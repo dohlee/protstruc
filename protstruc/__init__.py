@@ -1,0 +1,1 @@
+from protstruc.protstruc import AntibodyFvStructure
