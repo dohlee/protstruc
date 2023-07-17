@@ -52,3 +52,17 @@ def test_dihedral():
 
     dihedral = geom.dihedral(a, b, c, d, to_degree=True).flatten()
     assert np.allclose(dihedral, np.array([90.0]))
+
+
+def test_reconstruct_backbone_distmat_from_interresidue_geometry_dummy():
+    L = 10
+    d_cb = np.random.uniform(size=(L, L))
+    omega = np.random.uniform(size=(L, L))
+    theta = np.random.uniform(size=(L, L))
+    phi = np.random.uniform(size=(L, L))
+
+    distmat = geom.reconstruct_backbone_distmat_from_interresidue_geometry(
+        d_cb, omega, theta, phi
+    )
+
+    assert distmat.shape == (3, 3, L, L)

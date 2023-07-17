@@ -9,6 +9,29 @@ CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
 CB_DIHEDRAL = -2.143
 
+three2one = {
+    "ALA": "A",
+    "ARG": "R",
+    "ASN": "N",
+    "ASP": "D",
+    "CYS": "C",
+    "GLN": "Q",
+    "GLU": "E",
+    "GLY": "G",
+    "HIS": "H",
+    "ILE": "I",
+    "LEU": "L",
+    "LYS": "K",
+    "MET": "M",
+    "PHE": "F",
+    "PRO": "P",
+    "SER": "S",
+    "THR": "T",
+    "TRP": "W",
+    "TYR": "Y",
+    "VAL": "V",
+}
+
 
 class AntibodyFvStructure(object):
     def __init__(
@@ -20,7 +43,7 @@ class AntibodyFvStructure(object):
     ):
         self.df = PandasPdb().read_pdb(pdb_path).df["ATOM"]
         self.df["residue_id"] = (
-            self.df["chain_id"] + self.df["insertion"] + self.df["residue_number"].astype(str)
+            self.df["chain_id"] + self.df["residue_number"].astype(str) + self.df["insertion"]
         )
 
         self.coord = self.df[["x_coord", "y_coord", "z_coord"]].values
@@ -44,17 +67,26 @@ class AntibodyFvStructure(object):
         if impute_missing_atoms:
             self.impute_cb_coord()
 
+        self.heavy_chain_id = heavy_chain_id
+        self.light_chain_id = light_chain_id
+
     def valid_coord_mask(self, atom):
         return np.isfinite(self.coord_per_atom[atom]).all(axis=-1)
 
-    def filter_atom(self, atom):
-        return self.df["atom_name"] == atom
-
     def pdist(self, atom1="CA", atom2="CA"):
-        c1 = self.coord[self.filter_atom(atom1)]
-        c2 = self.coord[self.filter_atom(atom2)]
+        c1 = self.coord_per_atom[atom1]
+        c2 = self.coord_per_atom[atom2]
 
         return cdist(c1, c2)
+
+    def get_seq(self, chain=None):
+        if chain is None:
+            residues = self.df.drop_duplicates("residue_id").residue_name.values
+        else:
+            tmp = self.df[self.df.chain_id == chain]
+            residues = tmp.drop_duplicates("residue_id").residue_name.values
+
+        return "".join(three2one[aa] for aa in residues)
 
     def impute_cb_coord(self):
         c = self.coord_per_atom["C"]
