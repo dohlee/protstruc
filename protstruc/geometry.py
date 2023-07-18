@@ -1,5 +1,6 @@
 import numpy as np
 
+from sklearn.manifold import MDS
 from .constants import ideal
 
 MASK = 12345679
@@ -257,3 +258,65 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
     dist_mat[N_IDX, C_IDX, np.arange(1, L), np.arange(L - 1)] = ideal.C_N
 
     return dist_mat
+
+
+def initialize_backbone_with_mds(dist_mat: np.array, max_iter: int = 500) -> np.array:
+    """Given a pairwise distance matrix of backbone atoms, initialize
+    the coordinates of the backbone atoms using multidimensional scaling.
+
+    Args:
+        dist_mat (np.array): Pairwise distance matrix of backbone atoms (shape: (3, 3, L, L)).
+        max_iter (int, optional): Maximum number of iterations for MDS. Defaults to 500.
+
+    Returns:
+        np.array: Coordinates of backbone atoms (N, CA, C) (shape: (3, L, 3)).
+    """
+    L = dist_mat.shape[-1]
+    pdist = dist_mat.transpose(0, 2, 1, 3).reshape(3 * L, 3 * L)
+
+    mds = MDS(3, max_iter=max_iter, dissimilarity="precomputed")
+    coords = mds.fit_transform(pdist).reshape(3, L, 3)
+
+    coords = fix_chirality(coords)  # 3, L, 3
+
+    # place Cb and O atoms at ideal positions
+    N_IDX, CA_IDX, C_IDX = 0, 1, 2
+
+    cb_coords = place_fourth_atom(
+        coords[C_IDX], coords[N_IDX], coords[CA_IDX], ideal.AB, ideal.NAB, ideal.BANC
+    ).reshape(1, L, 3)
+
+    o_coords = place_fourth_atom(
+        np.roll(coords[N_IDX], shift=-1, axis=0),
+        coords[CA_IDX],
+        coords[C_IDX],
+        ideal.CO,
+        ideal.ACO,
+        ideal.NACO,
+    ).reshape(1, L, 3)
+
+    coords = np.concatenate([coords, o_coords, cb_coords], axis=0)
+    return coords
+
+
+def fix_chirality(coords: np.array) -> np.array:
+    """Fix chirality of the backbone so that all the phi dihedrals
+    are negative.
+
+    Args:
+        coords (np.array): Coordinates of backbone atoms (N, CA, C) (shape: (3, L, 3)).
+
+    Returns:
+        np.array: Fixed coordinates.
+    """
+    # compute phi dihedral angles
+    N_IDX, CA_IDX, C_IDX = 0, 1, 2
+    phi = dihedral(
+        coords[C_IDX, :-1],
+        coords[N_IDX, 1:],
+        coords[CA_IDX, 1:],
+        coords[C_IDX, 1:],
+    )
+
+    # return mirrored coordinates if phi is positive on average
+    return coords * np.array([1, 1, -1])[None, None, :] if phi.mean() > 0 else coords

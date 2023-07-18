@@ -1,4 +1,4 @@
-# Ideal bond lengths
+# ideal bond lengths
 NA = 1.458  # N to Ca
 AN = 1.458  # Ca to N
 AC = 1.523  # Ca to C
@@ -13,13 +13,19 @@ BC = 2.499  # Cb to C
 NC = 2.460  # N to C
 CN = 2.460  # C to N
 
-# Ideal planar angles
+CO = 1.231
+OC = 1.231
+
+# ideal planar angles
 ANC = 0.615  # Ca-N-C
 NAB = 1.927  # N-Ca-Cb
 BAN = 1.927  # Cb-Ca-N
+ACO = 2.108
+OCA = 2.108
 
-# Ideal dihedral angles
+# ideal dihedral angles
 BANC = -2.143  # Cb-Ca-N-C
+NACO = -3.142  # note the planarity of a peptide bond
 
 as_dict = {
     "NA": NA,

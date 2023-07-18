@@ -2,36 +2,15 @@ import numpy as np
 
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
+from collections import defaultdict
 
 import protstruc.geometry as geom
 from protstruc.constants import ideal
+from protstruc.alphabet import three2one
 
 CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
 CB_DIHEDRAL = -2.143
-
-three2one = {
-    "ALA": "A",
-    "ARG": "R",
-    "ASN": "N",
-    "ASP": "D",
-    "CYS": "C",
-    "GLN": "Q",
-    "GLU": "E",
-    "GLY": "G",
-    "HIS": "H",
-    "ILE": "I",
-    "LEU": "L",
-    "LYS": "K",
-    "MET": "M",
-    "PHE": "F",
-    "PRO": "P",
-    "SER": "S",
-    "THR": "T",
-    "TRP": "W",
-    "TYR": "Y",
-    "VAL": "V",
-}
 
 
 class AntibodyFvStructure(object):
@@ -68,6 +47,16 @@ class AntibodyFvStructure(object):
             .swaplevel(0, 1, axis=1)
         )
 
+        residue_ids = df_piv.index.values
+        residues = (
+            self.df.drop_duplicates("residue_id").set_index("residue_id").loc[residue_ids]
+        )
+        self.chain_ids = residues.chain_id.unique()
+        self.sequences = defaultdict(list)
+        for r in residues.to_records():
+            self.sequences[r.chain_id].append(three2one[r.residue_name])
+        self.sequences = {k: "".join(v) for k, v in self.sequences.items()}
+
         self.coord_per_atom = {}
         for atom in atoms:
             self.coord_per_atom[atom] = df_piv[atom].values
@@ -82,6 +71,12 @@ class AntibodyFvStructure(object):
 
         self.heavy_chain_id = heavy_chain_id
         self.light_chain_id = light_chain_id
+
+    def get_sequences(self):
+        return [self.sequences[chain] for chain in self.chain_ids]
+
+    def get_chain_ids(self):
+        return self.chain_ids
 
     def get_heavy_chain_length(self):
         return self.df[self.df.chain_id == self.heavy_chain_id].residue_number.nunique()
