@@ -4,6 +4,7 @@ from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
 
 import protstruc.geometry as geom
+from protstruc.constants import ideal
 
 CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
@@ -42,9 +43,16 @@ class AntibodyFvStructure(object):
         light_chain_id="L",
     ):
         self.df = PandasPdb().read_pdb(pdb_path).df["ATOM"]
-        self.df["residue_id"] = (
-            self.df["chain_id"] + self.df["residue_number"].astype(str) + self.df["insertion"]
+
+        chain_id = self.df["chain_id"]
+        _max_char_len = self.df["residue_number"].astype(str).map(len).max()
+        residue_number = (
+            self.df["residue_number"]
+            .astype(str)
+            .str.pad(_max_char_len, side="left", fillchar="0")
         )
+        insertion = self.df["insertion"]
+        self.df["residue_id"] = chain_id + residue_number + insertion
 
         self.coord = self.df[["x_coord", "y_coord", "z_coord"]].values
 
@@ -64,11 +72,22 @@ class AntibodyFvStructure(object):
         for atom in atoms:
             self.coord_per_atom[atom] = df_piv[atom].values
 
+        # for i in range(1):
+        #     print(
+        #         np.linalg.norm(self.coord_per_atom["C"][i] - self.coord_per_atom["N"][i + 1])
+        #     )
+
         if impute_missing_atoms:
             self.impute_cb_coord()
 
         self.heavy_chain_id = heavy_chain_id
         self.light_chain_id = light_chain_id
+
+    def get_heavy_chain_length(self):
+        return self.df[self.df.chain_id == self.heavy_chain_id].residue_number.nunique()
+
+    def get_light_chain_length(self):
+        return self.df[self.df.chain_id == self.light_chain_id].residue_number.nunique()
 
     def valid_coord_mask(self, atom):
         return np.isfinite(self.coord_per_atom[atom]).all(axis=-1)
@@ -93,9 +112,7 @@ class AntibodyFvStructure(object):
         n = self.coord_per_atom["N"]
         ca = self.coord_per_atom["CA"]
 
-        cb_coords = geom.place_fourth_atom(
-            c, n, ca, CC_BOND_LENGTH, CB_CA_N_ANGLE, CB_DIHEDRAL
-        )
+        cb_coords = geom.place_fourth_atom(c, n, ca, ideal.AB, ideal.NAB, ideal.BANC)
 
         to_fill = ~self.valid_coord_mask("CB")
         self.coord_per_atom["CB"][to_fill] = cb_coords[to_fill]

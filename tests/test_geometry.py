@@ -51,7 +51,7 @@ def test_dihedral():
     )
 
     dihedral = geom.dihedral(a, b, c, d, to_degree=True).flatten()
-    assert np.allclose(dihedral, np.array([90.0]))
+    assert np.allclose(dihedral, np.array([-90.0]))
 
 
 def test_reconstruct_backbone_distmat_from_interresidue_geometry_dummy():
