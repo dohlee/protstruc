@@ -112,7 +112,7 @@ class AntibodyFvStructure(object):
         to_fill = ~self.valid_coord_mask("CB")
         self.coord_per_atom["CB"][to_fill] = cb_coords[to_fill]
 
-    def inter_residue_geometry(self, to_degree=True):
+    def inter_residue_geometry(self, to_degree=False):
         """
         https://github.com/RosettaCommons/RoseTTAFold/blob/main/network/kinematics.py
         """

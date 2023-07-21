@@ -173,11 +173,11 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
 
     # prepare angles and dihedrals
     d_cb = d_cb.reshape(-1, 1)
-    angle_ABB = np.radians(phi.reshape(-1, 1))
-    angle_BBA = np.radians(phi.T.reshape(-1, 1))
-    dihedral_NABB = np.radians(theta.reshape(-1, 1))
-    dihedral_BBAN = np.radians(theta.T.reshape(-1, 1))
-    dihedral_ABBA = np.radians(omega.reshape(-1, 1))
+    angle_ABB = phi.reshape(-1, 1)
+    angle_BBA = phi.T.reshape(-1, 1)
+    dihedral_NABB = theta.reshape(-1, 1)
+    dihedral_BBAN = theta.T.reshape(-1, 1)
+    dihedral_ABBA = omega.reshape(-1, 1)
 
     # compute the coordinates of N, Ca, C, Cb of all other residues
     # with respect to the local coordinate system of each residue
