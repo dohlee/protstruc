@@ -319,4 +319,26 @@ def fix_chirality(coords: np.array) -> np.array:
     )
 
     # return mirrored coordinates if phi is positive on average
-    return coords * np.array([1, 1, -1])[None, None, :] if phi.mean() > 0 else coords
+    # return coords * np.array([1, 1, -1])[None, None, :] if phi.mean() > 0 else coords
+    return coords * np.array([1, 1, -1])[None, None, :]
+
+
+def gram_schmidt(a: np.array, b: np.array, c: np.array):
+    """Given three xyz coordinates, compute the orthonormal basis
+    using Gram-Schmidt process. Specifically, compute the orthonormal
+    basis of the plane defined by vectors (c - b) and (a - b).
+
+    Args:
+        a, b, c (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
+    """
+
+    v1 = c - b
+    e1 = v1 / norm(v1)
+
+    v2 = a - b
+    u2 = v2 - dot(e1, v2) * e1
+    e2 = u2 / norm(u2)
+
+    e3 = np.cross(e1, e2)
+
+    return e1, e2, e3
