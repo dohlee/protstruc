@@ -12,6 +12,110 @@ CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
 CB_DIHEDRAL = -2.143
 
+N_IDX, CA_IDX, C_IDX = 0, 1, 2
+
+
+class StructureBatch(object):
+    def __init__(self, xyz: np.ndarray, chain_ids: np.ndarray = None):
+        self.xyz = xyz
+        self.max_n_atoms_per_residue = self.xyz.shape[2]
+
+        self.chain_ids = chain_ids
+        if self.chain_ids is not None:
+            assert self.chain_ids.min() == 0, "Chain ids should start from zero"
+
+    @classmethod
+    def from_xyz(cls, xyz: np.ndarray, chain_ids: np.ndarray = None):
+        """Initialize a StructureBatch from a 3D coordinate array.
+
+        Args:
+            xyz (np.ndarray): Shape: (batch_size, num_residues, num_atoms, 3)
+            chain_ids (np.ndarray, optional): Chain identifiers for each residue.
+                Should be starting from zero. Defaults to None.
+                Shape: (batch_size, num_residues)
+
+        Returns:
+            StructureBatch: A StructureBatch object.
+        """
+        self = cls(xyz, chain_ids)
+        return self
+
+    @classmethod
+    def from_dihedrals(cls, dihedrals: np.ndarray, chain_ids: np.ndarray = None):
+        """Initialize a StructureBatch from a dihedral angle array.
+
+        Args:
+            dihedrals (np.ndarray): Shape: (batch_size, num_residues, num_dihedrals)
+            chain_ids (np.ndarray, optional): Chain identifiers for each residue.
+                Should be starting from zero. Defaults to None.
+                Shape: (batch_size, num_residues)
+        """
+        # TODO: Implement this
+        pass
+
+    def get_xyz(self):
+        return self.xyz
+
+    def get_max_n_atoms_per_residue(self):
+        return self.max_n_atoms_per_residue
+
+    def get_n_terminal_mask(self) -> np.ndarray:
+        """Return a boolean mask for the N-terminal residues.
+
+        Returns:
+            np.ndarray: Shape: (batch_size, num_residues)
+        """
+        padded = np.pad(
+            self.chain_ids, ((0, 0), (1, 0)), mode="constant", constant_values=np.nan
+        )
+        return (padded[:, :-1] != padded[:, 1:]).astype(bool)
+
+    def get_c_terminal_mask(self) -> np.ndarray:
+        """Return a boolean mask for the C-terminal residues.
+
+        Returns:
+            np.ndarray: Shape: (batch_size, num_residues)
+        """
+        padded = np.pad(
+            self.chain_ids, ((0, 0), (0, 1)), mode="constant", constant_values=np.nan
+        )
+        return (padded[:, :-1] != padded[:, 1:]).astype(bool)
+
+    def get_backbone_dihedrals(self) -> np.ndarray:
+        """Return the backbone dihedral angles.
+
+        Returns:
+            np.ndarray: Shape: (batch_size, num_residues, 3)
+        """
+        n_coords = self.xyz[:, :, N_IDX]
+        ca_coords = self.xyz[:, :, CA_IDX]
+        c_coords = self.xyz[:, :, C_IDX]
+
+        nterm, cterm = self.get_n_terminal_mask(), self.get_c_terminal_mask()
+
+        phi = geom.dihedral(
+            c_coords[:, :-1], n_coords[:, 1:], ca_coords[:, 1:], c_coords[:, 1:]
+        )
+        phi = np.pad(phi, ((0, 0), (1, 0)), mode="constant", constant_values=0.0)
+        phi[nterm] = 0.0
+
+        psi = geom.dihedral(
+            n_coords[:, :-1], ca_coords[:, :-1], c_coords[:, :-1], n_coords[:, 1:]
+        )
+        psi = np.pad(psi, ((0, 0), (0, 1)), mode="constant", constant_values=0.0)
+        psi[cterm] = 0.0
+
+        omega = geom.dihedral(
+            ca_coords[:, :-1], c_coords[:, :-1], n_coords[:, 1:], ca_coords[:, 1:]
+        )
+        omega = np.pad(omega, ((0, 0), (0, 1)), mode="constant", constant_values=0.0)
+        omega[cterm] = 0.0
+
+        dihedrals = np.stack([phi, psi, omega], axis=-1)
+        dihedral_mask = np.stack([nterm, cterm, cterm], axis=-1)
+
+        return dihedrals, dihedral_mask
+
 
 class AntibodyFvStructure(object):
     def __init__(

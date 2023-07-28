@@ -53,7 +53,7 @@ def dihedral(a: np.array, b: np.array, c: np.array, d: np.array, to_degree=False
             Whether to return dihedrals in degree. Defaults to False.
 
     Returns:
-        np.array: Dihedral angle between four points. (shape: (n, 1))
+        np.array: Dihedral angle between four points. (shape: (n,))
     """
     b0 = a - b
     b1 = c - b

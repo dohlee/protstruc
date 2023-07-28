@@ -52,7 +52,44 @@ def test_dihedral():
         ]
     )
 
-    dihedral = geom.dihedral(a, b, c, d, to_degree=True).flatten()
+    dihedral = geom.dihedral(a, b, c, d, to_degree=True)
+
+    assert dihedral.shape == (1,)
+    assert np.allclose(dihedral, np.array([-90.0]))
+
+
+def test_dihedral_for_higher_dimension():
+    a = np.array(
+        [
+            [
+                [1, 0, 0],
+            ]
+        ]
+    )
+    b = np.array(
+        [
+            [
+                [0, 0, 0],
+            ]
+        ]
+    )
+    c = np.array(
+        [
+            [
+                [0, 1, 0],
+            ]
+        ]
+    )
+    d = np.array(
+        [
+            [
+                [0, 1, 1],
+            ]
+        ]
+    )
+
+    dihedral = geom.dihedral(a, b, c, d, to_degree=True)
+    assert dihedral.shape == (1, 1)
     assert np.allclose(dihedral, np.array([-90.0]))
 
 
