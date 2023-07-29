@@ -1,0 +1,15 @@
+site_name: ProtStruc Documentation
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - Home: index.md
+  - Getting started:
+    - Installation: getting-started/installation.md
+  - Reference:
+    - protstruc: reference/protstruc.md
+    - geometry: reference/geometry.md
