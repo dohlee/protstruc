@@ -1,5 +1,6 @@
 import numpy as np
 
+from typing import List, Union
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
 from collections import defaultdict
@@ -15,7 +16,19 @@ CB_DIHEDRAL = -2.143
 N_IDX, CA_IDX, C_IDX = 0, 1, 2
 
 
-class StructureBatch(object):
+class StructureBatch:
+    """A batch of protein structures.
+
+    This class provides an interface to initialize from and represent a batch of protein structures
+    with various types of representations:
+
+    StructureBatch object can be initialized with:
+        - Backbone atom 3D coordinates `StructureBatch.from_xyz`
+        - Full-atom 3D coordinates `StructureBatch.from_xyz`
+        - Dihedral angles `StructureBatch.from_dihedrals` (TODO)
+        - A set of PDB files `StructureBatch.from_pdb` (TODO)
+    """
+
     def __init__(self, xyz: np.ndarray, chain_ids: np.ndarray = None):
         self.xyz = xyz
         self.max_n_atoms_per_residue = self.xyz.shape[2]
@@ -27,6 +40,11 @@ class StructureBatch(object):
     @classmethod
     def from_xyz(cls, xyz: np.ndarray, chain_ids: np.ndarray = None):
         """Initialize a StructureBatch from a 3D coordinate array.
+
+        Examples:
+            >>> bsz, n_max_res, n_max_atoms = 2, 10, 25
+            >>> xyz = np.random.randn(bsz, n_max_res, n_max_atoms, 3)
+            >>> sb = StructureBatch.from_xyz(xyz)
 
         Args:
             xyz (np.ndarray): Shape: (batch_size, num_residues, num_atoms, 3)
@@ -52,6 +70,15 @@ class StructureBatch(object):
         """
         # TODO: Implement this
         pass
+
+    @classmethod
+    def from_pdb(cls, pdb_path: Union[List[str], str]):
+        """Initialize a StructureBatch from a PDB file.
+
+        Args:
+            pdb_path: Path to a PDB file or a list of paths to PDB files.
+        """
+        # TODO: Implement this
 
     def get_xyz(self):
         return self.xyz
@@ -117,7 +144,7 @@ class StructureBatch(object):
         return dihedrals, dihedral_mask
 
 
-class AntibodyFvStructure(object):
+class AntibodyFvStructure:
     def __init__(
         self,
         pdb_path,

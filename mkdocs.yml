@@ -11,5 +11,6 @@ nav:
   - Getting started:
     - Installation: getting-started/installation.md
   - Reference:
-    - protstruc: reference/protstruc.md
-    - geometry: reference/geometry.md
+    - protstruc.protstruc: reference/protstruc.md
+    - protstruc.geometry: reference/geometry.md
+    - protstruc.io: reference/io.md

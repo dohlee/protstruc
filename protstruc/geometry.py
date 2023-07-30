@@ -1,3 +1,13 @@
+"""Utility functions for computing 3D geometry of protein structures.
+
+This module contains the following functions:
+
+- `angle(a, b, c, to_degree=False)`: Compute planar angle between three points.
+- `dihedral(a, b, c, d, to_degree=False)`: Compute dihedral angle between four points.
+- `place_fourth_atom(a, b, c, length, planar, dihedral)`: Place a fourth atom X given three atoms (A, B and C) and
+    the bond length (CX), planar angle (XCB), and dihedral angle (XCB vs ACB).
+"""
+
 import numpy as np
 
 from sklearn.manifold import MDS
@@ -19,7 +29,7 @@ def unit(x):
 
 
 def angle(a: np.array, b: np.array, c: np.array, to_degree=False) -> np.array:
-    """_summary_
+    """Compute planar angles between three points a, b and c.
 
     Args:
         a (np.array): 3D coordinates of atom a (shape: (n, 3))
@@ -29,7 +39,7 @@ def angle(a: np.array, b: np.array, c: np.array, to_degree=False) -> np.array:
             Whether to return angles in degree. Defaults to False.
 
     Returns:
-        np.array: Planar angle between three points. (shape: (n, 1))
+        Planar angle between three points. (shape: (n, 1))
     """
     ba = a - b
     bc = c - b
@@ -42,7 +52,7 @@ def angle(a: np.array, b: np.array, c: np.array, to_degree=False) -> np.array:
 
 
 def dihedral(a: np.array, b: np.array, c: np.array, d: np.array, to_degree=False) -> np.array:
-    """Compute dihedral angle between four points.
+    """Compute dihedral angle between four points a, b, c and d.
 
     Args:
         a (np.array): 3D coordinates of atom a (shape: (n, 3))
@@ -53,7 +63,7 @@ def dihedral(a: np.array, b: np.array, c: np.array, d: np.array, to_degree=False
             Whether to return dihedrals in degree. Defaults to False.
 
     Returns:
-        np.array: Dihedral angle between four points. (shape: (n,))
+        Dihedral angle between four points. (shape: (n,))
     """
     b0 = a - b
     b1 = c - b
@@ -98,7 +108,7 @@ def place_fourth_atom(
             i.e., dihedral angle between planes XCB and ACB
 
     Returns:
-        np.array: 3D coordinates of the new atom X (shape: (n, 3))
+        3D coordinates of the new atom X (shape: (n, 3))
     """
     bc = b - c
     bc = bc / norm(bc)
@@ -119,10 +129,8 @@ def place_fourth_atom(
 def ideal_local_frame() -> np.array:
     """Compute ideal local coordinate system of a residue centered at N
 
-    Returns:
-        np.array:
-            Local coordinate system of a residue centered at N,
-            with atom order N, CA, C, CB (shape: (4, 3))
+    Returns: Local coordinate system of a residue centered at N,
+    with atom order N, CA, C, CB (shape: (4, 3))
     """
 
     n = np.array([0.0, 0.0, 0.0])
@@ -323,13 +331,18 @@ def fix_chirality(coords: np.array) -> np.array:
     return coords * np.array([1, 1, -1])[None, None, :]
 
 
-def gram_schmidt(a: np.array, b: np.array, c: np.array):
+def gram_schmidt(a: np.array, b: np.array, c: np.array) -> (np.array, np.array, np.array):
     """Given three xyz coordinates, compute the orthonormal basis
     using Gram-Schmidt process. Specifically, compute the orthonormal
     basis of the plane defined by vectors (c - b) and (a - b).
 
     Args:
-        a, b, c (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
+        a (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
+        b (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
+        c (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
+
+    Returns:
+        e1, e2, e3
     """
 
     v1 = c - b
