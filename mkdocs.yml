@@ -1,7 +1,13 @@
 site_name: ProtStruc Documentation
+repo_name: dohlee/protstruc
+repo_url: https://github.com/dohlee/protstruc
+docs_dir: docs
 
 theme:
-  name: "material"
+  name: material
+  icon:
+    logo: fontawesome/solid/dice-d20
+    repo: octicons/mark-github-16
 
 plugins:
   - mkdocstrings
@@ -14,3 +20,6 @@ nav:
     - protstruc.protstruc: reference/protstruc.md
     - protstruc.geometry: reference/geometry.md
     - protstruc.io: reference/io.md
+  
+extra_css:
+  - css/mkdocs.css

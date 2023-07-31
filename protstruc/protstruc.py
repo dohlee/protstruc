@@ -33,9 +33,12 @@ class StructureBatch:
         self.xyz = xyz
         self.max_n_atoms_per_residue = self.xyz.shape[2]
 
-        self.chain_ids = chain_ids
-        if self.chain_ids is not None:
-            assert self.chain_ids.min() == 0, "Chain ids should start from zero"
+        if chain_ids is not None:
+            self.chain_ids = chain_ids.astype(float)
+            assert self.chain_ids.min() == 0.0, "Chain ids should start from zero"
+        else:
+            bsz, n_max_res = self.xyz.shape[:2]
+            self.chain_ids = np.zeros((bsz, n_max_res))
 
     @classmethod
     def from_xyz(cls, xyz: np.ndarray, chain_ids: np.ndarray = None):
