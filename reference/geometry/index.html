@@ -521,7 +521,7 @@
       <p>Utility functions for computing 3D geometry of protein structures.</p>
 <p>This module contains the following functions:</p>
 <ul>
-<li><code>angle(a, b, c, to_degree=False)</code>: Compute planar angle between three points.</li>
+<li><code>angle(a, b, c, to_degree=False)</code>: Compute planar angles between three points.</li>
 <li><code>dihedral(a, b, c, d, to_degree=False)</code>: Compute dihedral angle between four points.</li>
 <li><code>place_fourth_atom(a, b, c, length, planar, dihedral)</code>: Place a fourth atom X given three atoms (A, B and C) and
     the bond length (CX), planar angle (XCB), and dihedral angle (XCB vs ACB).</li>
@@ -552,8 +552,15 @@
 
   <div class="doc doc-contents ">
   
-      <p>Compute planar angles between three points a, b and c.</p>
+      <p>Compute planar angles (0 ~ pi) between three (array of) points a, b and c.</p>
 
+<details class="note" open>
+  <summary>Note</summary>
+  <p>The planar angle is computed as the angle between the vectors <code>ab</code> and <code>bc</code>
+using the dot product followed by <code>torch.arccos</code>. If <code>to_degree</code> is False, the
+output is in radians between 0 and pi. Otherwise, the output is in degrees
+between 0 and 180.</p>
+</details>
 
 
   <p><strong>Parameters:</strong></p>
@@ -570,11 +577,11 @@
         <tr>
           <td><code>a</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>3D coordinates of atom a (shape: (n, 3))</p>
+              <p>3D coordinates of atom a. Shape: (n, 3)</p>
             </div>
           </td>
           <td>
@@ -584,11 +591,11 @@
         <tr>
           <td><code>b</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>3D coordinates of atom b (shape: (n, 3))</p>
+              <p>3D coordinates of atom b. Shape: (n, 3)</p>
             </div>
           </td>
           <td>
@@ -598,11 +605,11 @@
         <tr>
           <td><code>c</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>3D coordinates of atom c (shape: (n, 3))</p>
+              <p>3D coordinates of atom c. Shape: (n, 3)</p>
             </div>
           </td>
           <td>
@@ -639,11 +646,11 @@
     <tbody>
         <tr>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.array">array</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Planar angle between three points. (shape: (n, 1))</p>
+              <p>Planar angle between three points. Shape: (n,)</p>
             </div>
           </td>
         </tr>
@@ -667,8 +674,27 @@
 
   <div class="doc doc-contents ">
   
-      <p>Compute dihedral angle between four points a, b, c and d.</p>
+      <p>Compute dihedral angle (-pi ~ pi) between (array of) four points a, b, c and d.</p>
 
+<details class="note" open>
+  <summary>Note</summary>
+  <p>The <strong>dihedral angle</strong> is the angle in the clockwise direction of the <strong>fourth atom</strong>
+compared to the <strong>first atom</strong>, while looking down <strong>the axis of the second to the
+third</strong>.</p>
+</details>
+<details class="note" open>
+  <summary>Note</summary>
+  <p>The dihedral angle is computed as the angle between the plane defined by
+vectors <code>ba</code> and <code>bc</code> and the plane defined by vectors <code>bc</code> and <code>cd</code>.
+In short, the dihedral angle (theta) is obtained by first computing cos(theta) and sin(theta)
+using dot and cross products of the normal vectors of the two planes, and then computing
+theta using <code>torch.atan2</code>.</p>
+</details>
+<details class="tip" open>
+  <summary>Tip</summary>
+  <p>Here is a nice explanation of the computation of dihedral angles:
+<a href="https://leimao.github.io/blog/Dihedral-Angles/">https://leimao.github.io/blog/Dihedral-Angles</a></p>
+</details>
 
 
   <p><strong>Parameters:</strong></p>
@@ -685,7 +711,7 @@
         <tr>
           <td><code>a</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -699,7 +725,7 @@
         <tr>
           <td><code>b</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -713,7 +739,7 @@
         <tr>
           <td><code>c</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -727,7 +753,7 @@
         <tr>
           <td><code>d</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -768,7 +794,7 @@
     <tbody>
         <tr>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.array">array</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
