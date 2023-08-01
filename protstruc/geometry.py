@@ -2,64 +2,105 @@
 
 This module contains the following functions:
 
-- `angle(a, b, c, to_degree=False)`: Compute planar angle between three points.
+- `angle(a, b, c, to_degree=False)`: Compute planar angles between three points.
 - `dihedral(a, b, c, d, to_degree=False)`: Compute dihedral angle between four points.
 - `place_fourth_atom(a, b, c, length, planar, dihedral)`: Place a fourth atom X given three atoms (A, B and C) and
     the bond length (CX), planar angle (XCB), and dihedral angle (XCB vs ACB).
 """
 
+import torch
 import numpy as np
 
+from typing import Union
 from sklearn.manifold import MDS
 from .constants import ideal
+from .decorator import with_tensor
 
 MASK = 12345679
 
 
+@with_tensor
 def dot(x, y):
-    return (x * y).sum(axis=-1, keepdims=True)
+    return (x * y).sum(dim=-1, keepdim=True)
 
 
+@with_tensor
 def norm(x):
-    return np.linalg.norm(x, axis=-1, keepdims=True)
+    return x.norm(dim=-1, keepdim=True)
 
 
+@with_tensor
 def unit(x):
     return x / norm(x)
 
 
-def angle(a: np.array, b: np.array, c: np.array, to_degree=False) -> np.array:
-    """Compute planar angles between three points a, b and c.
+@with_tensor
+def angle(
+    a: Union[np.ndarray, torch.Tensor],
+    b: Union[np.ndarray, torch.Tensor],
+    c: Union[np.ndarray, torch.Tensor],
+    to_degree: bool = False,
+) -> Union[np.array, torch.Tensor]:
+    """Compute planar angles (0 ~ pi) between three (array of) points a, b and c.
+
+    Note:
+        The planar angle is computed as the angle between the vectors `ab` and `bc`
+        using the dot product followed by `torch.arccos`. If `to_degree` is False, the
+        output is in radians between 0 and pi. Otherwise, the output is in degrees
+        between 0 and 180.
 
     Args:
-        a (np.array): 3D coordinates of atom a (shape: (n, 3))
-        b (np.array): 3D coordinates of atom b (shape: (n, 3))
-        c (np.array): 3D coordinates of atom c (shape: (n, 3))
-        to_degree (bool, optional):
+        a: 3D coordinates of atom a. Shape: (n, 3)
+        b: 3D coordinates of atom b. Shape: (n, 3)
+        c: 3D coordinates of atom c. Shape: (n, 3)
+        to_degree:
             Whether to return angles in degree. Defaults to False.
 
     Returns:
-        Planar angle between three points. (shape: (n, 1))
+        Planar angle between three points. Shape: (n,)
     """
     ba = a - b
     bc = c - b
     cosine_angle = dot(ba, bc) / (norm(ba) * norm(bc))
 
     if to_degree:
-        return np.degrees(np.arccos(cosine_angle)).squeeze(-1)
+        return torch.rad2deg(torch.arccos(cosine_angle)).squeeze(-1)
     else:
-        return np.arccos(cosine_angle).squeeze(-1)
+        return torch.arccos(cosine_angle).squeeze(-1)
 
 
-def dihedral(a: np.array, b: np.array, c: np.array, d: np.array, to_degree=False) -> np.array:
-    """Compute dihedral angle between four points a, b, c and d.
+@with_tensor
+def dihedral(
+    a: Union[np.ndarray, torch.Tensor],
+    b: Union[np.ndarray, torch.Tensor],
+    c: Union[np.ndarray, torch.Tensor],
+    d: Union[np.ndarray, torch.Tensor],
+    to_degree: bool = False,
+) -> Union[np.array, torch.Tensor]:
+    """Compute dihedral angle (-pi ~ pi) between (array of) four points a, b, c and d.
+
+    Note:
+        The **dihedral angle** is the angle in the clockwise direction of the **fourth atom**
+        compared to the **first atom**, while looking down **the axis of the second to the
+        third**.
+
+    Note:
+        The dihedral angle is computed as the angle between the plane defined by
+        vectors `ba` and `bc` and the plane defined by vectors `bc` and `cd`.
+        In short, the dihedral angle (theta) is obtained by first computing cos(theta) and sin(theta)
+        using dot and cross products of the normal vectors of the two planes, and then computing
+        theta using `torch.atan2`.
+
+    Tip:
+        Here is a nice explanation of the computation of dihedral angles:
+        [https://leimao.github.io/blog/Dihedral-Angles](https://leimao.github.io/blog/Dihedral-Angles/)
 
     Args:
-        a (np.array): 3D coordinates of atom a (shape: (n, 3))
-        b (np.array): 3D coordinates of atom b (shape: (n, 3))
-        c (np.array): 3D coordinates of atom c (shape: (n, 3))
-        d (np.array): 3D coordinates of atom d (shape: (n, 3))
-        to_degree (bool, optional):
+        a: 3D coordinates of atom a (shape: (n, 3))
+        b: 3D coordinates of atom b (shape: (n, 3))
+        c: 3D coordinates of atom c (shape: (n, 3))
+        d: 3D coordinates of atom d (shape: (n, 3))
+        to_degree:
             Whether to return dihedrals in degree. Defaults to False.
 
     Returns:
@@ -73,8 +114,8 @@ def dihedral(a: np.array, b: np.array, c: np.array, d: np.array, to_degree=False
     b1xb2 = np.cross(b2, b1)
     b0xb1_x_b1xb2 = np.cross(b0xb1, b1xb2)
 
-    x = dot(b0xb1, b1xb2)
-    y = dot(b0xb1_x_b1xb2, b1) / norm(b1)
+    x = dot(b0xb1, b1xb2)  # proportional to cos(theta)
+    y = dot(b0xb1_x_b1xb2, b1) / norm(b1)  # proportional to sin(theta)
 
     if to_degree:
         return np.degrees(np.arctan2(y, x)).squeeze(-1)

@@ -9,7 +9,10 @@ def with_tensor(func):
         new_args = []
         for arg in args:
             if isinstance(arg, np.ndarray):
-                new_args.append(torch.tensor(arg))
+                t = torch.tensor(arg)
+                if arg.dtype in [np.float32, np.float64]:
+                    t = t.float()
+                new_args.append(t)
             elif isinstance(arg, torch.Tensor):
                 found_tensor = True
                 new_args.append(arg)
@@ -19,7 +22,10 @@ def with_tensor(func):
         new_kwargs = {}
         for key, value in kwargs.items():
             if isinstance(value, np.ndarray):
-                new_kwargs[key] = torch.tensor(value)
+                t = torch.tensor(value)
+                if arg.dtype in [np.float32, np.float64]:
+                    t = t.float()
+                new_kwargs[key] = t
             elif isinstance(value, torch.Tensor):
                 found_tensor = True
                 new_kwargs[key] = value
