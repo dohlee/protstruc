@@ -146,6 +146,34 @@ class StructureBatch:
 
         return dihedrals, dihedral_mask
 
+    def pairwise_distance_matrix(self) -> np.ndarray:
+        """Return the pairwise distance matrix between residues.
+
+        Returns:
+            Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
+        """
+        return np.linalg.norm(
+            self.xyz[:, :, None, :, None] - self.xyz[:, None, :, None, :], axis=-1
+        )
+
+    def inter_residue_dihedrals(self, use_cb=False):
+        """Return the inter-residue dihedral angles.
+
+        Args:
+            use_cb (bool, optional): Use CB atom instead of CA. Defaults to False.
+
+        Returns:
+            Shape: (batch_size, num_residues, num_residues, 2)
+        """
+        n_coords = self.xyz[:, :, N_IDX]
+        ca_coords = self.xyz[:, :, CA_IDX]
+        c_coords = self.xyz[:, :, C_IDX]  # bsz, n_res, 3
+
+        ret = {}
+
+        phi = None
+        psi = None
+
 
 class AntibodyFvStructure:
     def __init__(
