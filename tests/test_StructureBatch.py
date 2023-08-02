@@ -59,9 +59,6 @@ def test_StructureBatch_from_pdb_multiple():
     assert len(xyz) == 3
 
     # two chains for each
-    print(sb.get_n_terminal_mask().sum(axis=1))
-    print(sb.get_c_terminal_mask().sum(axis=1))
-
     assert (sb.get_n_terminal_mask().sum(axis=1) == 2).all()
     assert (sb.get_c_terminal_mask().sum(axis=1) == 2).all()
 

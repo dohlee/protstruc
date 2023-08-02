@@ -12,8 +12,30 @@ from protstruc.general import (
 )
 
 
-def count_residues(pdb_df):
-    return pdb_df.groupby("chain_id").agg({"residue_number": "max"})["residue_number"].sum()
+def _precompute_internal_index_map(pdb_df):
+    ret = {}  # (chain_id, residue_number, insertion) -> internal_index
+
+    pdb_df = pdb_df.drop_duplicates(subset=["chain_id", "residue_number", "insertion"])
+
+    chain, idx, prev_residue_number = None, 0, None
+    for r in pdb_df.to_records():
+        if chain is None:
+            chain = r.chain_id
+        elif chain == r.chain_id:
+            # missing residue exists
+            if r.residue_number > prev_residue_number + 1:
+                n_missing_residues = r.residue_number - prev_residue_number - 1
+                idx += n_missing_residues + 1
+            else:
+                idx += 1
+        else:  # chain transition
+            chain = r.chain_id
+            idx += 1
+
+        ret[(r.chain_id, r.residue_number, r.insertion)] = idx
+        prev_residue_number = r.residue_number
+
+    return ret
 
 
 def pdb_to_xyz(
@@ -40,31 +62,28 @@ def pdb_to_xyz(
     pdb_df = PandasPdb().read_pdb(filename).df["ATOM"]
     pdb_df["atom_name"] = pdb_df["atom_name"].replace(non_standard_residue_substitutions)
 
-    n_residues = count_residues(pdb_df)
+    index_map = _precompute_internal_index_map(pdb_df)
+    n_residues = max(index_map.values()) + 1
+
     atom_xyz = torch.ones(n_residues, MAX_N_ATOMS_PER_RESIDUE, 3) * torch.nan
     chain_idx = torch.ones(n_residues) * torch.nan
 
-    curr_chain, curr_chain_start, curr_residue_idx = None, 0, None
-    curr_chain_idx = 0.0
+    curr_chain, curr_chain_idx = None, 0.0
     for r in pdb_df.to_records():
         residue_name = r.residue_name
         heavyatom_names = restype_to_heavyatom_names[AA[residue_name]]
 
         if curr_chain is None:
             curr_chain = r.chain_id
-            curr_residue_idx = r.residue_number - 1
-        elif curr_chain == r.chain_id:
-            curr_residue_idx = curr_chain_start + r.residue_number - 1
-        else:
+        if curr_chain != r.chain_id:
             curr_chain = r.chain_id
-            curr_chain_start = curr_residue_idx + 1
             curr_chain_idx += 1.0
-            curr_residue_idx = curr_chain_start + r.residue_number - 1
+
+        internal_idx = index_map[(r.chain_id, r.residue_number, r.insertion)]
 
         atom_idx = heavyatom_names.index(r.atom_name)
-        atom_xyz[curr_residue_idx, atom_idx] = torch.tensor([r.x_coord, r.y_coord, r.z_coord])
-
-        chain_idx[curr_residue_idx] = curr_chain_idx
+        atom_xyz[internal_idx, atom_idx] = torch.tensor([r.x_coord, r.y_coord, r.z_coord])
+        chain_idx[internal_idx] = curr_chain_idx
 
     atom_mask = ~(torch.isnan(atom_xyz).any(dim=-1))
 

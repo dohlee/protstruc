@@ -187,6 +187,21 @@ class StructureBatch:
     def get_max_n_atoms_per_residue(self):
         return self.max_n_atoms_per_residue
 
+    def _infill_chain_idx(self, chain_idx):
+        """Infill the chain index tensor to fill in the gaps."""
+        chain_idx = chain_idx.clone()
+        for i in range(chain_idx.shape[0]):
+            chain_idx[i] = self._infill_chain_idx_single(chain_idx[i])
+        return chain_idx
+
+    def _infill_chain_idx_single(self, chain_idx_single):
+        """Infill the chain index tensor to fill in the gaps."""
+        chain_idx_single = chain_idx_single.clone()
+        for i in range(chain_idx_single.shape[0]):
+            if torch.isnan(chain_idx_single[i]):
+                chain_idx_single[i] = chain_idx_single[i - 1]
+        return chain_idx_single
+
     def get_n_terminal_mask(self) -> torch.BoolTensor:
         """Return a boolean mask for the N-terminal residues.
 
@@ -194,8 +209,9 @@ class StructureBatch:
             A boolean tensor denoting N-terminal residues. True if N-terminal.
                 Shape: (batch_size, num_residues)
         """
+        chain_idx_infilled = self._infill_chain_idx(self.chain_idx).float()
 
-        padded = F.pad(self.chain_idx.float(), (1, 0, 0, 0), mode="constant", value=torch.nan)
+        padded = F.pad(chain_idx_infilled, (1, 0, 0, 0), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
     def get_c_terminal_mask(self) -> torch.BoolTensor:
@@ -205,7 +221,9 @@ class StructureBatch:
             A boolean tensor denoting C-terminal residues. True if C-terminal.
                 Shape: (batch_size, num_residues)
         """
-        padded = F.pad(self.chain_idx.float(), (0, 1, 0, 0), mode="constant", value=torch.nan)
+        chain_idx_infilled = self._infill_chain_idx(self.chain_idx).float()
+
+        padded = F.pad(chain_idx_infilled, (0, 1, 0, 0), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
     def get_backbone_dihedrals(self) -> torch.FloatTensor:
@@ -320,11 +338,6 @@ class AntibodyFvStructure:
         self.coord_per_atom = {}
         for atom in atoms:
             self.coord_per_atom[atom] = df_piv[atom].values
-
-        # for i in range(1):
-        #     print(
-        #         np.linalg.norm(self.coord_per_atom["C"][i] - self.coord_per_atom["N"][i + 1])
-        #     )
 
         if impute_missing_atoms:
             self.impute_cb_coord()

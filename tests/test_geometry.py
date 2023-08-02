@@ -157,28 +157,32 @@ def test_dihedral_for_higher_dimension():
             [
                 [1, 0, 0],
             ]
-        ]
+        ],
+        dtype=np.float32,
     )
     b = np.array(
         [
             [
                 [0, 0, 0],
             ]
-        ]
+        ],
+        dtype=np.float32,
     )
     c = np.array(
         [
             [
                 [0, 1, 0],
             ]
-        ]
+        ],
+        dtype=np.float32,
     )
     d = np.array(
         [
             [
                 [0, 1, 1],
             ]
-        ]
+        ],
+        dtype=np.float32,
     )
 
     dihedral = geom.dihedral(a, b, c, d, to_degree=True)
