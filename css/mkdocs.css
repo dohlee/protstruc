@@ -10,7 +10,7 @@ div.highlight>pre {
 
 html {
     /* override 125% default, which looks terrible on smaller screens */
-    font-size: 125% !important;
+    font-size: 120% !important;
 }
 
 .jupyter-wrapper {
@@ -19,8 +19,9 @@ html {
 }
 
 .md-grid {
-    /* change max width of page, looks much better on bigger screens */
-    max-width: 72rem !important;
+/* change max width of page, looks much better on bigger screens */
+/* max-width: 72rem !important; */
+max-width: 70% !important;
 }
 
 div.highlight {

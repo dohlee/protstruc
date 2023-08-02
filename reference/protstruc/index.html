@@ -107,6 +107,39 @@
     
     
     
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
     
       <div class="md-header__source">
         <a href="https://github.com/dohlee/protstruc" title="Go to repository" class="md-source" data-md-component="source">
@@ -384,6 +417,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.from_pdb_id" class="md-nav__link">
+    from_pdb_id()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
     from_dihedrals()
   </a>
@@ -405,15 +445,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
-    get_backbone_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="md-nav__link">
+    pairwise_distance_matrix()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="md-nav__link">
-    pairwise_distance_matrix()
+  <a href="#protstruc.protstruc.StructureBatch.backbone_dihedrals" class="md-nav__link">
+    backbone_dihedrals()
   </a>
   
 </li>
@@ -547,6 +587,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.from_pdb_id" class="md-nav__link">
+    from_pdb_id()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
     from_dihedrals()
   </a>
@@ -568,15 +615,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
-    get_backbone_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="md-nav__link">
+    pairwise_distance_matrix()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="md-nav__link">
-    pairwise_distance_matrix()
+  <a href="#protstruc.protstruc.StructureBatch.backbone_dihedrals" class="md-nav__link">
+    backbone_dihedrals()
   </a>
   
 </li>
@@ -672,6 +719,7 @@ with various types of representations:</p>
   <summary>StructureBatch object can be initialized with</summary>
   <ul>
 <li>A single PDB file or a list of PDB files <code>StructureBatch.from_pdb</code></li>
+<li>A pdb identifier or a list of PDB identifiers <code>StructureBatch.from_pdb_id</code> (TODO)</li>
 <li>Backbone or full atom 3D coordinates <code>StructureBatch.from_xyz</code></li>
 <li>Dihedral angles <code>StructureBatch.from_dihedrals</code> (TODO)</li>
 </ul>
@@ -913,6 +961,83 @@ Shape: (batch_size, num_residues)</p>
 
 
 
+<h3 id="protstruc.protstruc.StructureBatch.from_pdb_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">from_pdb_id</span><span class="p">(</span><span class="n">pdb_id</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Initialize a StructureBatch from a PDB ID or a list of PDB IDs.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>pdb_id</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[str, <span title="typing.List">List</span>[str]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A PDB identifier or a list of PDB identifiers.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>StructureBatch</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="protstruc.protstruc.StructureBatch" href="#protstruc.protstruc.StructureBatch">StructureBatch</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A StructureBatch object.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
 <h3 id="protstruc.protstruc.StructureBatch.from_dihedrals" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">from_dihedrals</span><span class="p">(</span><span class="n">dihedrals</span><span class="p">,</span> <span class="n">chain_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
   
@@ -1023,7 +1148,7 @@ Shape: (batch_size, num_residues)</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>A boolean tensor denoting N-terminal residues. True if N-terminal.
+              <p>A boolean tensor denoting N-terminal residues. <code>True</code> if N-terminal.
 Shape: (batch_size, num_residues)</p>
             </div>
           </td>
@@ -1067,52 +1192,8 @@ Shape: (batch_size, num_residues)</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>A boolean tensor denoting C-terminal residues. True if C-terminal.
+              <p>A boolean tensor denoting C-terminal residues. <code>True</code> if C-terminal.
 Shape: (batch_size, num_residues)</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_backbone_dihedrals</span><span class="p">()</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Return the backbone dihedral angles.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>torch.<span title="torch.FloatTensor">FloatTensor</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A tensor containing <code>phi</code>, <code>psi</code> and <code>omega</code> dihedral angles for each residue.
-Shape: (batch_size, num_residues, 3)</p>
             </div>
           </td>
         </tr>
@@ -1136,7 +1217,21 @@ Shape: (batch_size, num_residues, 3)</p>
 
   <div class="doc doc-contents ">
   
-      <p>Return the pairwise distance matrix between residues.</p>
+      <p>Return the all-atom pairwise pairwise distance matrix between residues.</p>
+
+<details class="info" open>
+  <summary>Info</summary>
+  <p>Distances are measured in <strong>Angstroms</strong>.</p>
+</details>
+
+
+<p><strong>Examples:</strong></p>
+    <p><code>dist[:, :, 1, 1]</code> will give pairwise alpha-carbon distance matrix between residues,
+as the index <code>1</code> corresponds to the alpha-carbon atom.
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">structure_batch</span> <span class="o">=</span> <span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span><span class="s2">&quot;1a8o.pdb&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">structure_batch</span><span class="o">.</span><span class="n">pairwise_distance_matrix</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ca_dist</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># 1 = CA_IDX</span>
+</code></pre></div></p>
 
 
 
@@ -1150,12 +1245,88 @@ Shape: (batch_size, num_residues, 3)</p>
     </thead>
     <tbody>
         <tr>
-<td><code>Shape</code></td>          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+<td><code>dist</code></td>          <td>
+                <code>torch.<span title="torch.FloatTensor">FloatTensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>(batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)</p>
+              <p>A tensor containing an all-atom pairwise distance matrix for each pair of residues.
+A distance between atom <code>a</code> of residue <code>i</code> and atom <code>b</code> of residue <code>j</code> is given by
+<code>dist[i, j, a, b]</code>.
+ Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.backbone_dihedrals" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">backbone_dihedrals</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return the backbone dihedral angles phi, psi and omega for each residue.</p>
+
+<details class="info" open>
+  <summary>Info</summary>
+  <p>Dihedral angles are measured in <strong>radians</strong> and are in the range <code>[-pi, pi]</code>.</p>
+<p>For a quick reminder of the definition of the dihedral angles, refer to the following image:
+<img alt="Dihedral" src="https://i.imgur.com/fZ0Sx3V.png" /></p>
+<p>Source: <a href="https://fabianfuchsml.github.io/alphafold2/">Fabian Fuchs</a></p>
+</details>
+<details class="note" open>
+  <summary>Note</summary>
+  <p><code>phi</code> angles are not defined for the first residue (it needs a predecessor)
+and <code>psi</code> and <code>omega</code> angles are not defined for the last residue (they need successors).
+Those invalid angles can be filtered using the <code>dihedral_mask</code> tensor returned from the method.</p>
+</details>
+<details class="warning" open>
+  <summary>Warning</summary>
+  <p>Dihedral angles involving the residues at the chain breaks are not handled correctly for now.</p>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>dihedrals</code></td>          <td>
+                <code>torch.<span title="torch.FloatTensor">FloatTensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tensor containing <code>phi</code>, <code>psi</code> and <code>omega</code> dihedral angles for each residue.
+Shape: (batch_size, num_residues, 3)</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>dihedral_mask</code></td>          <td>
+                <code>torch.<span title="torch.FloatTensor">FloatTensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tensor containing a boolean mask for the dihedral angles.
+<code>True</code> if the corresponding dihedral angle is defined, <code>False</code> otherwise.
+Shape: (batch_size, num_residues, 3)</p>
             </div>
           </td>
         </tr>
