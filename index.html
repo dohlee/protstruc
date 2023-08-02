@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#welcome-to-mkdocs" class="md-skip">
+        <a href="#welcome-to-protstruc-documentation" class="md-skip">
           Skip to content
         </a>
       
@@ -75,9 +75,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="." title="ProtStruc Documentation" class="md-header__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
@@ -129,6 +127,61 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    
+  
+
+
+  <li class="md-tabs__item">
+    <a href="." class="md-tabs__link md-tabs__link--active">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="getting-started/installation/" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="reference/protstruc/" class="md-tabs__link">
+        API reference
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -141,8 +194,10 @@
                   <div class="md-sidebar__inner">
                     
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="." title="ProtStruc Documentation" class="md-nav__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
@@ -209,16 +264,43 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    Commands
+  <a href="#what-is-protstruc" class="md-nav__link">
+    What is ProtStruc?
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-layout" class="md-nav__link">
-    Project layout
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialize-a-single-protein-structure-from-a-pdb-file" class="md-nav__link">
+    Initialize a single protein structure from a PDB file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initialize-a-batch-of-protein-structures-from-a-list-of-pdb-files" class="md-nav__link">
+    Initialize a batch of protein structures from a list of PDB files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initialize-a-batch-of-protein-structures-from-backbone-or-full-atom-xyz-coordinates" class="md-nav__link">
+    Initialize a batch of protein structures from backbone (or full atom) xyz coordinates
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -297,14 +379,14 @@
       
       
         <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-          Reference
+          API reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
-          Reference
+          API reference
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -383,16 +465,43 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    Commands
+  <a href="#what-is-protstruc" class="md-nav__link">
+    What is ProtStruc?
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-layout" class="md-nav__link">
-    Project layout
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialize-a-single-protein-structure-from-a-pdb-file" class="md-nav__link">
+    Initialize a single protein structure from a PDB file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initialize-a-batch-of-protein-structures-from-a-list-of-pdb-files" class="md-nav__link">
+    Initialize a batch of protein structures from a list of PDB files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initialize-a-batch-of-protein-structures-from-backbone-or-full-atom-xyz-coordinates" class="md-nav__link">
+    Initialize a batch of protein structures from backbone (or full atom) xyz coordinates
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -414,21 +523,35 @@
   
 
 
-<h1 id="welcome-to-mkdocs">Welcome to MkDocs</h1>
-<p>For full documentation visit <a href="https://www.mkdocs.org">mkdocs.org</a>.</p>
-<h2 id="commands">Commands</h2>
-<ul>
-<li><code>mkdocs new [dir-name]</code> - Create a new project.</li>
-<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
-<li><code>mkdocs build</code> - Build the documentation site.</li>
-<li><code>mkdocs -h</code> - Print help message and exit.</li>
-</ul>
-<h2 id="project-layout">Project layout</h2>
-<pre><code>mkdocs.yml    # The configuration file.
-docs/
-    index.md  # The documentation homepage.
-    ...       # Other markdown pages, images and other files.
-</code></pre>
+<h1 id="welcome-to-protstruc-documentation">Welcome to ProtStruc documentation!</h1>
+<h2 id="what-is-protstruc">What is ProtStruc?</h2>
+<p>ProtStruc is a Python package for handling protein structures, especially for deep learning applications.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="initialize-a-single-protein-structure-from-a-pdb-file">Initialize a single protein structure from a PDB file</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">protstruc</span> <span class="k">as</span> <span class="nn">ps</span>
+
+<span class="n">pdb_file</span> <span class="o">=</span> <span class="s1">&#39;1a0s.pdb&#39;</span>
+<span class="n">batch</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span><span class="n">pdb_file</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="initialize-a-batch-of-protein-structures-from-a-list-of-pdb-files">Initialize a batch of protein structures from a list of PDB files</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">protstruc</span> <span class="k">as</span> <span class="nn">ps</span>
+
+<span class="n">pdb_files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1a0s.pdb&#39;</span><span class="p">,</span> <span class="s1">&#39;1a1s.pdb&#39;</span><span class="p">,</span> <span class="s1">&#39;1a2s.pdb&#39;</span><span class="p">,</span> <span class="s1">&#39;1a3s.pdb&#39;</span><span class="p">,</span> <span class="s1">&#39;1a4s.pdb&#39;</span><span class="p">]</span>
+<span class="n">batch</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span><span class="n">pdb_files</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="initialize-a-batch-of-protein-structures-from-backbone-or-full-atom-xyz-coordinates">Initialize a batch of protein structures from backbone (or full atom) xyz coordinates</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">protstruc</span> <span class="k">as</span> <span class="nn">ps</span>
+
+<span class="n">batch_size</span><span class="p">,</span> <span class="n">max_n_residues</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">100</span>
+<span class="n">max_n_atoms_per_residue</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">xyz</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">max_n_residues</span><span class="p">,</span> <span class="n">max_n_atoms_per_residue</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">batch</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+</code></pre></div>
 
 
 
@@ -466,7 +589,7 @@ docs/
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.copy", "navigation.tabs", "navigation.sections"], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="assets/javascripts/bundle.220ee61c.min.js"></script>

@@ -77,9 +77,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="ProtStruc Documentation" class="md-header__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
@@ -131,6 +129,61 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../getting-started/installation/" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="./" class="md-tabs__link md-tabs__link--active">
+        API reference
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -143,8 +196,10 @@
                   <div class="md-sidebar__inner">
                     
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="ProtStruc Documentation" class="md-nav__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
@@ -253,14 +308,14 @@
       
       
         <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-          Reference
+          API reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
-          Reference
+          API reference
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -315,8 +370,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
-    from_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.from_xyz" class="md-nav__link">
+    from_xyz()
   </a>
   
 </li>
@@ -329,22 +384,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_xyz" class="md-nav__link">
-    from_xyz()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
-    get_backbone_dihedrals()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_c_terminal_mask" class="md-nav__link">
-    get_c_terminal_mask()
+  <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
+    from_dihedrals()
   </a>
   
 </li>
@@ -357,8 +398,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.inter_residue_dihedrals" class="md-nav__link">
-    inter_residue_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.get_c_terminal_mask" class="md-nav__link">
+    get_c_terminal_mask()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
+    get_backbone_dihedrals()
   </a>
   
 </li>
@@ -366,6 +414,13 @@
           <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="md-nav__link">
     pairwise_distance_matrix()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.inter_residue_dihedrals" class="md-nav__link">
+    inter_residue_dihedrals()
   </a>
   
 </li>
@@ -478,8 +533,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
-    from_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.from_xyz" class="md-nav__link">
+    from_xyz()
   </a>
   
 </li>
@@ -492,22 +547,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_xyz" class="md-nav__link">
-    from_xyz()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
-    get_backbone_dihedrals()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_c_terminal_mask" class="md-nav__link">
-    get_c_terminal_mask()
+  <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
+    from_dihedrals()
   </a>
   
 </li>
@@ -520,8 +561,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.inter_residue_dihedrals" class="md-nav__link">
-    inter_residue_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.get_c_terminal_mask" class="md-nav__link">
+    get_c_terminal_mask()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
+    get_backbone_dihedrals()
   </a>
   
 </li>
@@ -529,6 +577,13 @@
           <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="md-nav__link">
     pairwise_distance_matrix()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.inter_residue_dihedrals" class="md-nav__link">
+    inter_residue_dihedrals()
   </a>
   
 </li>
@@ -616,10 +671,9 @@ with various types of representations:</p>
 <details class="structurebatch-object-can-be-initialized-with" open>
   <summary>StructureBatch object can be initialized with</summary>
   <ul>
-<li>Backbone atom 3D coordinates <code>StructureBatch.from_xyz</code></li>
-<li>Full-atom 3D coordinates <code>StructureBatch.from_xyz</code></li>
+<li>A single PDB file or a list of PDB files <code>StructureBatch.from_pdb</code></li>
+<li>Backbone or full atom 3D coordinates <code>StructureBatch.from_xyz</code></li>
 <li>Dihedral angles <code>StructureBatch.from_dihedrals</code> (TODO)</li>
-<li>A set of PDB files <code>StructureBatch.from_pdb</code> (TODO)</li>
 </ul>
 </details>
 
@@ -640,8 +694,227 @@ with various types of representations:</p>
 
 
 
+<h3 id="protstruc.protstruc.StructureBatch.from_xyz" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">from_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">atom_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chain_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Initialize a StructureBatch from a 3D coordinate array.</p>
+
+
+
+<p><strong>Examples:</strong></p>
+    <p>Initialize a <code>StructureBatch</code> object from a numpy array of atom 3D coordinates.</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span><span class="p">,</span> <span class="n">n_max_res</span><span class="p">,</span> <span class="n">n_max_atoms</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">n_max_res</span><span class="p">,</span> <span class="n">n_max_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sb</span> <span class="o">=</span> <span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>xyz</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Shape: (batch_size, num_residues, num_atoms, 3)</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>atom_mask</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Shape: (batch_size, num_residues, num_atoms, 3)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>chain_idx</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Chain indices for each residue.
+Should be starting from zero. Defaults to None.
+Shape: (batch_size, num_residues)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>chain_ids</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[str]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of unique chain IDs for each protein.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>StructureBatch</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="protstruc.protstruc.StructureBatch" href="#protstruc.protstruc.StructureBatch">StructureBatch</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A StructureBatch object.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.from_pdb" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">from_pdb</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Initialize a StructureBatch from a PDB file or a list of PDB files.</p>
+
+
+
+<p><strong>Examples:</strong></p>
+    <p>Initialize a <code>StructureBatch</code> object from a single PDB file,</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">pdb_path</span> <span class="o">=</span> <span class="s1">&#39;1a0a.pdb&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sb</span> <span class="o">=</span> <span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">)</span>
+</code></pre></div>
+    <p>or with a list of PDB files.</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">pdb_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1a0a.pdb&#39;</span><span class="p">,</span> <span class="s1">&#39;1a0b.pdb&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sb</span> <span class="o">=</span> <span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span><span class="n">pdb_paths</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>pdb_path</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[str, <span title="typing.List">List</span>[str]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to a PDB file or a list of paths to PDB files.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>StructureBatch</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="protstruc.protstruc.StructureBatch" href="#protstruc.protstruc.StructureBatch">StructureBatch</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A StructureBatch object.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
 <h3 id="protstruc.protstruc.StructureBatch.from_dihedrals" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_dihedrals</span><span class="p">(</span><span class="n">dihedrals</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">from_dihedrals</span><span class="p">(</span><span class="n">dihedrals</span><span class="p">,</span> <span class="n">chain_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
@@ -670,7 +943,7 @@ with various types of representations:</p>
         <tr>
           <td><code>dihedrals</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -682,15 +955,29 @@ with various types of representations:</p>
           </td>
         </tr>
         <tr>
-          <td><code>chain_ids</code></td>
+          <td><code>chain_idx</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
               <p>Chain identifiers for each residue.
 Should be starting from zero. Defaults to None.
 Shape: (batch_size, num_residues)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>chain_ids</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[str]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of unique chain IDs for each protein.</p>
             </div>
           </td>
           <td>
@@ -709,187 +996,35 @@ Shape: (batch_size, num_residues)</p>
 
 
 
-<h3 id="protstruc.protstruc.StructureBatch.from_pdb" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_pdb</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
-  </span>
+<h3 id="protstruc.protstruc.StructureBatch.get_n_terminal_mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_n_terminal_mask</span><span class="p">()</span></code>
 
 </h3>
 
 
   <div class="doc doc-contents ">
   
-      <p>Initialize a StructureBatch from a PDB file.</p>
+      <p>Return a boolean mask for the N-terminal residues.</p>
 
 
 
-  <p><strong>Parameters:</strong></p>
+  <p><strong>Returns:</strong></p>
   <table>
     <thead>
       <tr>
-        <th>Name</th>
         <th>Type</th>
         <th>Description</th>
-        <th>Default</th>
       </tr>
     </thead>
     <tbody>
         <tr>
-          <td><code>pdb_path</code></td>
           <td>
-                <code><span title="typing.Union">Union</span>[<span title="typing.List">List</span>[str], str]</code>
+                <code>torch.<span title="torch.BoolTensor">BoolTensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Path to a PDB file or a list of paths to PDB files.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.from_xyz" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
-  </span>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Initialize a StructureBatch from a 3D coordinate array.</p>
-
-
-
-<p><strong>Examples:</strong></p>
-    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">bsz</span><span class="p">,</span> <span class="n">n_max_res</span><span class="p">,</span> <span class="n">n_max_atoms</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="n">n_max_res</span><span class="p">,</span> <span class="n">n_max_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sb</span> <span class="o">=</span> <span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
-</code></pre></div>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>xyz</code></td>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Shape: (batch_size, num_residues, num_atoms, 3)</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>chain_ids</code></td>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Chain identifiers for each residue.
-Should be starting from zero. Defaults to None.
+              <p>A boolean tensor denoting N-terminal residues. True if N-terminal.
 Shape: (batch_size, num_residues)</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-<td><code>StructureBatch</code></td>          <td>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A StructureBatch object.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_backbone_dihedrals</span><span class="p">()</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Return the backbone dihedral angles.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>np.ndarray: Shape: (batch_size, num_residues, 3)</p>
             </div>
           </td>
         </tr>
@@ -928,11 +1063,12 @@ Shape: (batch_size, num_residues)</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+                <code>torch.<span title="torch.BoolTensor">BoolTensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>np.ndarray: Shape: (batch_size, num_residues)</p>
+              <p>A boolean tensor denoting C-terminal residues. True if C-terminal.
+Shape: (batch_size, num_residues)</p>
             </div>
           </td>
         </tr>
@@ -948,15 +1084,15 @@ Shape: (batch_size, num_residues)</p>
 
 
 
-<h3 id="protstruc.protstruc.StructureBatch.get_n_terminal_mask" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_n_terminal_mask</span><span class="p">()</span></code>
+<h3 id="protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_backbone_dihedrals</span><span class="p">()</span></code>
 
 </h3>
 
 
   <div class="doc doc-contents ">
   
-      <p>Return a boolean mask for the N-terminal residues.</p>
+      <p>Return the backbone dihedral angles.</p>
 
 
 
@@ -971,11 +1107,55 @@ Shape: (batch_size, num_residues)</p>
     <tbody>
         <tr>
           <td>
+                <code>torch.<span title="torch.FloatTensor">FloatTensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tensor containing <code>phi</code>, <code>psi</code> and <code>omega</code> dihedral angles for each residue.
+Shape: (batch_size, num_residues, 3)</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pairwise_distance_matrix</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return the pairwise distance matrix between residues.</p>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>Shape</code></td>          <td>
                 <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>np.ndarray: Shape: (batch_size, num_residues)</p>
+              <p>(batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)</p>
             </div>
           </td>
         </tr>
@@ -1048,49 +1228,6 @@ Shape: (batch_size, num_residues)</p>
           <td>
             <div class="doc-md-description">
               <p>(batch_size, num_residues, num_residues, 2)</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.pairwise_distance_matrix" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">pairwise_distance_matrix</span><span class="p">()</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Return the pairwise distance matrix between residues.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-<td><code>Shape</code></td>          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>(batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)</p>
             </div>
           </td>
         </tr>
@@ -1208,7 +1345,7 @@ Shape: (batch_size, num_residues)</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.sections"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>

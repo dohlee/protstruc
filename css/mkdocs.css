@@ -10,7 +10,7 @@ div.highlight>pre {
 
 html {
     /* override 125% default, which looks terrible on smaller screens */
-    font-size: 120% !important;
+    font-size: 125% !important;
 }
 
 .jupyter-wrapper {
@@ -27,6 +27,6 @@ div.highlight {
     /* this was introduced to fix size of documentation script.
        This applies to multiline code fragments in markdown
      */
-    font-size: 13px;
+    font-size: 16px;
     background-color: #f2f2f2;
 }

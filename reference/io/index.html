@@ -75,9 +75,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="ProtStruc Documentation" class="md-header__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
@@ -129,6 +127,61 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../getting-started/installation/" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../protstruc/" class="md-tabs__link md-tabs__link--active">
+        API reference
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -141,8 +194,10 @@
                   <div class="md-sidebar__inner">
                     
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="ProtStruc Documentation" class="md-nav__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
@@ -251,14 +306,14 @@
       
       
         <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-          Reference
+          API reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
-          Reference
+          API reference
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -333,6 +388,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#protstruc.io.pdb_to_xyz" class="md-nav__link">
+    pdb_to_xyz()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#protstruc.io.to_pdb" class="md-nav__link">
     to_pdb()
   </a>
@@ -386,6 +448,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#protstruc.io.pdb_to_xyz" class="md-nav__link">
+    pdb_to_xyz()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#protstruc.io.to_pdb" class="md-nav__link">
     to_pdb()
   </a>
@@ -429,6 +498,117 @@
 
 
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="protstruc.io.pdb_to_xyz" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pdb_to_xyz</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Parse a PDB file and return a tensor containing 3D coordinates of atoms.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>filename</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to a PDB file.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>atom_xyz</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A xyz coordinate tensor.
+Shape (n_residues, MAX_N_ATOMS_PER_RESIDUE, 3).</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>atom_mask</code></td>          <td>
+                <code>torch.<span title="torch.BoolTensor">BoolTensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A mask tensor. 1 if the corresponding atom exists, 0 otherwise.
+Shape (n_residues, MAX_N_ATOMS_PER_RESIDUE)</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>chain_idx</code></td>          <td>
+                <code>torch.<span title="torch.LongTensor">LongTensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A LongTensor containing chain indices per residue.
+Shape (n_residues,)</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>chain_ids</code></td>          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of unique chain IDs in the order of integers appearing in the
+<code>chain_idx</code> tensor.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p><code>MAX_N_ATOMS_PER_RESIDUE</code> is set to <strong>15</strong> by default.</p>
+</details>
+  </div>
+
+</div>
 
 
 <div class="doc doc-object doc-function">
@@ -551,7 +731,7 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.sections"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
