@@ -5,6 +5,8 @@ docs_dir: docs
 
 theme:
   name: material
+  font:
+    text: Roboto
   icon:
     logo: fontawesome/solid/dice-d20
     repo: octicons/mark-github-16
@@ -15,6 +17,7 @@ theme:
 
 plugins:
   - mkdocstrings
+  - search
 
 markdown_extensions:
   - tables

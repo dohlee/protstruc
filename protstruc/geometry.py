@@ -84,7 +84,6 @@ def dihedral(
         compared to the **first atom**, while looking down **the axis of the second to the
         third**.
 
-    Note:
         The dihedral angle is computed as the angle between the plane defined by
         vectors `ba` and `bc` and the plane defined by vectors `bc` and `cd`.
         In short, the dihedral angle (theta) is obtained by first computing cos(theta) and sin(theta)

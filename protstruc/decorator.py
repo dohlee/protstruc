@@ -34,9 +34,12 @@ def with_tensor(func):
 
         out = func(*new_args, **new_kwargs)
 
+        # if at least one torch.tensor is in the input,
+        # return the output in torch.tensor type
         if found_tensor:
             return out
 
+        # if there are no tensors in the input but are only numpy arrays,
         # convert all tensors to numpy arrays
         if isinstance(out, tuple):
             return tuple([x.numpy() if isinstance(x, torch.Tensor) else x for x in out])

@@ -63,7 +63,7 @@ def test_StructureBatch_from_pdb_multiple():
     assert (sb.get_c_terminal_mask().sum(axis=1) == 2).all()
 
 
-def test_StructureBatch_get_backbone_dihedrals():
+def test_StructureBatch_backbone_dihedrals():
     n_proteins, max_n_residues, max_n_atoms = 16, 100, 25
     xyz = np.random.rand(n_proteins, max_n_residues, max_n_atoms, 3)
 
@@ -75,7 +75,7 @@ def test_StructureBatch_get_backbone_dihedrals():
 
     sb = StructureBatch.from_xyz(xyz, chain_idx=chain_idx, chain_ids=chain_ids)
 
-    dihedrals, dihedral_mask = sb.get_backbone_dihedrals()
+    dihedrals, dihedral_mask = sb.backbone_dihedrals()
     assert dihedrals.shape == (n_proteins, max_n_residues, 3)
     assert (dihedrals >= -np.pi).all() & (dihedrals <= np.pi).all()
 

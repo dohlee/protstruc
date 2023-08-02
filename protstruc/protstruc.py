@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from typing import List, Union
+from typing import List, Union, Tuple
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
 from collections import defaultdict
@@ -28,6 +28,7 @@ class StructureBatch:
 
     StructureBatch object can be initialized with:
         - A single PDB file or a list of PDB files `StructureBatch.from_pdb`
+        - A pdb identifier or a list of PDB identifiers `StructureBatch.from_pdb_id` (TODO)
         - Backbone or full atom 3D coordinates `StructureBatch.from_xyz`
         - Dihedral angles `StructureBatch.from_dihedrals` (TODO)
     """
@@ -156,6 +157,22 @@ class StructureBatch:
         return self
 
     @classmethod
+    def from_pdb_id(
+        cls,
+        pdb_id: Union[str, List[str]],
+    ) -> "StructureBatch":
+        """Initialize a StructureBatch from a PDB ID or a list of PDB IDs.
+
+        Args:
+            pdb_id: A PDB identifier or a list of PDB identifiers.
+
+        Returns:
+            StructureBatch: A StructureBatch object.
+        """
+        # TODO: implement this
+        pass
+
+    @classmethod
     def from_dihedrals(
         cls,
         dihedrals: Union[np.ndarray, torch.Tensor],
@@ -206,7 +223,7 @@ class StructureBatch:
         """Return a boolean mask for the N-terminal residues.
 
         Returns:
-            A boolean tensor denoting N-terminal residues. True if N-terminal.
+            A boolean tensor denoting N-terminal residues. `True` if N-terminal.
                 Shape: (batch_size, num_residues)
         """
         chain_idx_infilled = self._infill_chain_idx(self.chain_idx).float()
@@ -218,7 +235,7 @@ class StructureBatch:
         """Return a boolean mask for the C-terminal residues.
 
         Returns:
-            A boolean tensor denoting C-terminal residues. True if C-terminal.
+            A boolean tensor denoting C-terminal residues. `True` if C-terminal.
                 Shape: (batch_size, num_residues)
         """
         chain_idx_infilled = self._infill_chain_idx(self.chain_idx).float()
@@ -226,11 +243,55 @@ class StructureBatch:
         padded = F.pad(chain_idx_infilled, (0, 1, 0, 0), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
-    def get_backbone_dihedrals(self) -> torch.FloatTensor:
-        """Return the backbone dihedral angles.
+    def pairwise_distance_matrix(self) -> torch.FloatTensor:
+        """Return the all-atom pairwise pairwise distance matrix between residues.
+
+        Info:
+            Distances are measured in **Angstroms**.
+
+        Examples:
+            `dist[:, :, 1, 1]` will give pairwise alpha-carbon distance matrix between residues,
+            as the index `1` corresponds to the alpha-carbon atom.
+            ```python
+            >>> structure_batch = StructureBatch.from_pdb("1a8o.pdb")
+            >>> dist = structure_batch.pairwise_distance_matrix()
+            >>> ca_dist = dist[:, :, 1, 1]  # 1 = CA_IDX
+            ```
 
         Returns:
-            A tensor containing `phi`, `psi` and `omega` dihedral angles for each residue.
+            dist: A tensor containing an all-atom pairwise distance matrix for each pair of residues.
+                A distance between atom `a` of residue `i` and atom `b` of residue `j` is given by
+                `dist[i, j, a, b]`.
+                 Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
+        """
+        return torch.norm(
+            self.xyz[:, :, None, :, None] - self.xyz[:, None, :, None, :], dim=-1
+        )
+
+    def backbone_dihedrals(self) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
+        """Return the backbone dihedral angles phi, psi and omega for each residue.
+
+        Info:
+            Dihedral angles are measured in **radians** and are in the range `[-pi, pi]`.
+
+            For a quick reminder of the definition of the dihedral angles, refer to the following image:
+            ![Dihedral](https://i.imgur.com/fZ0Sx3V.png)
+
+            Source: [Fabian Fuchs](https://fabianfuchsml.github.io/alphafold2/)
+
+        Note:
+            `phi` angles are not defined for the first residue (it needs a predecessor)
+            and `psi` and `omega` angles are not defined for the last residue (they need successors).
+            Those invalid angles can be filtered using the `dihedral_mask` tensor returned from the method.
+
+        Warning:
+            Dihedral angles involving the residues at the chain breaks are not handled correctly for now.
+
+        Returns:
+            dihedrals: A tensor containing `phi`, `psi` and `omega` dihedral angles for each residue.
+                Shape: (batch_size, num_residues, 3)
+            dihedral_mask: A tensor containing a boolean mask for the dihedral angles.
+                `True` if the corresponding dihedral angle is defined, `False` otherwise.
                 Shape: (batch_size, num_residues, 3)
         """
         n_coords = self.xyz[:, :, N_IDX]
@@ -242,35 +303,25 @@ class StructureBatch:
         phi = geom.dihedral(
             c_coords[:, :-1], n_coords[:, 1:], ca_coords[:, 1:], c_coords[:, 1:]
         )
-        phi = np.pad(phi, ((0, 0), (1, 0)), mode="constant", constant_values=0.0)
+        phi = F.pad(phi, (1, 0, 0, 0), mode="constant", value=0.0)
         phi[nterm] = 0.0
 
         psi = geom.dihedral(
             n_coords[:, :-1], ca_coords[:, :-1], c_coords[:, :-1], n_coords[:, 1:]
         )
-        psi = np.pad(psi, ((0, 0), (0, 1)), mode="constant", constant_values=0.0)
+        psi = F.pad(psi, (0, 1, 0, 0), mode="constant", value=0.0)
         psi[cterm] = 0.0
 
         omega = geom.dihedral(
             ca_coords[:, :-1], c_coords[:, :-1], n_coords[:, 1:], ca_coords[:, 1:]
         )
-        omega = np.pad(omega, ((0, 0), (0, 1)), mode="constant", constant_values=0.0)
+        omega = F.pad(omega, (0, 1, 0, 0), mode="constant", value=0.0)
         omega[cterm] = 0.0
 
-        dihedrals = np.stack([phi, psi, omega], axis=-1)
-        dihedral_mask = np.stack([nterm, cterm, cterm], axis=-1)
+        dihedrals = torch.stack([phi, psi, omega], axis=-1)
+        dihedral_mask = torch.stack([nterm, cterm, cterm], axis=-1)
 
         return dihedrals, dihedral_mask
-
-    def pairwise_distance_matrix(self) -> np.ndarray:
-        """Return the pairwise distance matrix between residues.
-
-        Returns:
-            Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
-        """
-        return np.linalg.norm(
-            self.xyz[:, :, None, :, None] - self.xyz[:, None, :, None, :], axis=-1
-        )
 
     def inter_residue_dihedrals(self, use_cb=False):
         """Return the inter-residue dihedral angles.
