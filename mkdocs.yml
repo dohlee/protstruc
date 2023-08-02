@@ -8,15 +8,24 @@ theme:
   icon:
     logo: fontawesome/solid/dice-d20
     repo: octicons/mark-github-16
+  features:
+    - content.code.copy
+    - navigation.tabs
+    - navigation.sections
 
 plugins:
   - mkdocstrings
+
+markdown_extensions:
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
 
 nav:
   - Home: index.md
   - Getting started:
     - Installation: getting-started/installation.md
-  - Reference:
+  - API reference:
     - protstruc.protstruc: reference/protstruc.md
     - protstruc.geometry: reference/geometry.md
     - protstruc.io: reference/io.md

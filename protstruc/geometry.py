@@ -167,11 +167,11 @@ def place_fourth_atom(
     return x
 
 
-def ideal_local_frame() -> np.array:
+def ideal_local_frame() -> Union[np.array, torch.Tensor]:
     """Compute ideal local coordinate system of a residue centered at N
 
-    Returns: Local coordinate system of a residue centered at N,
-    with atom order N, CA, C, CB (shape: (4, 3))
+    Returns:
+        Local coordinate system of a residue centered at N, with atom order N, CA, C, CB (shape: (4, 3))
     """
 
     n = np.array([0.0, 0.0, 0.0])
@@ -212,8 +212,7 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
             same chain with the next one.
 
     Returns:
-        np.array: Backbone distance matrix representing the distance between
-        N, Ca, C atoms between residues (shape: (3, 3, L, L))
+        Backbone distance matrix representing the distance between N, Ca, C atoms between residues (shape: (3, 3, L, L))
     """
     N_IDX, CA_IDX, C_IDX, CB_IDX = 0, 1, 2, 3
 

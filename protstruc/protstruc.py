@@ -1,4 +1,6 @@
 import numpy as np
+import torch
+import torch.nn.functional as F
 
 from typing import List, Union
 from biopandas.pdb import PandasPdb
@@ -8,6 +10,8 @@ from collections import defaultdict
 import protstruc.geometry as geom
 from protstruc.constants import ideal
 from protstruc.alphabet import three2one
+from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
+from protstruc.io import pdb_to_xyz
 
 CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
@@ -23,99 +27,193 @@ class StructureBatch:
     with various types of representations:
 
     StructureBatch object can be initialized with:
-        - Backbone atom 3D coordinates `StructureBatch.from_xyz`
-        - Full-atom 3D coordinates `StructureBatch.from_xyz`
+        - A single PDB file or a list of PDB files `StructureBatch.from_pdb`
+        - Backbone or full atom 3D coordinates `StructureBatch.from_xyz`
         - Dihedral angles `StructureBatch.from_dihedrals` (TODO)
-        - A set of PDB files `StructureBatch.from_pdb` (TODO)
     """
 
-    def __init__(self, xyz: np.ndarray, chain_ids: np.ndarray = None):
-        self.xyz = xyz
-        self.max_n_atoms_per_residue = self.xyz.shape[2]
+    def __init__(
+        self,
+        xyz: torch.Tensor,
+        atom_mask: torch.BoolTensor = None,
+        chain_idx: torch.Tensor = None,
+        chain_ids: List[str] = None,
+    ):
+        if (chain_idx is not None and chain_ids is None) or (
+            chain_idx is None and chain_ids is not None
+        ):
+            raise ValueError("Both `chain_idx` and `chain_ids` should be provided or None.")
 
-        if chain_ids is not None:
-            self.chain_ids = chain_ids.astype(float)
-            assert self.chain_ids.min() == 0.0, "Chain ids should start from zero"
+        self.xyz = xyz
+        self.atom_mask = atom_mask
+        self.batch_size, self.n_residues, self.max_n_atoms_per_residue = self.xyz.shape[:3]
+
+        if atom_mask is not None:
+            self.residue_mask = atom_mask.any(dim=-1)
+        else:
+            self.residue_mask = torch.ones(self.batch_size, self.n_residues, dtype=torch.bool)
+
+        if chain_idx is not None:
+            for i, chidx in enumerate(chain_idx):
+                msk = ~torch.isnan(chidx)
+                assert (
+                    chidx[msk].min() == 0
+                ), f"Protein {i}: Chain index should start from zero"
+
+            self.chain_idx = chain_idx
         else:
             bsz, n_max_res = self.xyz.shape[:2]
-            self.chain_ids = np.zeros((bsz, n_max_res))
+            self.chain_idx = np.zeros((bsz, n_max_res))
+
+        self.chain_ids = chain_ids
 
     @classmethod
-    def from_xyz(cls, xyz: np.ndarray, chain_ids: np.ndarray = None):
+    def from_xyz(
+        cls,
+        xyz: Union[np.ndarray, torch.Tensor],
+        atom_mask: Union[np.ndarray, torch.Tensor] = None,
+        chain_idx: Union[np.ndarray, torch.Tensor] = None,
+        chain_ids: List[List[str]] = None,
+    ) -> "StructureBatch":
         """Initialize a StructureBatch from a 3D coordinate array.
 
         Examples:
-            >>> bsz, n_max_res, n_max_atoms = 2, 10, 25
-            >>> xyz = np.random.randn(bsz, n_max_res, n_max_atoms, 3)
+            Initialize a `StructureBatch` object from a numpy array of atom 3D coordinates.
+            >>> batch_size, n_max_res, n_max_atoms = 2, 10, 25
+            >>> xyz = np.random.randn(batch_size, n_max_res, n_max_atoms, 3)
             >>> sb = StructureBatch.from_xyz(xyz)
 
         Args:
-            xyz (np.ndarray): Shape: (batch_size, num_residues, num_atoms, 3)
-            chain_ids (np.ndarray, optional): Chain identifiers for each residue.
+            xyz: Shape: (batch_size, num_residues, num_atoms, 3)
+            atom_mask: Shape: (batch_size, num_residues, num_atoms, 3)
+            chain_idx: Chain indices for each residue.
                 Should be starting from zero. Defaults to None.
                 Shape: (batch_size, num_residues)
+            chain_ids: A list of unique chain IDs for each protein.
 
         Returns:
             StructureBatch: A StructureBatch object.
         """
-        self = cls(xyz, chain_ids)
+        xyz = torch.from_numpy(xyz) if isinstance(xyz, np.ndarray) else xyz
+        atom_mask = (
+            torch.from_numpy(atom_mask) if isinstance(atom_mask, np.ndarray) else atom_mask
+        )
+        chain_idx = (
+            torch.from_numpy(chain_idx) if isinstance(chain_idx, np.ndarray) else chain_idx
+        )
+        self = cls(xyz, atom_mask, chain_idx, chain_ids)
+
         return self
 
     @classmethod
-    def from_dihedrals(cls, dihedrals: np.ndarray, chain_ids: np.ndarray = None):
+    def from_pdb(cls, pdb_path: Union[str, List[str]]) -> "StructureBatch":
+        """Initialize a StructureBatch from a PDB file or a list of PDB files.
+
+        Examples:
+            Initialize a `StructureBatch` object from a single PDB file,
+            >>> pdb_path = '1a0a.pdb'
+            >>> sb = StructureBatch.from_pdb(pdb_path)
+
+            or with a list of PDB files.
+            >>> pdb_paths = ['1a0a.pdb', '1a0b.pdb']
+            >>> sb = StructureBatch.from_pdb(pdb_paths)
+
+        Args:
+            pdb_path: Path to a PDB file or a list of paths to PDB files.
+
+        Returns:
+            StructureBatch: A StructureBatch object.
+        """
+        # parse pdb file and get xyz coordinates
+        pdb_path = pdb_path if isinstance(pdb_path, list) else [pdb_path]
+
+        bsz = len(pdb_path)
+        tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx = [], [], []
+        chain_ids = []
+        for f in pdb_path:
+            _atom_xyz, _atom_mask, _chain_idx, _chain_ids = pdb_to_xyz(f)
+            tmp_atom_xyz.append(_atom_xyz)
+            tmp_atom_mask.append(_atom_mask)
+            tmp_chain_idx.append(_chain_idx)
+            chain_ids.append(_chain_ids)
+
+        max_n_residues = max([len(xyz) for xyz in tmp_atom_xyz])
+
+        atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
+        atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
+        chain_idx = torch.zeros(bsz, max_n_residues)
+
+        for i in range(bsz):
+            _atom_xyz = tmp_atom_xyz[i]
+            _atom_mask = tmp_atom_mask[i]
+            _chain_idx = tmp_chain_idx[i]
+
+            atom_xyz[i, : len(_atom_xyz)] = _atom_xyz
+            atom_mask[i, : len(_atom_mask)] = _atom_mask
+            chain_idx[i, : len(_chain_idx)] = _chain_idx
+
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids)
+        return self
+
+    @classmethod
+    def from_dihedrals(
+        cls,
+        dihedrals: Union[np.ndarray, torch.Tensor],
+        chain_idx: Union[np.ndarray, torch.Tensor] = None,
+        chain_ids: List[List[str]] = None,
+    ) -> "StructureBatch":
         """Initialize a StructureBatch from a dihedral angle array.
 
         Args:
-            dihedrals (np.ndarray): Shape: (batch_size, num_residues, num_dihedrals)
-            chain_ids (np.ndarray, optional): Chain identifiers for each residue.
+            dihedrals: Shape: (batch_size, num_residues, num_dihedrals)
+            chain_idx: Chain identifiers for each residue.
                 Should be starting from zero. Defaults to None.
                 Shape: (batch_size, num_residues)
+            chain_ids: A list of unique chain IDs for each protein.
         """
         # TODO: Implement this
         pass
 
-    @classmethod
-    def from_pdb(cls, pdb_path: Union[List[str], str]):
-        """Initialize a StructureBatch from a PDB file.
-
-        Args:
-            pdb_path: Path to a PDB file or a list of paths to PDB files.
-        """
-        # TODO: Implement this
+    def _parse_pdb(self, f: str) -> torch.Tensor:
+        """Parse a PDB file and return the all-atom 3D coordinates."""
+        pass
 
     def get_xyz(self):
         return self.xyz
 
+    def get_chain_ids(self):
+        return self.chain_ids
+
     def get_max_n_atoms_per_residue(self):
         return self.max_n_atoms_per_residue
 
-    def get_n_terminal_mask(self) -> np.ndarray:
+    def get_n_terminal_mask(self) -> torch.BoolTensor:
         """Return a boolean mask for the N-terminal residues.
 
         Returns:
-            np.ndarray: Shape: (batch_size, num_residues)
+            A boolean tensor denoting N-terminal residues. True if N-terminal.
+                Shape: (batch_size, num_residues)
         """
-        padded = np.pad(
-            self.chain_ids, ((0, 0), (1, 0)), mode="constant", constant_values=np.nan
-        )
-        return (padded[:, :-1] != padded[:, 1:]).astype(bool)
 
-    def get_c_terminal_mask(self) -> np.ndarray:
+        padded = F.pad(self.chain_idx.float(), (1, 0, 0, 0), mode="constant", value=torch.nan)
+        return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
+
+    def get_c_terminal_mask(self) -> torch.BoolTensor:
         """Return a boolean mask for the C-terminal residues.
 
         Returns:
-            np.ndarray: Shape: (batch_size, num_residues)
+            A boolean tensor denoting C-terminal residues. True if C-terminal.
+                Shape: (batch_size, num_residues)
         """
-        padded = np.pad(
-            self.chain_ids, ((0, 0), (0, 1)), mode="constant", constant_values=np.nan
-        )
-        return (padded[:, :-1] != padded[:, 1:]).astype(bool)
+        padded = F.pad(self.chain_idx.float(), (0, 1, 0, 0), mode="constant", value=torch.nan)
+        return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
-    def get_backbone_dihedrals(self) -> np.ndarray:
+    def get_backbone_dihedrals(self) -> torch.FloatTensor:
         """Return the backbone dihedral angles.
 
         Returns:
-            np.ndarray: Shape: (batch_size, num_residues, 3)
+            A tensor containing `phi`, `psi` and `omega` dihedral angles for each residue.
+                Shape: (batch_size, num_residues, 3)
         """
         n_coords = self.xyz[:, :, N_IDX]
         ca_coords = self.xyz[:, :, CA_IDX]
