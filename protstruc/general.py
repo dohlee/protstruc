@@ -53,6 +53,7 @@ ressymb_to_resindex = {
     'S': 15, 'T': 16, 'V': 17, 'W': 18, 'Y': 19,
     'X': 20,
 }
+resindex_to_oneletter = {v:k for k, v in ressymb_to_resindex.items()}
 
 class AA(enum.IntEnum):
     ALA = 0
@@ -92,6 +93,9 @@ class AA(enum.IntEnum):
 
     def __str__(self):
         return self.name
+
+    def oneletter(self):
+        return resindex_to_oneletter[self.value]
 
     @classmethod
     def is_aa(cls, value):

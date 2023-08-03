@@ -228,3 +228,14 @@ def test_initialize_backbone_with_mds():
     chain_ids = struc.get_chain_ids()
 
     to_pdb("tests/15c8_HL_reconstructed.pdb", coords, sequences, chain_ids)
+
+
+def test_gram_schmidt():
+    bsz, n_res = 16, 30
+
+    a = torch.randn(bsz, n_res, 3)
+    b = torch.randn(bsz, n_res, 3)
+    c = torch.randn(bsz, n_res, 3)
+
+    frame = geom.gram_schmidt(a, b, c)
+    assert frame.shape == (bsz, n_res, 3, 3)

@@ -17,7 +17,8 @@ CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
 CB_DIHEDRAL = -2.143
 
-N_IDX, CA_IDX, C_IDX = 0, 1, 2
+N_IDX, CA_IDX, C_IDX, O_IDX, CB_IDX = 0, 1, 2, 3, 4
+atom2idx = {"N": N_IDX, "CA": CA_IDX, "C": C_IDX, "O": O_IDX, "CB": CB_IDX}
 
 
 def _always_tensor(x):
@@ -87,7 +88,7 @@ class StructureBatch:
         chain_ids: List[List[str]] = None,
         seq: List[Dict[str, str]] = None,
     ) -> "StructureBatch":
-        """Initialize a StructureBatch from a 3D coordinate array.
+        """Initialize a `StructureBatch` from a 3D coordinate array.
 
         Examples:
             Initialize a `StructureBatch` object from a numpy array of atom 3D coordinates.
@@ -111,12 +112,12 @@ class StructureBatch:
         atom_mask = _always_tensor(atom_mask)
         chain_idx = _always_tensor(chain_idx)
 
-        self = cls(xyz, atom_mask, chain_idx, chain_ids)
+        self = cls(xyz, atom_mask, chain_idx, chain_ids, seq)
         return self
 
     @classmethod
     def from_pdb(cls, pdb_path: Union[str, List[str]]) -> "StructureBatch":
-        """Initialize a StructureBatch from a PDB file or a list of PDB files.
+        """Initialize a `StructureBatch` from a PDB file or a list of PDB files.
 
         Examples:
             Initialize a `StructureBatch` object from a single PDB file,
@@ -136,14 +137,15 @@ class StructureBatch:
         pdb_path = _always_list(pdb_path)
         bsz = len(pdb_path)
 
-        tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx = [], [], []
+        tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
         chain_ids = []
         for f in pdb_path:
-            _atom_xyz, _atom_mask, _chain_idx, _chain_ids = pdb_to_xyz(f)
+            _atom_xyz, _atom_mask, _chain_idx, _chain_ids, _seq_dict = pdb_to_xyz(f)
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
             tmp_chain_idx.append(_chain_idx)
             chain_ids.append(_chain_ids)
+            seq.append(_seq_dict)
 
         max_n_residues = max([len(xyz) for xyz in tmp_atom_xyz])
 
@@ -160,7 +162,7 @@ class StructureBatch:
             atom_mask[i, : len(_atom_mask)] = _atom_mask
             chain_idx[i, : len(_chain_idx)] = _chain_idx
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids)
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
         return self
 
     @classmethod
@@ -168,7 +170,7 @@ class StructureBatch:
         cls,
         pdb_id: Union[str, List[str]],
     ) -> "StructureBatch":
-        """Initialize a StructureBatch from a PDB ID or a list of PDB IDs.
+        """Initialize a `StructureBatch` from a PDB ID or a list of PDB IDs.
 
         Examples:
             >>> pdb_id = "2ZIL"  # Human lysozyme
@@ -193,16 +195,17 @@ class StructureBatch:
         pdb_id = _always_list(pdb_id)
         bsz = len(pdb_id)
 
-        tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx = [], [], []
+        tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
         chain_ids = []
         for id in pdb_id:
             pdb_df = PandasPdb().fetch_pdb(id).df["ATOM"]
-            _atom_xyz, _atom_mask, _chain_idx, _chain_ids = pdb_df_to_xyz(pdb_df)
+            _atom_xyz, _atom_mask, _chain_idx, _chain_ids, _seq_dict = pdb_df_to_xyz(pdb_df)
 
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
             tmp_chain_idx.append(_chain_idx)
             chain_ids.append(_chain_ids)
+            seq.append(_seq_dict)
 
         max_n_residues = max([len(xyz) for xyz in tmp_atom_xyz])
 
@@ -219,7 +222,7 @@ class StructureBatch:
             atom_mask[i, : len(_atom_mask)] = _atom_mask
             chain_idx[i, : len(_chain_idx)] = _chain_idx
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids)
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
         return self
 
     @classmethod
@@ -258,21 +261,6 @@ class StructureBatch:
     def get_max_n_atoms_per_residue(self):
         return self.max_n_atoms_per_residue
 
-    def _infill_chain_idx(self, chain_idx):
-        """Infill the chain index tensor to fill in the gaps."""
-        chain_idx = chain_idx.clone()
-        for i in range(chain_idx.shape[0]):
-            chain_idx[i] = self._infill_chain_idx_single(chain_idx[i])
-        return chain_idx
-
-    def _infill_chain_idx_single(self, chain_idx_single):
-        """Infill the chain index tensor to fill in the gaps."""
-        chain_idx_single = chain_idx_single.clone()
-        for i in range(chain_idx_single.shape[0]):
-            if torch.isnan(chain_idx_single[i]):
-                chain_idx_single[i] = chain_idx_single[i - 1]
-        return chain_idx_single
-
     def get_n_terminal_mask(self) -> torch.BoolTensor:
         """Return a boolean mask for the N-terminal residues.
 
@@ -280,9 +268,7 @@ class StructureBatch:
             A boolean tensor denoting N-terminal residues. `True` if N-terminal.
                 Shape: (batch_size, num_residues)
         """
-        chain_idx_infilled = self._infill_chain_idx(self.chain_idx).float()
-
-        padded = F.pad(chain_idx_infilled, (1, 0, 0, 0), mode="constant", value=torch.nan)
+        padded = F.pad(self.chain_idx, (1, 0, 0, 0), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
     def get_c_terminal_mask(self) -> torch.BoolTensor:
@@ -292,9 +278,7 @@ class StructureBatch:
             A boolean tensor denoting C-terminal residues. `True` if C-terminal.
                 Shape: (batch_size, num_residues)
         """
-        chain_idx_infilled = self._infill_chain_idx(self.chain_idx).float()
-
-        padded = F.pad(chain_idx_infilled, (0, 1, 0, 0), mode="constant", value=torch.nan)
+        padded = F.pad(self.chain_idx, (0, 1, 0, 0), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
     def pairwise_distance_matrix(self) -> Tuple[torch.FloatTensor, torch.BoolTensor]:
@@ -311,7 +295,6 @@ class StructureBatch:
             >>> dist = structure_batch.pairwise_distance_matrix()
             >>> ca_dist = dist[:, :, 1, 1]  # 1 = CA_IDX
             ```
-
         Returns:
             dist: A tensor containing an all-atom pairwise distance matrix for each pair of residues.
                 A distance between atom `a` of residue `i` and atom `b` of residue `j` is given by
@@ -325,6 +308,7 @@ class StructureBatch:
         )
 
         dist_mask = self.atom_mask[:, :, None, :, None] * self.atom_mask[:, None, :, None, :]
+        return dist, dist_mask
 
     def backbone_dihedrals(self) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
         """Return the backbone dihedral angles phi, psi and omega for each residue.
@@ -380,6 +364,46 @@ class StructureBatch:
         dihedral_mask = torch.stack([nterm, cterm, cterm], axis=-1)
 
         return dihedrals, dihedral_mask
+
+    def backbone_orientations(self, a1="N", a2="CA", a3="C") -> torch.FloatTensor:
+        """Return the orientation of the backbone for each residue.
+
+        Args:
+            a1: First atom used to determine backbone orientation.
+                Defaults to 'N'.
+            a2: Second atom used to determine backbone orientation.
+                Defaults to 'CA'.
+            a2: Third atom used to determine backbone orientation.
+                Defaults to 'C'.
+
+        Note:
+            The backbone orientations are determined by using Gram-Schmidt
+            orthogonalization on the vectors formed by the atoms `a1`, `a2` and `a3`.
+
+        Returns:
+            A tensor containing the local reference backbone frame for each residue.
+        """
+        a1_coords = self.xyz[:, :, atom2idx[a1]]
+        a2_coords = self.xyz[:, :, atom2idx[a2]]
+        a3_coords = self.xyz[:, :, atom2idx[a3]]
+
+        return geom.gram_schmidt(a1_coords, a2_coords, a3_coords)
+
+    def backbone_translations(self, atom="CA") -> torch.FloatTensor:
+        """Return the coordinate (translation) of a given backbone atom for each residue.
+
+        Note:
+            Reference atom is set to the **alpha-carbon (CA)** by default.
+
+        Args:
+            atom: Type of atom used to determine backbone translation.
+                Defaults to 'CA'.
+
+        Returns:
+            bb_translations: xyz coordinates (translations) of a specified backbone atoms.
+                Shape: (batch_size, num_residues, 3)
+        """
+        return self.xyz[:, :, atom2idx[atom]]
 
     def inter_residue_dihedrals(self, use_cb=False):
         """Return the inter-residue dihedral angles.

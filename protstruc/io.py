@@ -1,4 +1,5 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
+from collections import defaultdict
 import torch
 import numpy as np
 import pandas as pd
@@ -44,9 +45,18 @@ def tidy_pdb(pdb_df: pd.DataFrame) -> pd.DataFrame:
     return pdb_df
 
 
+def infill_chain_idx(chain_idx: torch.Tensor) -> torch.Tensor:
+    """Infill the chain index tensor to fill in the gaps."""
+    chain_idx = chain_idx.clone()
+    for i in range(chain_idx.shape[0]):
+        if torch.isnan(chain_idx[i]):
+            chain_idx[i] = chain_idx[i - 1]
+    return chain_idx
+
+
 def pdb_df_to_xyz(
     pdb_df: pd.DataFrame,
-) -> Tuple[torch.Tensor, torch.BoolTensor, torch.LongTensor, List[str]]:
+) -> Tuple[torch.Tensor, torch.BoolTensor, torch.LongTensor, List[str], Dict[str, str]]:
     pdb_df = tidy_pdb(pdb_df)
 
     index_map = _precompute_internal_index_map(pdb_df)
@@ -54,6 +64,7 @@ def pdb_df_to_xyz(
 
     atom_xyz = torch.ones(n_residues, MAX_N_ATOMS_PER_RESIDUE, 3) * torch.nan
     chain_idx = torch.ones(n_residues) * torch.nan
+    seq = [AA.UNK.oneletter()] * n_residues
 
     curr_chain, curr_chain_idx = None, 0.0
     for r in pdb_df.to_records():
@@ -71,18 +82,27 @@ def pdb_df_to_xyz(
         atom_idx = heavyatom_names.index(r.atom_name)
         atom_xyz[internal_idx, atom_idx] = torch.tensor([r.x_coord, r.y_coord, r.z_coord])
         chain_idx[internal_idx] = curr_chain_idx
+        seq[internal_idx] = AA[residue_name].oneletter()
 
     atom_mask = ~(torch.isnan(atom_xyz).any(dim=-1))
+
+    chain_idx = infill_chain_idx(chain_idx)
 
     _, chain_ids = pdb_df.chain_id.factorize()
     chain_ids = chain_ids.tolist()
 
-    return atom_xyz, atom_mask, chain_idx, chain_ids
+    seq_dict = defaultdict(list)
+    for chidx, aa in zip(chain_idx, seq):
+        chidx = int(chidx.item())
+        seq_dict[chain_ids[chidx]].append(aa)
+    seq_dict = {k: "".join(v) for k, v in seq_dict.items()}
+
+    return atom_xyz, atom_mask, chain_idx, chain_ids, seq_dict
 
 
 def pdb_to_xyz(
     filename: str,
-) -> Tuple[torch.Tensor, torch.BoolTensor, torch.LongTensor, List[str]]:
+) -> Tuple[torch.Tensor, torch.BoolTensor, torch.LongTensor, List[str], Dict[str, str]]:
     """Parse a PDB file and return a tensor containing 3D coordinates of atoms.
 
     Args:
@@ -97,14 +117,15 @@ def pdb_to_xyz(
             Shape (n_residues,)
         chain_ids: A list of unique chain IDs in the order of integers appearing in the
             `chain_idx` tensor.
+        seq: A dictionary mapping chain IDs to amino acid sequences.
 
     Note:
         `MAX_N_ATOMS_PER_RESIDUE` is set to **15** by default.
     """
     pdb_df = PandasPdb().read_pdb(filename).df["ATOM"]
 
-    atom_xyz, atom_mask, chain_idx, chain_ids = pdb_df_to_xyz(pdb_df)
-    return atom_xyz, atom_mask, chain_idx, chain_ids
+    atom_xyz, atom_mask, chain_idx, chain_ids, seq_dict = pdb_df_to_xyz(pdb_df)
+    return atom_xyz, atom_mask, chain_idx, chain_ids, seq_dict
 
 
 def to_pdb(

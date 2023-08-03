@@ -370,18 +370,19 @@ def fix_chirality(coords: np.array) -> np.array:
     return coords * np.array([1, 1, -1])[None, None, :]
 
 
-def gram_schmidt(a: np.array, b: np.array, c: np.array) -> (np.array, np.array, np.array):
+def gram_schmidt(a: torch.Tensor, b: torch.Tensor, c: torch.Tensor) -> torch.FloatTensor:
     """Given three xyz coordinates, compute the orthonormal basis
     using Gram-Schmidt process. Specifically, compute the orthonormal
     basis of the plane defined by vectors (c - b) and (a - b).
 
     Args:
-        a (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
-        b (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
-        c (torch.Tensor): xyz coordinates of three atoms (shape: (L, 3))
+        a: xyz coordinates of three atoms (shape: (*, 3))
+        b: xyz coordinates of three atoms (shape: (*, 3))
+        c: xyz coordinates of three atoms (shape: (*, 3))
 
     Returns:
-        e1, e2, e3
+        Orthonormal basis of the plane defined by vectors (c - b) and (a - b).
+            Shape: (*, 3, 3)
     """
 
     v1 = c - b
@@ -391,6 +392,6 @@ def gram_schmidt(a: np.array, b: np.array, c: np.array) -> (np.array, np.array, 
     u2 = v2 - dot(e1, v2) * e1
     e2 = u2 / norm(u2)
 
-    e3 = np.cross(e1, e2)
+    e3 = torch.cross(e1, e2)
 
-    return e1, e2, e3
+    return torch.stack([e1, e2, e3], dim=-1)

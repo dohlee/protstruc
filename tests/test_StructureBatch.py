@@ -77,7 +77,10 @@ def test_StructureBatch_backbone_dihedrals():
 
     dihedrals, dihedral_mask = sb.backbone_dihedrals()
     assert dihedrals.shape == (n_proteins, max_n_residues, 3)
+
     assert (dihedrals >= -np.pi).all() & (dihedrals <= np.pi).all()
+    assert ((dihedrals >= -np.pi) & (dihedrals < 0)).any()
+    assert ((dihedrals >= 0) & (dihedrals <= np.pi)).any()
 
     assert dihedral_mask.shape == (n_proteins, max_n_residues, 3)
 
@@ -100,3 +103,41 @@ def test_StructureBatch_from_pdb_id():
     # single chain
     assert (sb.get_n_terminal_mask().sum(axis=1) == 1).all()
     assert (sb.get_c_terminal_mask().sum(axis=1) == 1).all()
+
+
+def test_StructureBatch_from_pdb_ids():
+    pdb_id = ["2ZIL", "1REX"]  # Human lysozymes
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    xyz = sb.get_xyz()
+    assert len(xyz) == 2
+
+    # single chains
+    assert (sb.get_n_terminal_mask().sum(axis=1) == 1).all()
+    assert (sb.get_c_terminal_mask().sum(axis=1) == 1).all()
+
+
+def test_StructureBatch_pairwise_distance_matrix():
+    pdb_id = "1REX"
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    dist, dist_mask = sb.pairwise_distance_matrix()
+    assert dist.shape == (1, 130, 130, 15, 15)
+    assert dist_mask.shape == (1, 130, 130, 15, 15)
+
+
+def test_StructureBatch_backbone_orientations():
+    pdb_id = "1REX"
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    bb_orientations = sb.backbone_orientations("N", "CA", "C")
+    assert bb_orientations.shape == (1, 130, 3, 3)
+
+
+def test_StructureBatch_backbone_translations():
+    pdb_id = "1REX"
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    for atom in ["N", "CA", "C"]:
+        bb_translations = sb.backbone_translations(atom)
+        assert bb_translations.shape == (1, 130, 3)
