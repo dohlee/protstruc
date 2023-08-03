@@ -19,9 +19,9 @@ html {
 }
 
 .md-grid {
-/* change max width of page, looks much better on bigger screens */
-/* max-width: 72rem !important; */
-max-width: 70% !important;
+    /* change max width of page, looks much better on bigger screens */
+    /* max-width: 72rem !important; */
+    max-width: 80% !important;
 }
 
 div.highlight {
