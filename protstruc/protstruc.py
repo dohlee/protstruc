@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from typing import List, Union, Tuple
+from typing import List, Dict, Union, Tuple
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
 from collections import defaultdict
@@ -11,13 +11,21 @@ import protstruc.geometry as geom
 from protstruc.constants import ideal
 from protstruc.alphabet import three2one
 from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
-from protstruc.io import pdb_to_xyz
+from protstruc.io import pdb_to_xyz, pdb_df_to_xyz
 
 CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
 CB_DIHEDRAL = -2.143
 
 N_IDX, CA_IDX, C_IDX = 0, 1, 2
+
+
+def _always_tensor(x):
+    return torch.from_numpy(x) if isinstance(x, np.ndarray) else x
+
+
+def _always_list(x):
+    return x if isinstance(x, list) else [x]
 
 
 class StructureBatch:
@@ -39,6 +47,7 @@ class StructureBatch:
         atom_mask: torch.BoolTensor = None,
         chain_idx: torch.Tensor = None,
         chain_ids: List[str] = None,
+        seq: List[Dict[str, str]] = None,
     ):
         if (chain_idx is not None and chain_ids is None) or (
             chain_idx is None and chain_ids is not None
@@ -67,6 +76,7 @@ class StructureBatch:
             self.chain_idx = np.zeros((bsz, n_max_res))
 
         self.chain_ids = chain_ids
+        self.seq = seq
 
     @classmethod
     def from_xyz(
@@ -75,6 +85,7 @@ class StructureBatch:
         atom_mask: Union[np.ndarray, torch.Tensor] = None,
         chain_idx: Union[np.ndarray, torch.Tensor] = None,
         chain_ids: List[List[str]] = None,
+        seq: List[Dict[str, str]] = None,
     ) -> "StructureBatch":
         """Initialize a StructureBatch from a 3D coordinate array.
 
@@ -86,24 +97,21 @@ class StructureBatch:
 
         Args:
             xyz: Shape: (batch_size, num_residues, num_atoms, 3)
-            atom_mask: Shape: (batch_size, num_residues, num_atoms, 3)
+            atom_mask: Shape: (batch_size, num_residues, num_atoms)
             chain_idx: Chain indices for each residue.
                 Should be starting from zero. Defaults to None.
                 Shape: (batch_size, num_residues)
             chain_ids: A list of unique chain IDs for each protein.
+            seq: A list of dictionaries containing sequence information for each chain.
 
         Returns:
             StructureBatch: A StructureBatch object.
         """
-        xyz = torch.from_numpy(xyz) if isinstance(xyz, np.ndarray) else xyz
-        atom_mask = (
-            torch.from_numpy(atom_mask) if isinstance(atom_mask, np.ndarray) else atom_mask
-        )
-        chain_idx = (
-            torch.from_numpy(chain_idx) if isinstance(chain_idx, np.ndarray) else chain_idx
-        )
-        self = cls(xyz, atom_mask, chain_idx, chain_ids)
+        xyz = _always_tensor(xyz)
+        atom_mask = _always_tensor(atom_mask)
+        chain_idx = _always_tensor(chain_idx)
 
+        self = cls(xyz, atom_mask, chain_idx, chain_ids)
         return self
 
     @classmethod
@@ -125,10 +133,9 @@ class StructureBatch:
         Returns:
             StructureBatch: A StructureBatch object.
         """
-        # parse pdb file and get xyz coordinates
-        pdb_path = pdb_path if isinstance(pdb_path, list) else [pdb_path]
-
+        pdb_path = _always_list(pdb_path)
         bsz = len(pdb_path)
+
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx = [], [], []
         chain_ids = []
         for f in pdb_path:
@@ -163,14 +170,57 @@ class StructureBatch:
     ) -> "StructureBatch":
         """Initialize a StructureBatch from a PDB ID or a list of PDB IDs.
 
+        Examples:
+            >>> pdb_id = "2ZIL"  # Human lysozyme
+            >>> sb = StructureBatch.from_pdb_id(pdb_id)
+            >>> xyz = sb.get_xyz()
+            >>> xyz.shape
+            torch.Size([1, 130, 15, 3])
+            >>> dihedrals, dihedral_mask = sb.backbone_dihedrals()
+            >>> dihedrals.shape
+            torch.Size([1, 130, 3])
+            >>> dihedral_mask.shape
+            torch.Size([1, 130, 3])
+            >>> dihedral_mask.sum()
+            tensor(3)
+
         Args:
             pdb_id: A PDB identifier or a list of PDB identifiers.
 
         Returns:
             StructureBatch: A StructureBatch object.
         """
-        # TODO: implement this
-        pass
+        pdb_id = _always_list(pdb_id)
+        bsz = len(pdb_id)
+
+        tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx = [], [], []
+        chain_ids = []
+        for id in pdb_id:
+            pdb_df = PandasPdb().fetch_pdb(id).df["ATOM"]
+            _atom_xyz, _atom_mask, _chain_idx, _chain_ids = pdb_df_to_xyz(pdb_df)
+
+            tmp_atom_xyz.append(_atom_xyz)
+            tmp_atom_mask.append(_atom_mask)
+            tmp_chain_idx.append(_chain_idx)
+            chain_ids.append(_chain_ids)
+
+        max_n_residues = max([len(xyz) for xyz in tmp_atom_xyz])
+
+        atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
+        atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
+        chain_idx = torch.zeros(bsz, max_n_residues)
+
+        for i in range(bsz):
+            _atom_xyz = tmp_atom_xyz[i]
+            _atom_mask = tmp_atom_mask[i]
+            _chain_idx = tmp_chain_idx[i]
+
+            atom_xyz[i, : len(_atom_xyz)] = _atom_xyz
+            atom_mask[i, : len(_atom_mask)] = _atom_mask
+            chain_idx[i, : len(_chain_idx)] = _chain_idx
+
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids)
+        return self
 
     @classmethod
     def from_dihedrals(
@@ -191,15 +241,19 @@ class StructureBatch:
         # TODO: Implement this
         pass
 
-    def _parse_pdb(self, f: str) -> torch.Tensor:
-        """Parse a PDB file and return the all-atom 3D coordinates."""
-        pass
-
     def get_xyz(self):
         return self.xyz
 
     def get_chain_ids(self):
         return self.chain_ids
+
+    def get_seq(self) -> List[Dict[str, str]]:
+        """Return the amino acid sequence of proteins.
+
+        Returns:
+            seq_dict: A list of dictionaries containing sequence information for each chain.
+        """
+        return self.seq
 
     def get_max_n_atoms_per_residue(self):
         return self.max_n_atoms_per_residue
@@ -243,7 +297,7 @@ class StructureBatch:
         padded = F.pad(chain_idx_infilled, (0, 1, 0, 0), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
-    def pairwise_distance_matrix(self) -> torch.FloatTensor:
+    def pairwise_distance_matrix(self) -> Tuple[torch.FloatTensor, torch.BoolTensor]:
         """Return the all-atom pairwise pairwise distance matrix between residues.
 
         Info:
@@ -262,11 +316,15 @@ class StructureBatch:
             dist: A tensor containing an all-atom pairwise distance matrix for each pair of residues.
                 A distance between atom `a` of residue `i` and atom `b` of residue `j` is given by
                 `dist[i, j, a, b]`.
-                 Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
+                Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
+            dist_mask: A boolean tensor denoting which distances are valid.
+                Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
         """
-        return torch.norm(
+        dist = torch.norm(
             self.xyz[:, :, None, :, None] - self.xyz[:, None, :, None, :], dim=-1
         )
+
+        dist_mask = self.atom_mask[:, :, None, :, None] * self.atom_mask[:, None, :, None, :]
 
     def backbone_dihedrals(self) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
         """Return the backbone dihedral angles phi, psi and omega for each residue.

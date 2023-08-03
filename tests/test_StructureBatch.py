@@ -88,3 +88,15 @@ def test_StructureBatch_backbone_dihedrals():
     assert (dihedrals[nterm][:, 0] == 0.0).all()
     # psi and omega are not defined for N-term residue. should be zero-filled.
     assert (dihedrals[cterm][:, [1, 2]] == 0.0).all()
+
+
+def test_StructureBatch_from_pdb_id():
+    pdb_id = "2ZIL"  # Human lysozyme
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    xyz = sb.get_xyz()
+    assert len(xyz) == 1
+
+    # single chain
+    assert (sb.get_n_terminal_mask().sum(axis=1) == 1).all()
+    assert (sb.get_c_terminal_mask().sum(axis=1) == 1).all()

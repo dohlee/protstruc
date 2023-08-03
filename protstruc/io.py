@@ -1,6 +1,7 @@
 from typing import List, Tuple
 import torch
 import numpy as np
+import pandas as pd
 
 from biopandas.pdb import PandasPdb
 from protstruc.alphabet import one2three
@@ -38,29 +39,15 @@ def _precompute_internal_index_map(pdb_df):
     return ret
 
 
-def pdb_to_xyz(
-    filename: str,
-) -> Tuple[torch.Tensor, torch.BoolTensor, torch.LongTensor, List[str]]:
-    """Parse a PDB file and return a tensor containing 3D coordinates of atoms.
-
-    Args:
-        filename: Path to a PDB file.
-
-    Returns:
-        atom_xyz: A xyz coordinate tensor.
-            Shape (n_residues, MAX_N_ATOMS_PER_RESIDUE, 3).
-        atom_mask: A mask tensor. 1 if the corresponding atom exists, 0 otherwise.
-            Shape (n_residues, MAX_N_ATOMS_PER_RESIDUE)
-        chain_idx: A LongTensor containing chain indices per residue.
-            Shape (n_residues,)
-        chain_ids: A list of unique chain IDs in the order of integers appearing in the
-            `chain_idx` tensor.
-
-    Note:
-        `MAX_N_ATOMS_PER_RESIDUE` is set to **15** by default.
-    """
-    pdb_df = PandasPdb().read_pdb(filename).df["ATOM"]
+def tidy_pdb(pdb_df: pd.DataFrame) -> pd.DataFrame:
     pdb_df["atom_name"] = pdb_df["atom_name"].replace(non_standard_residue_substitutions)
+    return pdb_df
+
+
+def pdb_df_to_xyz(
+    pdb_df: pd.DataFrame,
+) -> Tuple[torch.Tensor, torch.BoolTensor, torch.LongTensor, List[str]]:
+    pdb_df = tidy_pdb(pdb_df)
 
     index_map = _precompute_internal_index_map(pdb_df)
     n_residues = max(index_map.values()) + 1
@@ -90,6 +77,33 @@ def pdb_to_xyz(
     _, chain_ids = pdb_df.chain_id.factorize()
     chain_ids = chain_ids.tolist()
 
+    return atom_xyz, atom_mask, chain_idx, chain_ids
+
+
+def pdb_to_xyz(
+    filename: str,
+) -> Tuple[torch.Tensor, torch.BoolTensor, torch.LongTensor, List[str]]:
+    """Parse a PDB file and return a tensor containing 3D coordinates of atoms.
+
+    Args:
+        filename: Path to a PDB file.
+
+    Returns:
+        atom_xyz: A xyz coordinate tensor.
+            Shape (n_residues, MAX_N_ATOMS_PER_RESIDUE, 3).
+        atom_mask: A mask tensor. 1 if the corresponding atom exists, 0 otherwise.
+            Shape (n_residues, MAX_N_ATOMS_PER_RESIDUE)
+        chain_idx: A LongTensor containing chain indices per residue.
+            Shape (n_residues,)
+        chain_ids: A list of unique chain IDs in the order of integers appearing in the
+            `chain_idx` tensor.
+
+    Note:
+        `MAX_N_ATOMS_PER_RESIDUE` is set to **15** by default.
+    """
+    pdb_df = PandasPdb().read_pdb(filename).df["ATOM"]
+
+    atom_xyz, atom_mask, chain_idx, chain_ids = pdb_df_to_xyz(pdb_df)
     return atom_xyz, atom_mask, chain_idx, chain_ids
 
 
