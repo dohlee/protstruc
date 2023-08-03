@@ -373,7 +373,7 @@ class StructureBatch:
                 Defaults to 'N'.
             a2: Second atom used to determine backbone orientation.
                 Defaults to 'CA'.
-            a2: Third atom used to determine backbone orientation.
+            a3: Third atom used to determine backbone orientation.
                 Defaults to 'C'.
 
         Note:
