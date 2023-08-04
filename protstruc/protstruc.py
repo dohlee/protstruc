@@ -151,7 +151,7 @@ class StructureBatch:
 
         atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
         atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
-        chain_idx = torch.zeros(bsz, max_n_residues)
+        chain_idx = torch.ones(bsz, max_n_residues) * torch.nan
 
         for i in range(bsz):
             _atom_xyz = tmp_atom_xyz[i]
@@ -211,7 +211,7 @@ class StructureBatch:
 
         atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
         atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
-        chain_idx = torch.zeros(bsz, max_n_residues)
+        chain_idx = torch.ones(bsz, max_n_residues) * torch.nan
 
         for i in range(bsz):
             _atom_xyz = tmp_atom_xyz[i]
@@ -258,6 +258,19 @@ class StructureBatch:
         """
         return self.seq
 
+    def get_total_lengths(self) -> torch.LongTensor:
+        """Return the total sum of chain lengths for each protein.
+
+        Note:
+            This **counts the number of missing residues in the middle of a chain**,
+            but **does not count the missing residues at the beginning and end of a chain**.
+
+        Returns:
+            total_lengths: A tensor containing the total length of each protein.
+                Shape: (batch_size,)
+        """
+        return self.residue_mask.cumsum(dim=1).argmax(dim=1) + 1
+
     def get_max_n_atoms_per_residue(self):
         return self.max_n_atoms_per_residue
 
@@ -268,7 +281,7 @@ class StructureBatch:
             A boolean tensor denoting N-terminal residues. `True` if N-terminal.
                 Shape: (batch_size, num_residues)
         """
-        padded = F.pad(self.chain_idx, (1, 0, 0, 0), mode="constant", value=torch.nan)
+        padded = F.pad(self.chain_idx, (1, 0), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
     def get_c_terminal_mask(self) -> torch.BoolTensor:
@@ -278,7 +291,7 @@ class StructureBatch:
             A boolean tensor denoting C-terminal residues. `True` if C-terminal.
                 Shape: (batch_size, num_residues)
         """
-        padded = F.pad(self.chain_idx, (0, 1, 0, 0), mode="constant", value=torch.nan)
+        padded = F.pad(self.chain_idx, (0, 1), mode="constant", value=torch.nan)
         return (padded[:, :-1] != padded[:, 1:]).bool() * self.residue_mask
 
     def pairwise_distance_matrix(self) -> Tuple[torch.FloatTensor, torch.BoolTensor]:
@@ -361,11 +374,15 @@ class StructureBatch:
         omega[cterm] = 0.0
 
         dihedrals = torch.stack([phi, psi, omega], axis=-1)
-        dihedral_mask = torch.stack([nterm, cterm, cterm], axis=-1)
+
+        dihedral_mask = ~torch.stack([nterm, cterm, cterm], axis=-1)
+        dihedral_mask *= self.residue_mask[:, :, None]
 
         return dihedrals, dihedral_mask
 
-    def backbone_orientations(self, a1="N", a2="CA", a3="C") -> torch.FloatTensor:
+    def backbone_orientations(
+        self, a1: str = "N", a2: str = "CA", a3: str = "C"
+    ) -> torch.FloatTensor:
         """Return the orientation of the backbone for each residue.
 
         Args:
@@ -381,7 +398,8 @@ class StructureBatch:
             orthogonalization on the vectors formed by the atoms `a1`, `a2` and `a3`.
 
         Returns:
-            A tensor containing the local reference backbone frame for each residue.
+            bb_orientations: A tensor containing the local reference backbone
+                orientation for each residue.
         """
         a1_coords = self.xyz[:, :, atom2idx[a1]]
         a2_coords = self.xyz[:, :, atom2idx[a2]]
@@ -389,7 +407,7 @@ class StructureBatch:
 
         return geom.gram_schmidt(a1_coords, a2_coords, a3_coords)
 
-    def backbone_translations(self, atom="CA") -> torch.FloatTensor:
+    def backbone_translations(self, atom: str = "CA") -> torch.FloatTensor:
         """Return the coordinate (translation) of a given backbone atom for each residue.
 
         Note:

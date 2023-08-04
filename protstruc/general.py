@@ -53,7 +53,7 @@ ressymb_to_resindex = {
     'S': 15, 'T': 16, 'V': 17, 'W': 18, 'Y': 19,
     'X': 20,
 }
-resindex_to_oneletter = {v:k for k, v in ressymb_to_resindex.items()}
+resindex_to_oneletter = {v: k for k, v in ressymb_to_resindex.items()}
 
 class AA(enum.IntEnum):
     ALA = 0
@@ -105,6 +105,8 @@ class AA(enum.IntEnum):
             or (value in cls._member_names_)
             or (value in cls._member_map_.values())
         )
+    
+standard_aa_names = [AA(i).name for i in range(20)]
 
 # Copyright 2021 DeepMind Technologies Limited
 #
@@ -142,3 +144,13 @@ restype_to_heavyatom_names = {
     AA.VAL: ['N', 'CA', 'C', 'O', 'CB', 'CG1', 'CG2', '',    '',    '',    '',    '',    '',    '', 'OXT'],  # noqa: E241, E501
     AA.UNK: ['',  '',   '',  '',  '',   '',    '',    '',    '',    '',    '',    '',    '',    '',    ''],  # noqa: E241, E501
 }
+
+class ATOM(enum.IntEnum):
+    N = 0
+    CA = 1
+    C = 2
+    O = 3  # noqa: E741
+    CB = 4
+
+    def __str__(self):
+        return self.name

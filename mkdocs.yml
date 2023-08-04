@@ -18,6 +18,7 @@ theme:
 
 plugins:
   - mkdocstrings
+  - mkdocs-jupyter
   - search
 
 markdown_extensions:
@@ -31,6 +32,10 @@ nav:
     - Examples: home/examples.md
   - Getting started:
     - Installation: getting-started/installation.md
+    - Tutorials:
+      - Pairwise distance matrix: tutorials/pairwise_distance_matrix.ipynb
+      - Ramachandran plot: tutorials/ramachandran_plot.ipynb
+      - Backbone orientations/translations: tutorials/backbone_orientations_and_translations.ipynb
   - API reference:
     - protstruc.protstruc: reference/protstruc.md
     - protstruc.geometry: reference/geometry.md

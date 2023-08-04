@@ -10,6 +10,7 @@ from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
 from protstruc.general import (
     restype_to_heavyatom_names,
     non_standard_residue_substitutions,
+    standard_aa_names,
     AA,
 )
 
@@ -41,7 +42,13 @@ def _precompute_internal_index_map(pdb_df):
 
 
 def tidy_pdb(pdb_df: pd.DataFrame) -> pd.DataFrame:
+    # convert non-standard residues to standard residues
     pdb_df["atom_name"] = pdb_df["atom_name"].replace(non_standard_residue_substitutions)
+
+    # try discard non-standard residues
+    # hopefully this will discard non-peptide chains, too
+    pdb_df = pdb_df[pdb_df["residue_name"].isin(standard_aa_names)].reset_index(drop=True)
+
     return pdb_df
 
 

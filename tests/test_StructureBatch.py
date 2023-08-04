@@ -1,5 +1,7 @@
 from protstruc import StructureBatch
+from protstruc.general import ATOM
 
+import torch
 import protstruc as ps
 import numpy as np
 import pytest
@@ -125,6 +127,15 @@ def test_StructureBatch_pairwise_distance_matrix():
     assert dist.shape == (1, 130, 130, 15, 15)
     assert dist_mask.shape == (1, 130, 130, 15, 15)
 
+    ca_dist = dist[:, :, :, ATOM.CA, ATOM.CA]
+    cb_dist = dist[:, :, :, ATOM.CB, ATOM.CB]
+
+    assert (ca_dist >= 0).all()
+    assert (cb_dist[~torch.isnan(cb_dist)] >= 0).all()
+
+    # test if enum ATOM.CA works correctly
+    assert (ca_dist == dist[:, :, :, 1, 1]).all()
+
 
 def test_StructureBatch_backbone_orientations():
     pdb_id = "1REX"
@@ -141,3 +152,12 @@ def test_StructureBatch_backbone_translations():
     for atom in ["N", "CA", "C"]:
         bb_translations = sb.backbone_translations(atom)
         assert bb_translations.shape == (1, 130, 3)
+
+
+def test_StructureBatch_get_chain_lengths():
+    pdb_id = ["1REX", "4EOT"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    chain_lengths = sb.get_total_lengths()
+    print(chain_lengths)
+    assert (chain_lengths == torch.tensor([130, 184])).all()
