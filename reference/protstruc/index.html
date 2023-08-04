@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../../getting-started/installation/">
+        <link rel="prev" href="../../tutorials/backbone_orientations_and_translations/">
       
       
         <link rel="next" href="../geometry/">
@@ -345,6 +345,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -368,6 +370,92 @@
       <a href="../../getting-started/installation/" class="md-nav__link">
         Installation
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/pairwise_distance_matrix/" class="md-nav__link">
+        Pairwise distance matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ramachandran_plot/" class="md-nav__link">
+        Ramachandran plot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/backbone_orientations_and_translations/" class="md-nav__link">
+        Backbone orientations/translations
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -499,6 +587,13 @@
           <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.get_seq" class="md-nav__link">
     get_seq()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.get_total_lengths" class="md-nav__link">
+    get_total_lengths()
   </a>
   
 </li>
@@ -690,6 +785,13 @@
           <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.get_seq" class="md-nav__link">
     get_seq()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.get_total_lengths" class="md-nav__link">
+    get_total_lengths()
   </a>
   
 </li>
@@ -1303,6 +1405,55 @@ Shape: (batch_size, num_residues)</p>
 
 
 
+<h3 id="protstruc.protstruc.StructureBatch.get_total_lengths" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_total_lengths</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return the total sum of chain lengths for each protein.</p>
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>This <strong>counts the number of missing residues in the middle of a chain</strong>,
+but <strong>does not count the missing residues at the beginning and end of a chain</strong>.</p>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>total_lengths</code></td>          <td>
+                <code>torch.<span title="torch.LongTensor">LongTensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tensor containing the total length of each protein.
+Shape: (batch_size,)</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
 <h3 id="protstruc.protstruc.StructureBatch.get_n_terminal_mask" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">get_n_terminal_mask</span><span class="p">()</span></code>
 
@@ -1561,6 +1712,7 @@ Shape: (batch_size, num_residues, 3)</p>
         <tr>
           <td><code>a1</code></td>
           <td>
+                <code>str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1575,6 +1727,7 @@ Defaults to 'N'.</p>
         <tr>
           <td><code>a2</code></td>
           <td>
+                <code>str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1587,8 +1740,9 @@ Defaults to 'CA'.</p>
           </td>
         </tr>
         <tr>
-          <td><code>a2</code></td>
+          <td><code>a3</code></td>
           <td>
+                <code>str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1597,7 +1751,7 @@ Defaults to 'C'.</p>
             </div>
           </td>
           <td>
-                <code>&#39;CA&#39;</code>
+                <code>&#39;C&#39;</code>
           </td>
         </tr>
     </tbody>
@@ -1614,18 +1768,19 @@ orthogonalization on the vectors formed by the atoms <code>a1</code>, <code>a2</
   <table>
     <thead>
       <tr>
-        <th>Type</th>
+<th>Name</th>        <th>Type</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
         <tr>
-          <td>
+<td><code>bb_orientations</code></td>          <td>
                 <code>torch.<span title="torch.FloatTensor">FloatTensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>A tensor containing the local reference backbone frame for each residue.</p>
+              <p>A tensor containing the local reference backbone
+orientation for each residue.</p>
             </div>
           </td>
         </tr>
@@ -1671,6 +1826,7 @@ orthogonalization on the vectors formed by the atoms <code>a1</code>, <code>a2</
         <tr>
           <td><code>atom</code></td>
           <td>
+                <code>str</code>
           </td>
           <td>
             <div class="doc-md-description">
