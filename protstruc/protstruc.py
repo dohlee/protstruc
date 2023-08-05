@@ -247,6 +247,9 @@ class StructureBatch:
     def get_xyz(self):
         return self.xyz
 
+    def get_chain_idx(self):
+        return self.chain_idx
+
     def get_chain_ids(self):
         return self.chain_ids
 
