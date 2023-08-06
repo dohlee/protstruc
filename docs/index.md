@@ -23,6 +23,6 @@ There are many ways to represent protein structures in various deep learning app
 |2022, *arXiv*|Inverse-folding|[PiFold](https://arxiv.org/abs/2209.12643)|**Inter-atomic/residue distance, backbone dihedrals and bond angles, orientation of residue frame, inter-residue orientations**|
 |2023, *Science*|Structure prediction|[ESMFold](https://www.science.org/doi/10.1126/science.ade2574)|**Orientation & translation** of backbone frames centered at Ca's|
 |2023, *ICML*|Structure generation|[FrameDiff](https://arxiv.org/abs/2302.02277)|**Orientation & translation** of backbone frames centered at Ca's, an additional torsion angle for oxygen atom|
-||Structure generation|HERN||
-|2022, *arXiv*|Sequence-structure co-design|Multi-channel Equivariant Attention Network (MEAN)||
+|2022, *ICML*|Structure generation|[Hierarchical Equivariant Refinement Network (HERN)](https://arxiv.org/abs/2207.06616)||
+|2022, *arXiv*|Sequence-structure co-design|[Multi-channel Equivariant Attention Network (MEAN)](https://arxiv.org/abs/2208.06073)||
 |2023, *ICML*|Sequence-structure co-design|[Dynamic multi-channel Equivariant Attention Network (dyMEAN)](https://arxiv.org/abs/2302.00203)||
