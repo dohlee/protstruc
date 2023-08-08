@@ -226,6 +226,33 @@ class StructureBatch:
         return self
 
     @classmethod
+    def from_backbone_orientations_translations(
+        cls,
+        orientations: Union[np.ndarray, torch.Tensor],
+        translations: Union[np.ndarray, torch.Tensor],
+        chain_idx: Union[np.ndarray, torch.Tensor] = None,
+        chain_ids: List[List[str]] = None,
+        seq: List[Dict[str, str]] = None,
+    ) -> "StructureBatch":
+        """Initialize a StructureBatch from an array of backbone orientations and translations.
+
+        Args:
+            orientations: Shape: (batch_size, num_residues, 3, 3)
+            translations: Shape: (batch_size, num_residues, 3)
+            chain_idx: Chain identifiers for each residue. Should be starting from zero.
+                Defaults to None. Shape: (batch_size, num_residues)
+            chain_ids: A list of unique chain IDs for each protein.
+            seq: A list of dictionaries containing sequence information for each chain.
+
+        Returns:
+            StructureBatch: A StructureBatch object.
+        """
+        batch_size, n_residues = orientations.shape[:2]
+        # determine ideal backbone coordinates
+        ideal_backbone = geom.ideal_backbone_coordinates(size=(batch_size, n_residues))
+        # self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
+
+    @classmethod
     def from_dihedrals(
         cls,
         dihedrals: Union[np.ndarray, torch.Tensor],
@@ -398,7 +425,10 @@ class StructureBatch:
 
         Note:
             The backbone orientations are determined by using Gram-Schmidt
-            orthogonalization on the vectors formed by the atoms `a1`, `a2` and `a3`.
+            orthogonalization on the vectors `a3 - a2` and `a1 - a2`.
+            Note that `a3 - a2` forms the first basis, and `a1 - a2` - proj_{a3 - a2}(a1 - a2)
+            forms the second basis. The third basis is formed by taking the cross product of the
+            first and second basis vectors.
 
         Returns:
             bb_orientations: A tensor containing the local reference backbone

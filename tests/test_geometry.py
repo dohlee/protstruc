@@ -239,3 +239,22 @@ def test_gram_schmidt():
 
     frame = geom.gram_schmidt(a, b, c)
     assert frame.shape == (bsz, n_res, 3, 3)
+
+
+def test_ideal_backbone_coordinates():
+    bsz, n_res = 16, 30
+
+    xyz = geom.ideal_backbone_coordinates(size=(bsz, n_res))
+    assert xyz.shape == (bsz, n_res, 3, 3)
+
+    xyz_cb = geom.ideal_backbone_coordinates(size=(bsz, n_res), include_cb=True)
+    assert xyz_cb.shape == (bsz, n_res, 4, 3)
+
+    n = xyz[:, :, 0]
+    ca = xyz[:, :, 1]
+    c = xyz[:, :, 2]
+    frame = geom.gram_schmidt(n, ca, c)
+    assert frame.shape == (bsz, n_res, 3, 3)
+
+    # check that the ideal coordinates results in identity frame
+    assert (frame == torch.eye(3).expand(bsz, n_res, -1, -1)).all()

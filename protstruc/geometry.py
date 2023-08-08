@@ -9,10 +9,12 @@ This module contains the following functions:
 """
 
 import torch
+import math
 import numpy as np
 
-from typing import Union
+from typing import Union, Tuple, List
 from sklearn.manifold import MDS
+from einops import repeat
 from .constants import ideal
 from .decorator import with_tensor
 
@@ -184,6 +186,44 @@ def ideal_local_frame() -> Union[np.array, torch.Tensor]:
     )
     c = place_fourth_atom(cb, ca, n, ideal.NC, ideal.ANC, ideal.BANC)
     return np.array([n, ca, c, cb])
+
+
+def ideal_backbone_coordinates(
+    size: Union[Tuple[int], List[int]], include_cb: bool = False
+) -> Union[np.array, torch.Tensor]:
+    """Return a batch of ideal backbone coordinates (N, Ca, C and optionally Cb)
+    with a given batch size and number of residues.
+
+    Args:
+        size:
+        include_cb: Whether to include Cb atom in the frame. Defaults to False.
+
+    Returns:
+        A batch of ideal backbone coordinates (N, Ca, C and optionally Cb).
+        Shape: (batch_size, num_residues, 3, 3) if `include_cb` is False,
+            otherwise (batch_size, num_residues, 4, 3).
+    """
+    # let Ca-C vector be always along x-axis
+    ca = torch.zeros(3)
+    c = torch.tensor([ideal.AC, 0.0, 0.0])
+    n = torch.tensor(
+        [
+            ideal.NA * math.cos(ideal.NAC),
+            ideal.NA * math.sin(ideal.NAC),
+            0.0,
+        ]
+    )
+
+    if include_cb:
+        _b, _c = (ca - n), (c - ca)
+        _a = torch.cross(_b, _c)
+
+        cb = -0.58273431 * _a + 0.56802827 * _b - 0.54067466 * _c + ca
+        xyz = torch.stack([n, ca, c, cb])
+    else:
+        xyz = torch.stack([n, ca, c])
+
+    return xyz.expand(*size, -1, -1)
 
 
 def reconstruct_backbone_distmat_from_interresidue_geometry(
@@ -381,7 +421,7 @@ def gram_schmidt(a: torch.Tensor, b: torch.Tensor, c: torch.Tensor) -> torch.Flo
         c: xyz coordinates of three atoms (shape: (*, 3))
 
     Returns:
-        Orthonormal basis of the plane defined by vectors (c - b) and (a - b).
+        Orthonormal basis of the plane defined by vectors `c - b` and `a - b`.
             Shape: (*, 3, 3)
     """
 

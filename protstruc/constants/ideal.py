@@ -20,6 +20,8 @@ OC = 1.231
 ANC = 0.615  # Ca-N-C
 NAB = 1.927  # N-Ca-Cb
 BAN = 1.927  # Cb-Ca-N
+NAC = 1.937  # N-Ca-C
+CAN = 1.937  # C-Ca-N
 ACO = 2.108
 OCA = 2.108
 
