@@ -6,6 +6,7 @@ from typing import List, Dict, Union, Tuple
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
 from collections import defaultdict
+from einops import rearrange
 
 import protstruc.geometry as geom
 from protstruc.constants import ideal
@@ -56,6 +57,9 @@ class StructureBatch:
             raise ValueError("Both `chain_idx` and `chain_ids` should be provided or None.")
 
         self.xyz = xyz
+        self.mu = torch.tensor(np.nanmean(xyz.numpy(), axis=-2, keepdims=True))
+        self.std = torch.tensor(np.nanstd(xyz.numpy(), axis=-2, keepdims=True))
+
         self.atom_mask = atom_mask
         self.batch_size, self.n_residues, self.max_n_atoms_per_residue = self.xyz.shape[:3]
 
@@ -455,6 +459,32 @@ class StructureBatch:
                 Shape: (batch_size, num_residues, 3)
         """
         return self.xyz[:, :, atom2idx[atom]]
+
+    def translate(self, translation: torch.Tensor, atomwise: bool = False):
+        """Translate the structures by a given tensor of shape (batch_size, num_residues, 3)
+        Translation is performed residue-wise by default, but atomwise translation
+        can be performed when `atomwise=True`. In that case, the translation tensor
+        should have a shape of (batch_size, num_residues, num_atom, 3).
+
+        Args:
+            translation: Translation vector.
+                Shape: (batch_size, num_residues, 3) if `atomwise=False`,
+                (batch_size, num_residues, num_atom, 3) otherwise.
+        """
+
+        if not atomwise:
+            translation = rearrange(translation, "b n c -> b n () c")
+
+        # update xyz coordinates
+        self.xyz += translation
+
+    def standardize(self):
+        """Standardize the coordinates of the structures to have zero mean and unit standard deviation."""
+        self.xyz = (self.xyz - self.mu) / self.std
+
+    def unstandardize(self):
+        """Recover the coordinates at original scale from teh standardized coordinates."""
+        self.xyz = self.xyz * self.std + self.mu
 
     def inter_residue_dihedrals(self, use_cb=False):
         """Return the inter-residue dihedral angles.

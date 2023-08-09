@@ -6,7 +6,7 @@ docs_dir: docs
 theme:
   name: material
   font:
-    text: Roboto
+    text: Inter
   icon:
     logo: fontawesome/solid/dice-d20
     repo: octicons/mark-github-16
@@ -36,6 +36,7 @@ nav:
       - Pairwise distance matrix: tutorials/pairwise_distance_matrix.ipynb
       - Ramachandran plot: tutorials/ramachandran_plot.ipynb
       - Backbone orientations/translations: tutorials/backbone_orientations_and_translations.ipynb
+      - Diffusing XYZ coordinates with Gaussian noise: tutorials/diffusing_xyz_coordinates.ipynb
   - API reference:
     - protstruc.protstruc: reference/protstruc.md
     - protstruc.geometry: reference/geometry.md
