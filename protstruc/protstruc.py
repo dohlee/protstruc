@@ -284,13 +284,15 @@ class StructureBatch:
         Returns:
             local_xyz: Shape: (batch_size, num_residues, num_atoms_per_residue, 3)
         """
+        n_atoms = self.max_n_atoms_per_residue
+
         orientation = self.backbone_orientations()  # b n 3 3
-        orientation = repeat(
-            orientation, "b n i j -> b n a i j", a=self.max_n_atoms_per_residue
-        )
+        orientation = repeat(orientation, "b n i j -> b n a i j", a=n_atoms)
+
         xyz = self.xyz  # b n a 3
 
         local_xyz = torch.einsum("bnaji,bnaj->bnai", orientation, xyz)
+        local_xyz = local_xyz - xyz[:, :, atom2idx["CA"]].unsqueeze(-2)
         return local_xyz
 
     def get_atom_mask(self):
