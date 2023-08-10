@@ -34,8 +34,8 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
       
     
     
@@ -398,6 +398,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
@@ -448,6 +450,20 @@
     <li class="md-nav__item">
       <a href="../../tutorials/backbone_orientations_and_translations/" class="md-nav__link">
         Backbone orientations/translations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/diffusing_xyz_coordinates/" class="md-nav__link">
+        Diffusing XYZ coordinates with Gaussian noise
       </a>
     </li>
   
@@ -591,6 +607,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#protstruc.geometry.ideal_backbone_coordinates" class="md-nav__link">
+    ideal_backbone_coordinates()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#protstruc.geometry.ideal_local_frame" class="md-nav__link">
     ideal_local_frame()
   </a>
@@ -702,6 +725,13 @@
         <li class="md-nav__item">
   <a href="#protstruc.geometry.gram_schmidt" class="md-nav__link">
     gram_schmidt()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#protstruc.geometry.ideal_backbone_coordinates" class="md-nav__link">
+    ideal_backbone_coordinates()
   </a>
   
 </li>
@@ -1214,8 +1244,107 @@ basis of the plane defined by vectors (c - b) and (a - b).</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Orthonormal basis of the plane defined by vectors (c - b) and (a - b).
+              <p>Orthonormal basis of the plane defined by vectors <code>c - b</code> and <code>a - b</code>.
 Shape: (*, 3, 3)</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="protstruc.geometry.ideal_backbone_coordinates" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ideal_backbone_coordinates</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">include_cb</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return a batch of ideal backbone coordinates (N, Ca, C and optionally Cb)
+with a given batch size and number of residues.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>size</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="typing.Tuple">Tuple</span>[int], <span title="typing.List">List</span>[int]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>include_cb</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to include Cb atom in the frame. Defaults to False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td></td>          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.array">array</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A batch of ideal backbone coordinates (N, Ca, C and optionally Cb).</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>Shape</code></td>          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.array">array</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>(batch_size, num_residues, 3, 3) if <code>include_cb</code> is False,
+otherwise (batch_size, num_residues, 4, 3).</p>
             </div>
           </td>
         </tr>

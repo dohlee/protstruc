@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../../tutorials/backbone_orientations_and_translations/">
+        <link rel="prev" href="../../tutorials/diffusing_xyz_coordinates/">
       
       
         <link rel="next" href="../geometry/">
@@ -34,8 +34,8 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
       
     
     
@@ -398,6 +398,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
@@ -448,6 +450,20 @@
     <li class="md-nav__item">
       <a href="../../tutorials/backbone_orientations_and_translations/" class="md-nav__link">
         Backbone orientations/translations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/diffusing_xyz_coordinates/" class="md-nav__link">
+        Diffusing XYZ coordinates with Gaussian noise
       </a>
     </li>
   
@@ -578,6 +594,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.from_backbone_orientations_translations" class="md-nav__link">
+    from_backbone_orientations_translations()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
     from_dihedrals()
   </a>
@@ -636,6 +659,27 @@
           <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.backbone_translations" class="md-nav__link">
     backbone_translations()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.translate" class="md-nav__link">
+    translate()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.standardize" class="md-nav__link">
+    standardize()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.unstandardize" class="md-nav__link">
+    unstandardize()
   </a>
   
 </li>
@@ -776,6 +820,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.from_backbone_orientations_translations" class="md-nav__link">
+    from_backbone_orientations_translations()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
     from_dihedrals()
   </a>
@@ -834,6 +885,27 @@
           <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.backbone_translations" class="md-nav__link">
     backbone_translations()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.translate" class="md-nav__link">
+    translate()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.standardize" class="md-nav__link">
+    standardize()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.unstandardize" class="md-nav__link">
+    unstandardize()
   </a>
   
 </li>
@@ -1241,6 +1313,140 @@ Shape: (batch_size, num_residues)</p>
           </td>
           <td>
               <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>StructureBatch</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="protstruc.protstruc.StructureBatch" href="#protstruc.protstruc.StructureBatch">StructureBatch</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A StructureBatch object.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.from_backbone_orientations_translations" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">from_backbone_orientations_translations</span><span class="p">(</span><span class="n">orientations</span><span class="p">,</span> <span class="n">translations</span><span class="p">,</span> <span class="n">chain_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Initialize a StructureBatch from an array of backbone orientations and translations.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>orientations</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Shape: (batch_size, num_residues, 3, 3)</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>translations</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Shape: (batch_size, num_residues, 3)</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>chain_idx</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Chain identifiers for each residue. Should be starting from zero.
+Defaults to None. Shape: (batch_size, num_residues)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>chain_ids</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[str]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of unique chain IDs for each protein.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>seq</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, str]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of dictionaries containing sequence information for each chain.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
           </td>
         </tr>
     </tbody>
@@ -1760,7 +1966,10 @@ Defaults to 'C'.</p>
 <details class="note" open>
   <summary>Note</summary>
   <p>The backbone orientations are determined by using Gram-Schmidt
-orthogonalization on the vectors formed by the atoms <code>a1</code>, <code>a2</code> and <code>a3</code>.</p>
+orthogonalization on the vectors <code>a3 - a2</code> and <code>a1 - a2</code>.
+Note that <code>a3 - a2</code> forms the first basis, and <code>a1 - a2</code> - proj_{a3 - a2}(a1 - a2)
+forms the second basis. The third basis is formed by taking the cross product of the
+first and second basis vectors.</p>
 </details>
 
 
@@ -1865,6 +2074,98 @@ Shape: (batch_size, num_residues, 3)</p>
         </tr>
     </tbody>
   </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.translate" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">translate</span><span class="p">(</span><span class="n">translation</span><span class="p">,</span> <span class="n">atomwise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Translate the structures by a given tensor of shape (batch_size, num_residues, 3)
+Translation is performed residue-wise by default, but atomwise translation
+can be performed when <code>atomwise=True</code>. In that case, the translation tensor
+should have a shape of (batch_size, num_residues, num_atom, 3).</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>translation</code></td>
+          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Translation vector.
+Shape: (batch_size, num_residues, 3) if <code>atomwise=False</code>,
+(batch_size, num_residues, num_atom, 3) otherwise.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.standardize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">standardize</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Standardize the coordinates of the structures to have zero mean and unit standard deviation.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.unstandardize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">unstandardize</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Recover the coordinates at original scale from teh standardized coordinates.</p>
 
   </div>
 
