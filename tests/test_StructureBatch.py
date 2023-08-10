@@ -161,3 +161,26 @@ def test_StructureBatch_get_chain_lengths():
     chain_lengths = sb.get_total_lengths()
     print(chain_lengths)
     assert (chain_lengths == torch.tensor([130, 184])).all()
+
+
+def test_StructureBatch_pairwise_dihedrals():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    # phi = Dihedral(C_i, N_j, Ca_j, C_j)
+    phi = sb.pairwise_dihedrals(atoms_i=["C"], atoms_j=["N", "CA", "C"])
+    assert phi.shape == (1, 130, 130)
+
+    # psi = Dihedral(N_i, Ca_i, C_i, N_j)
+    psi = sb.pairwise_dihedrals(atoms_i=["N", "CA", "C"], atoms_j=["N"])
+    assert psi.shape == (1, 130, 130)
+
+
+def test_get_local_xyz():
+    pdb_id = ["1REX", "4EOT"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    n_atoms = sb.get_max_n_atoms_per_residue()
+
+    local_xyz = sb.get_local_xyz()
+    assert local_xyz.shape == (2, 184, n_atoms, 3)

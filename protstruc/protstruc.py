@@ -6,7 +6,7 @@ from typing import List, Dict, Union, Tuple
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
 from collections import defaultdict
-from einops import rearrange
+from einops import rearrange, repeat
 
 import protstruc.geometry as geom
 from protstruc.constants import ideal
@@ -78,7 +78,7 @@ class StructureBatch:
             self.chain_idx = chain_idx
         else:
             bsz, n_max_res = self.xyz.shape[:2]
-            self.chain_idx = np.zeros((bsz, n_max_res))
+            self.chain_idx = torch.zeros(bsz, n_max_res)
 
         self.chain_ids = chain_ids
         self.seq = seq
@@ -278,6 +278,24 @@ class StructureBatch:
     def get_xyz(self):
         return self.xyz
 
+    def get_local_xyz(self) -> torch.Tensor:
+        """Return the coordinates of each atom in the local frame of each residue.
+
+        Returns:
+            local_xyz: Shape: (batch_size, num_residues, num_atoms_per_residue, 3)
+        """
+        orientation = self.backbone_orientations()  # b n 3 3
+        orientation = repeat(
+            orientation, "b n i j -> b n a i j", a=self.max_n_atoms_per_residue
+        )
+        xyz = self.xyz  # b n a 3
+
+        local_xyz = torch.einsum("bnaji,bnaj->bnai", orientation, xyz)
+        return local_xyz
+
+    def get_atom_mask(self):
+        return self.atom_mask
+
     def get_chain_idx(self):
         return self.chain_idx
 
@@ -335,17 +353,17 @@ class StructureBatch:
             Distances are measured in **Angstroms**.
 
         Examples:
-            `dist[:, :, 1, 1]` will give pairwise alpha-carbon distance matrix between residues,
+            `dist[:, :, :, 1, 1]` will give pairwise alpha-carbon distance matrix between residues,
             as the index `1` corresponds to the alpha-carbon atom.
             ```python
             >>> structure_batch = StructureBatch.from_pdb("1a8o.pdb")
             >>> dist = structure_batch.pairwise_distance_matrix()
-            >>> ca_dist = dist[:, :, 1, 1]  # 1 = CA_IDX
+            >>> ca_dist = dist[:, :, :, 1, 1]  # 1 = CA_IDX
             ```
         Returns:
             dist: A tensor containing an all-atom pairwise distance matrix for each pair of residues.
-                A distance between atom `a` of residue `i` and atom `b` of residue `j` is given by
-                `dist[i, j, a, b]`.
+                A distance between atom `a` of residue `i` and atom `b` of residue `j` of protein
+                at index `batch_idx` is given by `dist[batch_idx, i, j, a, b]`.
                 Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
             dist_mask: A boolean tensor denoting which distances are valid.
                 Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)
@@ -459,6 +477,44 @@ class StructureBatch:
                 Shape: (batch_size, num_residues, 3)
         """
         return self.xyz[:, :, atom2idx[atom]]
+
+    def pairwise_dihedrals(self, atoms_i: List[str], atoms_j: List[str]) -> torch.FloatTensor:
+        """Return a matrix representing a pairwise dihedral angle between residues defined by
+        two sets of atoms, one for each side of the residue.
+
+        Args:
+            atoms_i: List of atoms to be used for the first residue.
+            atoms_j: List of atoms to be used for the second residue.
+
+        Returns:
+            pairwise_dihedrals: A tensor containing pairwise dihedral angles between residues.
+                Shape: (batch_size, num_residues, num_residues)
+        """
+        # take uppercase of atom names
+        atoms_i = [atom.upper() for atom in atoms_i]
+        atoms_j = [atom.upper() for atom in atoms_j]
+
+        for atom in atoms_i:
+            if atom not in atom2idx:
+                raise ValueError(f"Atom {atom} is not valid.")
+        for atom in atoms_j:
+            if atom not in atom2idx:
+                raise ValueError(f"Atom {atom} is not valid.")
+
+        atoms_i = [atom2idx[atom] for atom in atoms_i]
+        atoms_j = [atom2idx[atom] for atom in atoms_j]
+
+        # get coordinates of specified atoms for residue i and j
+        n = self.n_residues
+        coords_i = self.xyz[:, :, atoms_i].repeat_interleave(n, dim=1)
+        coords_j = self.xyz[:, :, atoms_j].repeat(1, n, 1, 1)
+
+        # and construct all-pairwise four-atom coordinates
+        coords = torch.cat([coords_i, coords_j], dim=-2)  # bsz, n_res^2, 4, 3
+
+        dih = geom.dihedral(coords[:, :, 0], coords[:, :, 1], coords[:, :, 2], coords[:, :, 3])
+        dih = dih.reshape(-1, n, n)
+        return dih
 
     def translate(self, translation: torch.Tensor, atomwise: bool = False):
         """Translate the structures by a given tensor of shape (batch_size, num_residues, 3)

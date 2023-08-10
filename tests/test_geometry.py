@@ -221,7 +221,7 @@ def test_initialize_backbone_with_mds():
     )
     assert distmat.shape == (3, 3, L, L)
 
-    coords = geom.initialize_backbone_with_mds(distmat, max_iter=2000)
+    coords = geom.initialize_backbone_with_mds(distmat, max_iter=3)  # cheap test
     assert coords.shape == (5, L, 3)
 
     sequences = struc.get_sequences()
