@@ -184,3 +184,24 @@ def test_get_local_xyz():
 
     local_xyz = sb.get_local_xyz()
     assert local_xyz.shape == (2, 184, n_atoms, 3)
+
+
+def test_from_backbone_orientations_translations():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    orientations = sb.backbone_orientations()
+    translations = sb.backbone_translations()
+    chain_idx = sb.get_chain_idx()
+    chain_ids = sb.get_chain_ids()
+    seq = sb.get_seq()
+
+    sb2 = StructureBatch.from_backbone_orientations_translations(
+        orientations, translations, chain_idx, chain_ids, seq
+    )
+    assert sb2.get_max_n_atoms_per_residue() == 3
+
+    sb3 = StructureBatch.from_backbone_orientations_translations(
+        orientations, translations, chain_idx, chain_ids, seq, include_cb=True
+    )
+    assert sb3.get_max_n_atoms_per_residue() == 4

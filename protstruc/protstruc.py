@@ -38,8 +38,9 @@ class StructureBatch:
 
     StructureBatch object can be initialized with:
         - A single PDB file or a list of PDB files `StructureBatch.from_pdb`
-        - A pdb identifier or a list of PDB identifiers `StructureBatch.from_pdb_id` (TODO)
+        - A pdb identifier or a list of PDB identifiers `StructureBatch.from_pdb_id`
         - Backbone or full atom 3D coordinates `StructureBatch.from_xyz`
+        - Backbone orientation and translations `StructureBatch.from_backbone_orientations_translations`
         - Dihedral angles `StructureBatch.from_dihedrals` (TODO)
     """
 
@@ -92,10 +93,10 @@ class StructureBatch:
         chain_ids: List[List[str]] = None,
         seq: List[Dict[str, str]] = None,
     ) -> "StructureBatch":
-        """Initialize a `StructureBatch` from a 3D coordinate array.
+        """Initialize a `StructureBatch` from a 3D atom coordinate array.
 
         Examples:
-            Initialize a `StructureBatch` object from a numpy array of atom 3D coordinates.
+            Initialize a `StructureBatch` object from a numpy array of 3D atom coordinates.
             >>> batch_size, n_max_res, n_max_atoms = 2, 10, 25
             >>> xyz = np.random.randn(batch_size, n_max_res, n_max_atoms, 3)
             >>> sb = StructureBatch.from_xyz(xyz)
@@ -237,6 +238,7 @@ class StructureBatch:
         chain_idx: Union[np.ndarray, torch.Tensor] = None,
         chain_ids: List[List[str]] = None,
         seq: List[Dict[str, str]] = None,
+        include_cb: bool = False,
     ) -> "StructureBatch":
         """Initialize a StructureBatch from an array of backbone orientations and translations.
 
@@ -247,14 +249,27 @@ class StructureBatch:
                 Defaults to None. Shape: (batch_size, num_residues)
             chain_ids: A list of unique chain IDs for each protein.
             seq: A list of dictionaries containing sequence information for each chain.
+            include_cb: Whether to include CB atoms when initializing. Defaults to False.
 
         Returns:
             StructureBatch: A StructureBatch object.
         """
         batch_size, n_residues = orientations.shape[:2]
-        # determine ideal backbone coordinates
-        ideal_backbone = geom.ideal_backbone_coordinates(size=(batch_size, n_residues))
-        # self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
+
+        # determine ideal backbone coordinates (b n a 3) or (b n a 4)
+        ideal_backbone = geom.ideal_backbone_coordinates((batch_size, n_residues), include_cb)
+        n_atoms = ideal_backbone.shape[2]
+
+        # rotate and translate ideal backbone coordinates by orientations
+        orientations = repeat(orientations, "b n i j -> b n a i j", a=n_atoms)
+
+        atom_xyz = torch.einsum("bnaij,bnaj->bnai", orientations, ideal_backbone)
+        atom_xyz = atom_xyz + rearrange(translations, "b n i -> b n () i")
+
+        atom_mask = torch.ones_like(atom_xyz[..., 0])
+
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
+        return self
 
     @classmethod
     def from_dihedrals(
