@@ -608,6 +608,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.get_local_xyz" class="md-nav__link">
+    get_local_xyz()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.get_seq" class="md-nav__link">
     get_seq()
   </a>
@@ -664,6 +671,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.pairwise_dihedrals" class="md-nav__link">
+    pairwise_dihedrals()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.translate" class="md-nav__link">
     translate()
   </a>
@@ -685,8 +699,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.inter_residue_dihedrals" class="md-nav__link">
-    inter_residue_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.center_of_mass" class="md-nav__link">
+    center_of_mass()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.center_at" class="md-nav__link">
+    center_at()
   </a>
   
 </li>
@@ -834,6 +855,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.get_local_xyz" class="md-nav__link">
+    get_local_xyz()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.get_seq" class="md-nav__link">
     get_seq()
   </a>
@@ -890,6 +918,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.pairwise_dihedrals" class="md-nav__link">
+    pairwise_dihedrals()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#protstruc.protstruc.StructureBatch.translate" class="md-nav__link">
     translate()
   </a>
@@ -911,8 +946,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.inter_residue_dihedrals" class="md-nav__link">
-    inter_residue_dihedrals()
+  <a href="#protstruc.protstruc.StructureBatch.center_of_mass" class="md-nav__link">
+    center_of_mass()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protstruc.protstruc.StructureBatch.center_at" class="md-nav__link">
+    center_at()
   </a>
   
 </li>
@@ -1001,8 +1043,9 @@ with various types of representations:</p>
   <summary>StructureBatch object can be initialized with</summary>
   <ul>
 <li>A single PDB file or a list of PDB files <code>StructureBatch.from_pdb</code></li>
-<li>A pdb identifier or a list of PDB identifiers <code>StructureBatch.from_pdb_id</code> (TODO)</li>
+<li>A pdb identifier or a list of PDB identifiers <code>StructureBatch.from_pdb_id</code></li>
 <li>Backbone or full atom 3D coordinates <code>StructureBatch.from_xyz</code></li>
+<li>Backbone orientation and translations <code>StructureBatch.from_backbone_orientations_translations</code></li>
 <li>Dihedral angles <code>StructureBatch.from_dihedrals</code> (TODO)</li>
 </ul>
 </details>
@@ -1036,12 +1079,12 @@ with various types of representations:</p>
 
   <div class="doc doc-contents ">
   
-      <p>Initialize a <code>StructureBatch</code> from a 3D coordinate array.</p>
+      <p>Initialize a <code>StructureBatch</code> from a 3D atom coordinate array.</p>
 
 
 
 <p><strong>Examples:</strong></p>
-    <p>Initialize a <code>StructureBatch</code> object from a numpy array of atom 3D coordinates.</p>
+    <p>Initialize a <code>StructureBatch</code> object from a numpy array of 3D atom coordinates.</p>
     <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span><span class="p">,</span> <span class="n">n_max_res</span><span class="p">,</span> <span class="n">n_max_atoms</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">n_max_res</span><span class="p">,</span> <span class="n">n_max_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sb</span> <span class="o">=</span> <span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
@@ -1352,7 +1395,7 @@ Shape: (batch_size, num_residues)</p>
 
 
 <h3 id="protstruc.protstruc.StructureBatch.from_backbone_orientations_translations" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_backbone_orientations_translations</span><span class="p">(</span><span class="n">orientations</span><span class="p">,</span> <span class="n">translations</span><span class="p">,</span> <span class="n">chain_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">from_backbone_orientations_translations</span><span class="p">(</span><span class="n">orientations</span><span class="p">,</span> <span class="n">translations</span><span class="p">,</span> <span class="n">chain_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_cb</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
@@ -1447,6 +1490,20 @@ Defaults to None. Shape: (batch_size, num_residues)</p>
           </td>
           <td>
                 <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>include_cb</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to include CB atoms when initializing. Defaults to False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
           </td>
         </tr>
     </tbody>
@@ -1554,6 +1611,49 @@ Shape: (batch_size, num_residues)</p>
           </td>
           <td>
                 <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.get_local_xyz" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_local_xyz</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return the coordinates of each atom in the local frame of each residue.</p>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>local_xyz</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Shape: (batch_size, num_residues, num_atoms_per_residue, 3)</p>
+            </div>
           </td>
         </tr>
     </tbody>
@@ -1765,11 +1865,11 @@ Shape: (batch_size, num_residues)</p>
 
 
 <p><strong>Examples:</strong></p>
-    <p><code>dist[:, :, 1, 1]</code> will give pairwise alpha-carbon distance matrix between residues,
+    <p><code>dist[:, :, :, 1, 1]</code> will give pairwise alpha-carbon distance matrix between residues,
 as the index <code>1</code> corresponds to the alpha-carbon atom.
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">structure_batch</span> <span class="o">=</span> <span class="n">StructureBatch</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span><span class="s2">&quot;1a8o.pdb&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">structure_batch</span><span class="o">.</span><span class="n">pairwise_distance_matrix</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ca_dist</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># 1 = CA_IDX</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ca_dist</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># 1 = CA_IDX</span>
 </code></pre></div></p>
 
 
@@ -1790,8 +1890,8 @@ as the index <code>1</code> corresponds to the alpha-carbon atom.
           <td>
             <div class="doc-md-description">
               <p>A tensor containing an all-atom pairwise distance matrix for each pair of residues.
-A distance between atom <code>a</code> of residue <code>i</code> and atom <code>b</code> of residue <code>j</code> is given by
-<code>dist[i, j, a, b]</code>.
+A distance between atom <code>a</code> of residue <code>i</code> and atom <code>b</code> of residue <code>j</code> of protein
+at index <code>batch_idx</code> is given by <code>dist[batch_idx, i, j, a, b]</code>.
 Shape: (batch_size, num_residues, num_residues, max_n_atoms_per_residue, max_n_atoms_per_residue)</p>
             </div>
           </td>
@@ -2084,6 +2184,95 @@ Shape: (batch_size, num_residues, 3)</p>
 
 
 
+<h3 id="protstruc.protstruc.StructureBatch.pairwise_dihedrals" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pairwise_dihedrals</span><span class="p">(</span><span class="n">atoms_i</span><span class="p">,</span> <span class="n">atoms_j</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return a matrix representing a pairwise dihedral angle between residues defined by
+two sets of atoms, one for each side of the residue.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>atoms_i</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of atoms to be used for the first residue.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>atoms_j</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of atoms to be used for the second residue.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>pairwise_dihedrals</code></td>          <td>
+                <code>torch.<span title="torch.FloatTensor">FloatTensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tensor containing pairwise dihedral angles between residues.
+Shape: (batch_size, num_residues, num_residues)</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
 <h3 id="protstruc.protstruc.StructureBatch.translate" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">translate</span><span class="p">(</span><span class="n">translation</span><span class="p">,</span> <span class="n">atomwise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
@@ -2093,9 +2282,10 @@ Shape: (batch_size, num_residues, 3)</p>
   <div class="doc doc-contents ">
   
       <p>Translate the structures by a given tensor of shape (batch_size, num_residues, 3)
-Translation is performed residue-wise by default, but atomwise translation
-can be performed when <code>atomwise=True</code>. In that case, the translation tensor
-should have a shape of (batch_size, num_residues, num_atom, 3).</p>
+or (batch_size, 1, 3). Translation is performed residue-wise by default,
+but atomwise translation can be performed when <code>atomwise=True</code>.
+In that case, the translation tensor should have a
+shape of (batch_size, num_residues, num_atom, 3).</p>
 
 
 
@@ -2139,7 +2329,7 @@ Shape: (batch_size, num_residues, 3) if <code>atomwise=False</code>,
 
 
 <h3 id="protstruc.protstruc.StructureBatch.standardize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">standardize</span><span class="p">()</span></code>
+<code class="highlight language-python"><span class="n">standardize</span><span class="p">(</span><span class="n">atom_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residue_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -2147,6 +2337,54 @@ Shape: (batch_size, num_residues, 3) if <code>atomwise=False</code>,
   <div class="doc doc-contents ">
   
       <p>Standardize the coordinates of the structures to have zero mean and unit standard deviation.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>atom_mask</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Mask for atoms used for standardization. If None, all atoms are used.
+<code>atom_mask</code> and <code>residue_mask</code> cannot be specified at the same time.
+Shape: (batch_size, num_residues, num_atoms)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>residue_mask</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Mask for residues used for standardization. If None, all residues are used.
+<code>atom_mask</code> and <code>residue_mask</code> cannot be specified at the same time.
+Shape: (batch_size, num_residues)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
   </div>
 
@@ -2165,7 +2403,7 @@ Shape: (batch_size, num_residues, 3) if <code>atomwise=False</code>,
 
   <div class="doc doc-contents ">
   
-      <p>Recover the coordinates at original scale from teh standardized coordinates.</p>
+      <p>Recover the coordinates at original scale from the standardized coordinates.</p>
 
   </div>
 
@@ -2176,15 +2414,65 @@ Shape: (batch_size, num_residues, 3) if <code>atomwise=False</code>,
 
 
 
-<h3 id="protstruc.protstruc.StructureBatch.inter_residue_dihedrals" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">inter_residue_dihedrals</span><span class="p">(</span><span class="n">use_cb</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<h3 id="protstruc.protstruc.StructureBatch.center_of_mass" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">center_of_mass</span><span class="p">()</span></code>
 
 </h3>
 
 
   <div class="doc doc-contents ">
   
-      <p>Return the inter-residue dihedral angles.</p>
+      <p>Compute the center of mass of the structures.</p>
+
+<details class="warning" open>
+  <summary>Warning</summary>
+  <p>Only Ca atoms are considered when computing the coordinates of center of mass.</p>
+</details>
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>center_of_mass</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tensor containing the center of mass of the structures.
+Shape: (batch_size, 3)</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="protstruc.protstruc.StructureBatch.center_at" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">center_at</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Translate the whole structure so that the center of Ca atom coordinates is at the given
+3D coordinates. If <code>center</code> is not specified, the structures (considering only Ca coordinates)
+are centered at the origin.</p>
 
 
 
@@ -2200,40 +2488,18 @@ Shape: (batch_size, num_residues, 3) if <code>atomwise=False</code>,
     </thead>
     <tbody>
         <tr>
-          <td><code>use_cb</code></td>
+          <td><code>center</code></td>
           <td>
-                <code>bool</code>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>Use CB atom instead of CA. Defaults to False.</p>
+              <p>Coordinates of the center.
+Shape: (batch_size, 3) or (3,)</p>
             </div>
           </td>
           <td>
-                <code>False</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-<td><code>Shape</code></td>          <td>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>(batch_size, num_residues, num_residues, 2)</p>
-            </div>
+                <code>None</code>
           </td>
         </tr>
     </tbody>
