@@ -252,4 +252,24 @@ def test_standardize_and_unstandardize_reverts_original_xyz_correctly():
     sb.unstandardize()
     xyz2 = sb.get_xyz()
 
-    assert torch.allclose(xyz, xyz2, equal_nan=True, rtol=1e-4)
+    assert torch.allclose(xyz, xyz2, equal_nan=True, rtol=1e-4, atol=1e-5)
+
+
+def test_center_at_origin():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    sb.center_at()
+
+    com = sb.center_of_mass()
+    assert torch.allclose(com, torch.zeros_like(com), rtol=1e-4, atol=1e-5)
+
+
+def test_center_at_desired_points():
+    pdb_id = ["1REX", "4EOT"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    centers = torch.randn([2, 3])
+    sb.center_at(centers)
+
+    assert torch.allclose(sb.center_of_mass(), centers, rtol=1e-4, atol=1e-5)

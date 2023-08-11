@@ -535,9 +535,10 @@ class StructureBatch:
 
     def translate(self, translation: torch.Tensor, atomwise: bool = False):
         """Translate the structures by a given tensor of shape (batch_size, num_residues, 3)
-        Translation is performed residue-wise by default, but atomwise translation
-        can be performed when `atomwise=True`. In that case, the translation tensor
-        should have a shape of (batch_size, num_residues, num_atom, 3).
+        or (batch_size, 1, 3). Translation is performed residue-wise by default,
+        but atomwise translation can be performed when `atomwise=True`.
+        In that case, the translation tensor should have a
+        shape of (batch_size, num_residues, num_atom, 3).
 
         Args:
             translation: Translation vector.
@@ -590,12 +591,57 @@ class StructureBatch:
         self._standardized = True
 
     def unstandardize(self):
-        """Recover the coordinates at original scale from teh standardized coordinates."""
+        """Recover the coordinates at original scale from the standardized coordinates."""
         if not self._standardized:
             raise ValueError("Cannot unstandardize structures that are not standardized.")
 
         self.xyz = self.xyz * self.std + self.mu
         self._standardized = False
+
+    def center_of_mass(self) -> torch.Tensor:
+        """Compute the center of mass of the structures.
+
+        Warning:
+            Only Ca atoms are considered when computing the coordinates of center of mass.
+
+        Returns:
+            center_of_mass: A tensor containing the center of mass of the structures.
+                Shape: (batch_size, 3)
+        """
+
+        xyz_ca = self.xyz[:, :, atom2idx["CA"]]
+        return xyz_ca.nanmean(axis=1)
+
+    def center_at(self, center: torch.Tensor = None):
+        """Translate the whole structure so that the center of Ca atom coordinates is at the given
+        3D coordinates. If `center` is not specified, the structures (considering only Ca coordinates)
+        are centered at the origin.
+
+        Args:
+            center: Coordinates of the center.
+                Shape: (batch_size, 3) or (3,)
+        """
+        if center is None:
+            center = torch.zeros(1, 3)
+
+        if center.ndim > 2 or center.shape[-1] != 3:
+            raise ValueError(
+                f"`center` must have a shape of (batch_size, 3) or (3,), got {center.shape}."
+            )
+
+        if center.ndim == 2 and center.shape[0] != self.batch_size:
+            raise ValueError(
+                f"`center` must have a shape of (batch_size, 3) or (3,), got {center.shape}."
+            )
+
+        if center.ndim == 1:
+            center = center.unsqueeze(0)  # (1 3)
+
+        # compute translation vector
+        translation = center - self.center_of_mass()
+        translation = rearrange(translation, "b c -> b () () c")
+
+        self.xyz = self.xyz + translation
 
 
 class AntibodyFvStructure:
