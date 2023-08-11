@@ -205,3 +205,51 @@ def test_from_backbone_orientations_translations():
         orientations, translations, chain_idx, chain_ids, seq, include_cb=True
     )
     assert sb3.get_max_n_atoms_per_residue() == 4
+
+
+def test_standardize_unstandardize():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    sb.standardize()
+    sb.unstandardize()
+
+
+def test_standardized_not_nan():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    atom_mask = sb.get_atom_mask()
+
+    sb.standardize()
+    xyz = sb.get_xyz()
+    assert not torch.isnan(xyz[atom_mask.bool()]).any()
+
+
+def test_cannot_standardize_twice():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    with pytest.raises(ValueError):
+        sb.standardize()
+        sb.standardize()
+
+
+def test_cannot_unstandardize_first():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    with pytest.raises(ValueError):
+        sb.unstandardize()
+
+
+def test_standardize_and_unstandardize_reverts_original_xyz_correctly():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    xyz = sb.get_xyz()
+    sb.standardize()
+    sb.unstandardize()
+    xyz2 = sb.get_xyz()
+
+    assert torch.allclose(xyz, xyz2, equal_nan=True, rtol=1e-4)

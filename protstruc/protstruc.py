@@ -58,9 +58,6 @@ class StructureBatch:
             raise ValueError("Both `chain_idx` and `chain_ids` should be provided or None.")
 
         self.xyz = xyz
-        self.mu = torch.tensor(np.nanmean(xyz.numpy(), axis=-2, keepdims=True))
-        self.std = torch.tensor(np.nanstd(xyz.numpy(), axis=-2, keepdims=True))
-
         self.atom_mask = atom_mask
         self.batch_size, self.n_residues, self.max_n_atoms_per_residue = self.xyz.shape[:3]
 
@@ -83,6 +80,9 @@ class StructureBatch:
 
         self.chain_ids = chain_ids
         self.seq = seq
+
+        # assumes that the input is not standardized yet
+        self._standardized = False
 
     @classmethod
     def from_xyz(
@@ -551,13 +551,51 @@ class StructureBatch:
         # update xyz coordinates
         self.xyz += translation
 
-    def standardize(self):
-        """Standardize the coordinates of the structures to have zero mean and unit standard deviation."""
+    def standardize(self, atom_mask: bool = None, residue_mask: bool = None):
+        """Standardize the coordinates of the structures to have zero mean and unit standard deviation.
+
+        Args:
+            atom_mask: Mask for atoms used for standardization. If None, all atoms are used.
+                `atom_mask` and `residue_mask` cannot be specified at the same time.
+                Shape: (batch_size, num_residues, num_atoms)
+            residue_mask: Mask for residues used for standardization. If None, all residues are used.
+                `atom_mask` and `residue_mask` cannot be specified at the same time.
+                Shape: (batch_size, num_residues)
+        """
+        if atom_mask is not None and residue_mask is not None:
+            raise ValueError("Only one of atom_mask and residue_mask can be specified.")
+
+        if self._standardized:
+            raise ValueError("Coordinates are already standardized.")
+
+        if atom_mask:
+            atom_mask = atom_mask * self.atom_mask
+        elif residue_mask:
+            atom_mask = residue_mask.unsqueeze(-1) * self.atom_mask
+        else:
+            atom_mask = self.atom_mask
+
+        total_atom_counts = rearrange(atom_mask, "b n a -> b (n a)").sum(axis=1, keepdims=True)
+        # compute coordinate mean
+        xyz_masked = self.xyz * atom_mask.unsqueeze(-1)
+        xyz_masked = rearrange(xyz_masked, "b n a c -> b (n a) c")
+        self.mu = xyz_masked.nan_to_num(0.0).sum(axis=1) / total_atom_counts
+        # compute coordinate standard deviation
+        xyz_centered = self.xyz.nan_to_num(0.0) - rearrange(self.mu, "b c -> b () () c")
+        xyz_centered = xyz_centered**2 * atom_mask.unsqueeze(-1)
+        xyz_centered = rearrange(xyz_centered, "b n a c -> b (n a) c")
+        self.std = torch.sqrt(xyz_centered.sum(axis=1) / total_atom_counts)
+
         self.xyz = (self.xyz - self.mu) / self.std
+        self._standardized = True
 
     def unstandardize(self):
         """Recover the coordinates at original scale from teh standardized coordinates."""
+        if not self._standardized:
+            raise ValueError("Cannot unstandardize structures that are not standardized.")
+
         self.xyz = self.xyz * self.std + self.mu
+        self._standardized = False
 
     def inter_residue_dihedrals(self, use_cb=False):
         """Return the inter-residue dihedral angles.
