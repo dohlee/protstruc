@@ -642,6 +642,39 @@ class StructureBatch:
         translation = rearrange(translation, "b c -> b () () c")
 
         self.xyz = self.xyz + translation
+    
+    def inter_residue_geometry(self) -> Dict[str, torch.Tensor]:
+        """Return a dictionary of inter-residue geometry, which is used for representing
+        protein structure for trRoseTTA.
+
+        Returns:
+            inter_residue_geometry: A dictionary containing inter-residue geometry tensors.
+        """
+        ret = {}
+        dist, dist_mask = self.pairwise_distance_matrix()  # b n n a a
+
+        # Ca-Ca distance (Symmetric)
+        ret["d_ca"] = dist[:, :, :, atom2idx["CA"], atom2idx["CA"]]
+        ret["d_ca_mask"] = dist_mask[:, :, :, atom2idx["CA"], atom2idx["CA"]]
+        # Cb-Cb distance (Symmetric)
+        ret["d_cb"] = dist[:, :, :, atom2idx["CB"], atom2idx["CB"]]
+        ret["d_cb_mask"] = dist_mask[:, :, :, atom2idx["CB"], atom2idx["CB"]]
+        # N-O distance (Non-symmetric)
+        ret["d_no"] = dist[:, :, :, atom2idx["N"], atom2idx["O"]]
+        ret["d_no_mask"] = dist_mask[:, :, :, atom2idx["N"], atom2idx["O"]]
+
+        # Ca-Cb-Cb'-Ca' dihedral (Symmetric)
+        ret["omega"] = self.pairwise_dihedrals(["CA", "CB"], ["CA", "CB"])
+        # N-Ca-Cb-Cb' dihedral (Non-symmetric)
+        ret["theta"] = self.pairwise_dihedrals(["N", "CA", "CB"], ["CB"])
+        # Ca-Cb-Cb' planar angle (Non-symmetric)
+        ret["phi"] = geom.angle(
+            self.coord_per_atom["CA"][:, np.newaxis, :],
+            self.coord_per_atom["CB"][:, np.newaxis, :],
+            self.coord_per_atom["CB"][np.newaxis, :, :],
+        )
+
+        return ret
 
 
 class AntibodyFvStructure:
