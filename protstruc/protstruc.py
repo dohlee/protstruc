@@ -739,6 +739,22 @@ class AntibodyFvStructureBatch(StructureBatch):
             [len(s[chain_id]) for s, chain_id in zip(self.seq, self.light_chain_ids)]
         )
 
+    def get_heavy_chain_seq(self) -> List[str]:
+        """Return a list of sequences containing heavy chain sequences.
+
+        Returns:
+            heavy_chain_seq: A list of sequences containing heavy chain sequences.
+        """
+        return [s[chain_id] for s, chain_id in zip(self.seq, self.heavy_chain_ids)]
+
+    def get_light_chain_seq(self) -> List[str]:
+        """Return a list of sequences containing light chain sequences.
+
+        Returns:
+            light_chain_seq: A list of sequences containing light chain sequences.
+        """
+        return [s[chain_id] for s, chain_id in zip(self.seq, self.light_chain_ids)]
+
 
 class AntibodyFvStructure:
     def __init__(

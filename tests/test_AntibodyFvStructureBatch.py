@@ -30,3 +30,9 @@ def test_AntibodyFvStructureBatch_from_pdb():
 
     assert batch.get_heavy_chain_lengths() == torch.tensor([119])
     assert batch.get_light_chain_lengths() == torch.tensor([110])
+
+    assert len(batch.get_heavy_chain_seq()) == 1
+    assert len(batch.get_heavy_chain_seq()[0]) == 119
+
+    assert len(batch.get_light_chain_seq()) == 1
+    assert len(batch.get_light_chain_seq()[0]) == 110

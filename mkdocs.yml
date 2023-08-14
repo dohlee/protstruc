@@ -38,9 +38,10 @@ nav:
       - Backbone orientations/translations: tutorials/backbone_orientations_and_translations.ipynb
       - Diffusing XYZ coordinates with Gaussian noise: tutorials/diffusing_xyz_coordinates.ipynb
   - API reference:
-    - protstruc.protstruc: reference/protstruc.md
-    - protstruc.geometry: reference/geometry.md
-    - protstruc.io: reference/io.md
+    - StructureBatch: reference/StructureBatch.md
+    - AntibodyFvStructureBatch: reference/AntibodyFvStructureBatch.md
+    - geometry: reference/geometry.md
+    - io: reference/io.md
   
 extra_css:
   - css/mkdocs.css
