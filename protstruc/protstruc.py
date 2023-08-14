@@ -567,6 +567,21 @@ class StructureBatch:
         # update xyz coordinates
         self.xyz += translation
 
+    def rotate(self, rotation: torch.Tensor):
+        """Rotate the structures by a given rotation matrix of shape (batch_size, 3, 3).
+
+        Args:
+            rotation: Rotation matrix. Shape: (batch_size, 3, 3) if rotations is applied structure-by-structure,
+                (3, 3) if the same rotation is to be applied to all structures.
+        """
+        if rotation.ndim == 2:
+            rotation = rearrange(rotation, "i j -> () () () i j")
+        else:
+            rotation = rearrange(rotation, "b i j -> b () () i j")
+
+        # update xyz coordinates
+        self.xyz = torch.einsum("bnaij,bnaj->bnai", rotation, self.xyz)
+
     def standardize(self, atom_mask: bool = None, residue_mask: bool = None):
         """Standardize the coordinates of the structures to have zero mean and unit standard deviation.
 
@@ -727,7 +742,7 @@ class AntibodyFvStructureBatch(StructureBatch):
         """
         return torch.Tensor(
             [len(s[chain_id]) for s, chain_id in zip(self.seq, self.heavy_chain_ids)]
-        )
+        ).long()
 
     def get_light_chain_lengths(self) -> torch.LongTensor:
         """Return the lengths of light chains.
@@ -737,7 +752,7 @@ class AntibodyFvStructureBatch(StructureBatch):
         """
         return torch.Tensor(
             [len(s[chain_id]) for s, chain_id in zip(self.seq, self.light_chain_ids)]
-        )
+        ).long()
 
     def get_heavy_chain_seq(self) -> List[str]:
         """Return a list of sequences containing heavy chain sequences.

@@ -36,6 +36,7 @@ nav:
       - Pairwise distance matrix: tutorials/pairwise_distance_matrix.ipynb
       - Ramachandran plot: tutorials/ramachandran_plot.ipynb
       - Backbone orientations/translations: tutorials/backbone_orientations_and_translations.ipynb
+      - Rotating structures: tutorials/rotating_structures.ipynb
       - Diffusing XYZ coordinates with Gaussian noise: tutorials/diffusing_xyz_coordinates.ipynb
   - API reference:
     - StructureBatch: reference/StructureBatch.md

@@ -36,3 +36,21 @@ def test_AntibodyFvStructureBatch_from_pdb():
 
     assert len(batch.get_light_chain_seq()) == 1
     assert len(batch.get_light_chain_seq()[0]) == 110
+
+
+def test_AntibodyFvStructureBatch_from_multiple_pdbs():
+    pdbs = ["tests/15c8_HL.pdb", "tests/1a6v_JN.pdb"]
+    batch = AntibodyFvStructureBatch.from_pdb(pdbs)
+
+    assert batch.get_xyz().shape == (2, 230, MAX_N_ATOMS_PER_RESIDUE, 3)
+
+    assert torch.allclose(batch.get_heavy_chain_lengths(), torch.tensor([119, 120]))
+    assert torch.allclose(batch.get_light_chain_lengths(), torch.tensor([110, 110]))
+
+    assert len(batch.get_heavy_chain_seq()) == 2
+    assert len(batch.get_heavy_chain_seq()[0]) == 119
+    assert len(batch.get_heavy_chain_seq()[1]) == 120
+
+    assert len(batch.get_light_chain_seq()) == 2
+    assert len(batch.get_light_chain_seq()[0]) == 110
+    assert len(batch.get_light_chain_seq()[1]) == 110
