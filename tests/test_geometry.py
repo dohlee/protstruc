@@ -205,7 +205,7 @@ def test_reconstruct_backbone_distmat_from_interresidue_geometry_dummy():
 
 
 def test_initialize_backbone_with_mds():
-    struc = protstruc.AntibodyFvStructure("tests/15c8_HL.pdb")
+    struc = protstruc.StructureBatch.from_pdb("tests/15c8_HL.pdb")
 
     g = struc.inter_residue_geometry()
 

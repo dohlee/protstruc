@@ -55,16 +55,22 @@ class StructureBatch:
         if (chain_idx is not None and chain_ids is None) or (
             chain_idx is None and chain_ids is not None
         ):
-            raise ValueError("Both `chain_idx` and `chain_ids` should be provided or None.")
+            raise ValueError(
+                "Both `chain_idx` and `chain_ids` should be provided or None."
+            )
 
         self.xyz = xyz
         self.atom_mask = atom_mask
-        self.batch_size, self.n_residues, self.max_n_atoms_per_residue = self.xyz.shape[:3]
+        self.batch_size, self.n_residues, self.max_n_atoms_per_residue = self.xyz.shape[
+            :3
+        ]
 
         if atom_mask is not None:
             self.residue_mask = atom_mask.any(dim=-1)
         else:
-            self.residue_mask = torch.ones(self.batch_size, self.n_residues, dtype=torch.bool)
+            self.residue_mask = torch.ones(
+                self.batch_size, self.n_residues, dtype=torch.bool
+            )
 
         if chain_idx is not None:
             for i, chidx in enumerate(chain_idx):
@@ -75,8 +81,7 @@ class StructureBatch:
 
             self.chain_idx = chain_idx
         else:
-            bsz, n_max_res = self.xyz.shape[:2]
-            self.chain_idx = torch.zeros(bsz, n_max_res)
+            self.chain_idx = torch.zeros(self.batch_size, self.n_residues)
 
         self.chain_ids = chain_ids
         self.seq = seq
@@ -92,6 +97,7 @@ class StructureBatch:
         chain_idx: Union[np.ndarray, torch.Tensor] = None,
         chain_ids: List[List[str]] = None,
         seq: List[Dict[str, str]] = None,
+        **kwargs,
     ) -> "StructureBatch":
         """Initialize a `StructureBatch` from a 3D atom coordinate array.
 
@@ -117,11 +123,11 @@ class StructureBatch:
         atom_mask = _always_tensor(atom_mask)
         chain_idx = _always_tensor(chain_idx)
 
-        self = cls(xyz, atom_mask, chain_idx, chain_ids, seq)
+        self = cls(xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
         return self
 
     @classmethod
-    def from_pdb(cls, pdb_path: Union[str, List[str]]) -> "StructureBatch":
+    def from_pdb(cls, pdb_path: Union[str, List[str]], **kwargs) -> "StructureBatch":
         """Initialize a `StructureBatch` from a PDB file or a list of PDB files.
 
         Examples:
@@ -167,14 +173,11 @@ class StructureBatch:
             atom_mask[i, : len(_atom_mask)] = _atom_mask
             chain_idx[i, : len(_chain_idx)] = _chain_idx
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
         return self
 
     @classmethod
-    def from_pdb_id(
-        cls,
-        pdb_id: Union[str, List[str]],
-    ) -> "StructureBatch":
+    def from_pdb_id(cls, pdb_id: Union[str, List[str]], **kwargs) -> "StructureBatch":
         """Initialize a `StructureBatch` from a PDB ID or a list of PDB IDs.
 
         Examples:
@@ -204,7 +207,9 @@ class StructureBatch:
         chain_ids = []
         for id in pdb_id:
             pdb_df = PandasPdb().fetch_pdb(id).df["ATOM"]
-            _atom_xyz, _atom_mask, _chain_idx, _chain_ids, _seq_dict = pdb_df_to_xyz(pdb_df)
+            _atom_xyz, _atom_mask, _chain_idx, _chain_ids, _seq_dict = pdb_df_to_xyz(
+                pdb_df
+            )
 
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
@@ -227,7 +232,7 @@ class StructureBatch:
             atom_mask[i, : len(_atom_mask)] = _atom_mask
             chain_idx[i, : len(_chain_idx)] = _chain_idx
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
         return self
 
     @classmethod
@@ -239,6 +244,7 @@ class StructureBatch:
         chain_ids: List[List[str]] = None,
         seq: List[Dict[str, str]] = None,
         include_cb: bool = False,
+        **kwargs,
     ) -> "StructureBatch":
         """Initialize a StructureBatch from an array of backbone orientations and translations.
 
@@ -257,7 +263,9 @@ class StructureBatch:
         batch_size, n_residues = orientations.shape[:2]
 
         # determine ideal backbone coordinates (b n a 3) or (b n a 4)
-        ideal_backbone = geom.ideal_backbone_coordinates((batch_size, n_residues), include_cb)
+        ideal_backbone = geom.ideal_backbone_coordinates(
+            (batch_size, n_residues), include_cb
+        )
         n_atoms = ideal_backbone.shape[2]
 
         # rotate and translate ideal backbone coordinates by orientations
@@ -268,7 +276,7 @@ class StructureBatch:
 
         atom_mask = torch.ones_like(atom_xyz[..., 0])
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq)
+        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
         return self
 
     @classmethod
@@ -277,6 +285,7 @@ class StructureBatch:
         dihedrals: Union[np.ndarray, torch.Tensor],
         chain_idx: Union[np.ndarray, torch.Tensor] = None,
         chain_ids: List[List[str]] = None,
+        **kwargs,
     ) -> "StructureBatch":
         """Initialize a StructureBatch from a dihedral angle array.
 
@@ -389,7 +398,9 @@ class StructureBatch:
             self.xyz[:, :, None, :, None] - self.xyz[:, None, :, None, :], dim=-1
         )
 
-        dist_mask = self.atom_mask[:, :, None, :, None] * self.atom_mask[:, None, :, None, :]
+        dist_mask = (
+            self.atom_mask[:, :, None, :, None] * self.atom_mask[:, None, :, None, :]
+        )
         return dist, dist_mask
 
     def backbone_dihedrals(self) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
@@ -495,7 +506,9 @@ class StructureBatch:
         """
         return self.xyz[:, :, atom2idx[atom]]
 
-    def pairwise_dihedrals(self, atoms_i: List[str], atoms_j: List[str]) -> torch.FloatTensor:
+    def pairwise_dihedrals(
+        self, atoms_i: List[str], atoms_j: List[str]
+    ) -> torch.FloatTensor:
         """Return a matrix representing a pairwise dihedral angle between residues defined by
         two sets of atoms, one for each side of the residue.
 
@@ -529,7 +542,9 @@ class StructureBatch:
         # and construct all-pairwise four-atom coordinates
         coords = torch.cat([coords_i, coords_j], dim=-2)  # bsz, n_res^2, 4, 3
 
-        dih = geom.dihedral(coords[:, :, 0], coords[:, :, 1], coords[:, :, 2], coords[:, :, 3])
+        dih = geom.dihedral(
+            coords[:, :, 0], coords[:, :, 1], coords[:, :, 2], coords[:, :, 3]
+        )
         dih = dih.reshape(-1, n, n)
         return dih
 
@@ -576,7 +591,9 @@ class StructureBatch:
         else:
             atom_mask = self.atom_mask
 
-        total_atom_counts = rearrange(atom_mask, "b n a -> b (n a)").sum(axis=1, keepdims=True)
+        total_atom_counts = rearrange(atom_mask, "b n a -> b (n a)").sum(
+            axis=1, keepdims=True
+        )
         # compute coordinate mean
         xyz_masked = self.xyz * atom_mask.unsqueeze(-1)
         xyz_masked = rearrange(xyz_masked, "b n a c -> b (n a) c")
@@ -593,7 +610,9 @@ class StructureBatch:
     def unstandardize(self):
         """Recover the coordinates at original scale from the standardized coordinates."""
         if not self._standardized:
-            raise ValueError("Cannot unstandardize structures that are not standardized.")
+            raise ValueError(
+                "Cannot unstandardize structures that are not standardized."
+            )
 
         self.xyz = self.xyz * self.std + self.mu
         self._standardized = False
@@ -642,7 +661,7 @@ class StructureBatch:
         translation = rearrange(translation, "b c -> b () () c")
 
         self.xyz = self.xyz + translation
-    
+
     def inter_residue_geometry(self) -> Dict[str, torch.Tensor]:
         """Return a dictionary of inter-residue geometry, which is used for representing
         protein structure for trRoseTTA.
@@ -675,6 +694,50 @@ class StructureBatch:
         )
 
         return ret
+
+
+class AntibodyFvStructureBatch(StructureBatch):
+    def __init__(
+        self,
+        xyz: torch.Tensor,
+        atom_mask: torch.BoolTensor = None,
+        chain_idx: torch.Tensor = None,
+        chain_ids: List[str] = None,
+        seq: List[Dict[str, str]] = None,
+        heavy_chain_ids=None,
+        light_chain_ids=None,
+    ):
+        super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq)
+
+        if heavy_chain_ids is None:
+            self.heavy_chain_ids = ["H" for _ in range(self.batch_size)]
+        else:
+            self.heavy_chain_ids = heavy_chain_ids
+
+        if light_chain_ids is None:
+            self.light_chain_ids = ["L" for _ in range(self.batch_size)]
+        else:
+            self.light_chain_ids = light_chain_ids
+
+    def get_heavy_chain_lengths(self) -> torch.LongTensor:
+        """Return the lengths of heavy chains.
+
+        Returns:
+            heavy_chain_lengths: A tensor containing the lengths of heavy chains.
+        """
+        return torch.Tensor(
+            [len(s[chain_id]) for s, chain_id in zip(self.seq, self.heavy_chain_ids)]
+        )
+
+    def get_light_chain_lengths(self) -> torch.LongTensor:
+        """Return the lengths of light chains.
+
+        Returns:
+            light_chain_lengths: A tensor containing the lengths of light chains.
+        """
+        return torch.Tensor(
+            [len(s[chain_id]) for s, chain_id in zip(self.seq, self.light_chain_ids)]
+        )
 
 
 class AntibodyFvStructure:
@@ -713,7 +776,9 @@ class AntibodyFvStructure:
 
         residue_ids = df_piv.index.values
         residues = (
-            self.df.drop_duplicates("residue_id").set_index("residue_id").loc[residue_ids]
+            self.df.drop_duplicates("residue_id")
+            .set_index("residue_id")
+            .loc[residue_ids]
         )
         self.chain_ids = residues.chain_id.unique()
         self.sequences = defaultdict(list)

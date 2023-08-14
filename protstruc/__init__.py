@@ -1,1 +1,1 @@
-from protstruc.protstruc import AntibodyFvStructure, StructureBatch
+from protstruc.protstruc import StructureBatch, AntibodyFvStructureBatch
