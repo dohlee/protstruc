@@ -322,8 +322,8 @@ class StructureBatch:
     def get_atom_mask(self):
         return self.atom_mask
 
-    def get_chain_idx(self):
-        return self.chain_idx
+    def get_chain_idx(self) -> torch.LongTensor:
+        return self.chain_idx.long()
 
     def get_chain_ids(self):
         return self.chain_ids
