@@ -11,6 +11,7 @@ from einops import rearrange, repeat
 import protstruc.geometry as geom
 from protstruc.constants import ideal
 from protstruc.alphabet import three2one
+from protstruc.general import ATOM, AA, ressymb_to_resindex
 from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
 from protstruc.io import pdb_to_xyz, pdb_df_to_xyz
 
@@ -276,6 +277,17 @@ class StructureBatch:
 
         atom_mask = torch.ones_like(atom_xyz[..., 0])
 
+        # pad to xyz and mask MAX_N_ATOMS_PER_RESIDUE
+        dummy_xyz = torch.zeros(
+            batch_size, n_residues, MAX_N_ATOMS_PER_RESIDUE - n_atoms, 3
+        )
+        atom_xyz = torch.cat([atom_xyz, dummy_xyz], axis=-2)
+
+        dummy_mask = torch.zeros(
+            batch_size, n_residues, MAX_N_ATOMS_PER_RESIDUE - n_atoms
+        )
+        atom_mask = torch.cat([atom_mask, dummy_mask], axis=-1)
+
         self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
         return self
 
@@ -319,8 +331,21 @@ class StructureBatch:
         local_xyz = local_xyz - xyz[:, :, atom2idx["CA"]].unsqueeze(-2)
         return local_xyz
 
-    def get_atom_mask(self):
+    def get_atom_mask(self) -> torch.BoolTensor:
+        """Return a boolean mask for valid atoms.
+
+        Returns:
+            atom_mask: Shape (batch_size, num_residues, num_atoms)
+        """
         return self.atom_mask
+
+    def get_residue_mask(self) -> torch.BoolTensor:
+        """Return a boolean mask for valid residues.
+
+        Returns:
+            residue_mask: Shape (batch_size, num_residues)
+        """
+        return self.atom_mask[:, :, ATOM.CA]
 
     def get_chain_idx(self) -> torch.LongTensor:
         return self.chain_idx.long()
@@ -335,6 +360,23 @@ class StructureBatch:
             seq_dict: A list of dictionaries containing sequence information for each chain.
         """
         return self.seq
+
+    def get_seq_idx(self) -> torch.LongTensor:
+        """Return a tensor containing the integer representation of amino acid sequence of proteins.
+
+        Returns:
+            seq_idx: A tensor containing the integer representation of amino acid sequence of proteins.
+        """
+        seq_idx = (
+            torch.ones(self.batch_size, self.n_residues, dtype=torch.long) * AA.UNK
+        )
+        for i, (seqdict, chain_ids) in enumerate(zip(self.seq, self.chain_ids)):
+            seq_concat = "".join([seqdict[chain_id] for chain_id in chain_ids])
+            seq_idx[i, : len(seq_concat)] = torch.tensor(
+                [ressymb_to_resindex[res] for res in seq_concat]
+            ).long()
+
+        return seq_idx
 
     def get_total_lengths(self) -> torch.LongTensor:
         """Return the total sum of chain lengths for each protein.
@@ -556,6 +598,46 @@ class StructureBatch:
         dih = dih.reshape(-1, n, n)
         return dih
 
+    def pairwise_planar_angles(
+        self, atoms_i: List[str], atoms_j: List[str]
+    ) -> torch.FloatTensor:
+        """Return a matrix representing a pairwise planar angles between residues defined by
+        two sets of atoms, one for each side of the residue.
+
+        Args:
+            atoms_i: List of atoms to be used for the first residue.
+            atoms_j: List of atoms to be used for the second residue.
+
+        Returns:
+            pairwise_planar_angles: A tensor containing pairwise planar angles between residues.
+                Shape: (batch_size, num_residues, num_residues)
+        """
+        # take uppercase of atom names
+        atoms_i = [atom.upper() for atom in atoms_i]
+        atoms_j = [atom.upper() for atom in atoms_j]
+
+        for atom in atoms_i:
+            if atom not in atom2idx:
+                raise ValueError(f"Atom {atom} is not valid.")
+        for atom in atoms_j:
+            if atom not in atom2idx:
+                raise ValueError(f"Atom {atom} is not valid.")
+
+        atoms_i = [atom2idx[atom] for atom in atoms_i]
+        atoms_j = [atom2idx[atom] for atom in atoms_j]
+
+        # get coordinates of specified atoms for residue i and j
+        n = self.n_residues
+        coords_i = self.xyz[:, :, atoms_i].repeat_interleave(n, dim=1)
+        coords_j = self.xyz[:, :, atoms_j].repeat(1, n, 1, 1)
+
+        # and construct all-pairwise four-atom coordinates
+        coords = torch.cat([coords_i, coords_j], dim=-2)  # bsz, n_res^2, 3, 3
+
+        planar_angle = geom.angle(coords[:, :, 0], coords[:, :, 1], coords[:, :, 2])
+        planar_angle = planar_angle.reshape(-1, n, n)
+        return planar_angle
+
     def translate(self, translation: torch.Tensor, atomwise: bool = False):
         """Translate the structures by a given tensor of shape (batch_size, num_residues, 3)
         or (batch_size, 1, 3). Translation is performed residue-wise by default,
@@ -710,11 +792,9 @@ class StructureBatch:
         # N-Ca-Cb-Cb' dihedral (Non-symmetric)
         ret["theta"] = self.pairwise_dihedrals(["N", "CA", "CB"], ["CB"])
         # Ca-Cb-Cb' planar angle (Non-symmetric)
-        ret["phi"] = geom.angle(
-            self.coord_per_atom["CA"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][np.newaxis, :, :],
-        )
+        ret["phi"] = self.pairwise_planar_angles(["CA", "CB"], ["CB"])
+
+        print(ret["phi"].shape)
 
         return ret
 
@@ -747,6 +827,7 @@ class AntibodyFvStructureBatch(StructureBatch):
 
         Returns:
             heavy_chain_lengths: A tensor containing the lengths of heavy chains.
+                Shape: (batch_size,)
         """
         return torch.Tensor(
             [len(s[chain_id]) for s, chain_id in zip(self.seq, self.heavy_chain_ids)]
@@ -757,6 +838,7 @@ class AntibodyFvStructureBatch(StructureBatch):
 
         Returns:
             light_chain_lengths: A tensor containing the lengths of light chains.
+                Shape: (batch_size,)
         """
         return torch.Tensor(
             [len(s[chain_id]) for s, chain_id in zip(self.seq, self.light_chain_ids)]

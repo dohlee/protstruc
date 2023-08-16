@@ -125,13 +125,13 @@ def dihedral(
 
 
 def place_fourth_atom(
-    a: np.array,
-    b: np.array,
-    c: np.array,
-    length: np.array,
-    planar: np.array,
-    dihedral: np.array,
-) -> np.array:
+    a: Union[np.array, torch.Tensor],
+    b: Union[np.array, torch.Tensor],
+    c: Union[np.array, torch.Tensor],
+    length: Union[np.array, torch.Tensor],
+    planar: Union[np.array, torch.Tensor],
+    dihedral: Union[np.array, torch.Tensor],
+) -> Union[np.array, torch.Tensor]:
     """Place a fourth atom X given three atoms (A, B and C) and
     the bond length (CX), planar angle (XCB), and dihedral angle (XCB vs ACB).
 
@@ -155,14 +155,14 @@ def place_fourth_atom(
     bc = b - c
     bc = bc / norm(bc)
 
-    n = np.cross((b - a), bc)
+    n = torch.cross((b - a), bc)
     n = n / norm(n)
 
-    d = [bc, np.cross(n, bc), n]
+    d = [bc, torch.cross(n, bc), n]
     m = [
-        length * np.cos(planar),
-        length * np.sin(planar) * np.cos(dihedral),
-        -length * np.sin(planar) * np.sin(dihedral),
+        length * torch.cos(planar),
+        length * torch.sin(planar) * torch.cos(dihedral),
+        -length * torch.sin(planar) * torch.sin(dihedral),
     ]
     x = c + sum([magnitude * direction for magnitude, direction in zip(m, d)])
     return x
@@ -227,26 +227,26 @@ def ideal_backbone_coordinates(
 
 
 def reconstruct_backbone_distmat_from_interresidue_geometry(
-    d_cb: np.array,
-    omega: np.array,
-    theta: np.array,
-    phi: np.array,
-    mask: np.array = None,
+    d_cb: torch.Tensor,
+    omega: torch.Tensor,
+    theta: torch.Tensor,
+    phi: torch.Tensor,
+    mask: torch.Tensor = None,
     chain_breaks: list = None,
-) -> np.array:
+) -> torch.Tensor:
     """Reconstruct the backbone distance matrix from interresidue geometry
     including Cb distance matrix (`d_cb`), Ca-Cb-Ca'-Cb' dihedral (`omega`),
     N-Ca-Cb-Cb' dihedral (`theta`), and Ca-Cb-Cb' planar angle (`phi`).
 
     Args:
-        d_cb (np.array): Cb distance matrix (shape: (L, L))
-        omega (np.array): Ca-Cb-Ca'-Cb' dihedral matrix (shape: (L, L))
-        theta (np.array): N-Ca-Cb-Cb' dihedral matrix (shape: (L, L))
-        phi (np.array): Ca-Cb-Cb' planar angle matrix (shape: (L, L))
-        mask (np.array):
+        d_cb: Cb distance matrix (shape: (L, L))
+        omega: Ca-Cb-Ca'-Cb' dihedral matrix (shape: (L, L))
+        theta: N-Ca-Cb-Cb' dihedral matrix (shape: (L, L))
+        phi: Ca-Cb-Cb' planar angle matrix (shape: (L, L))
+        mask:
             Mask for valid residue pairs, i.e., pairs of residues whose distance
             can be reconstructed from interresidue geometry (shape: (L, L))
-        chain_breaks (list):
+        chain_breaks:
             List of chain breaks, i.e., indices of residues that are not in the
             same chain with the next one.
 
@@ -256,19 +256,19 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
     N_IDX, CA_IDX, C_IDX, CB_IDX = 0, 1, 2, 3
 
     L = d_cb.shape[0]
-    x = ideal_local_frame()[:, np.newaxis]  # (4, 1, 3) in order of N, Ca, C, Cb
+    x = ideal_local_frame().unsqueeze(1)  # (4, 1, 3) in order of N, Ca, C, Cb
 
     # prepare angles and dihedrals
-    d_cb = d_cb.reshape(-1, 1)
-    angle_ABB = phi.reshape(-1, 1)
-    angle_BBA = phi.T.reshape(-1, 1)
-    dihedral_NABB = theta.reshape(-1, 1)
-    dihedral_BBAN = theta.T.reshape(-1, 1)
-    dihedral_ABBA = omega.reshape(-1, 1)
+    d_cb = d_cb.unsqueeze(-1)
+    angle_ABB = phi.unsqueeze(-1)
+    angle_BBA = phi.T.unsqueeze(-1)
+    dihedral_NABB = theta.unsqueeze(-1)
+    dihedral_BBAN = theta.T.unsqueeze(-1)
+    dihedral_ABBA = omega.unsqueeze(-1)
 
     # compute the coordinates of N, Ca, C, Cb of all other residues
     # with respect to the local coordinate system of each residue
-    y = np.zeros((4, L * L, 3))
+    y = torch.zeros(4, L * L, 3)
 
     y[CB_IDX] = place_fourth_atom(
         x[N_IDX], x[CA_IDX], x[CB_IDX], d_cb, angle_ABB, dihedral_NABB
@@ -284,7 +284,7 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
     )
 
     # only take N, Ca and C coordinates and compute their pairwise distance
-    dist_mat = np.zeros((3, 3, L, L))
+    dist_mat = torch.zeros(3, 3, L, L)
 
     atoms = ["N", "A", "C"]
     for atom_i in [N_IDX, CA_IDX, C_IDX]:
@@ -300,14 +300,14 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
             dist_mat[atom_i, atom_j] = pdist
 
     # replace bond lengths with ideal ones
-    dist_mat[N_IDX, CA_IDX, np.arange(L), np.arange(L)] = ideal.NA
-    dist_mat[CA_IDX, N_IDX, np.arange(L), np.arange(L)] = ideal.NA
+    dist_mat[N_IDX, CA_IDX, torch.arange(L), torch.arange(L)] = ideal.NA
+    dist_mat[CA_IDX, N_IDX, torch.arange(L), torch.arange(L)] = ideal.NA
 
-    dist_mat[CA_IDX, C_IDX, np.arange(L), np.arange(L)] = ideal.AC
-    dist_mat[C_IDX, CA_IDX, np.arange(L), np.arange(L)] = ideal.AC
+    dist_mat[CA_IDX, C_IDX, torch.arange(L), torch.arange(L)] = ideal.AC
+    dist_mat[C_IDX, CA_IDX, torch.arange(L), torch.arange(L)] = ideal.AC
 
-    dist_mat[C_IDX, N_IDX, np.arange(L - 1), np.arange(1, L)] = ideal.C_N
-    dist_mat[N_IDX, C_IDX, np.arange(1, L), np.arange(L - 1)] = ideal.C_N
+    dist_mat[C_IDX, N_IDX, torch.arange(L - 1), torch.arange(1, L)] = ideal.C_N
+    dist_mat[N_IDX, C_IDX, torch.arange(1, L), torch.arange(L - 1)] = ideal.C_N
 
     if chain_breaks is not None:
         for idx in chain_breaks:
@@ -318,7 +318,7 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
     # shortest path distances later
     if mask is not None:
         dist_mat[:, :, ~mask] = MASK
-    dist_mat = np.nan_to_num(dist_mat, nan=MASK)
+    dist_mat = torch.nan_to_num(dist_mat, nan=MASK)
 
     # replace MASK with Floyd-Warshall shortest path distance
     # 3 x 3 x L x L
@@ -326,8 +326,8 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
 
     for i in range(3 * L):
         d = dist_mat[i]
-        tmp = np.stack([dist_mat, d[None, :] + d[:, None]])
-        dist_mat = np.min(tmp, axis=0)
+        tmp = torch.stack([dist_mat, d[None, :] + d[:, None]])
+        dist_mat = torch.min(tmp, axis=0)
 
     # symmetrize
     dist_mat = (dist_mat + dist_mat.transpose(1, 0)) / 2.0
@@ -335,14 +335,14 @@ def reconstruct_backbone_distmat_from_interresidue_geometry(
     dist_mat = dist_mat.reshape(3, L, 3, L).transpose(0, 2, 1, 3)
 
     # replace bond lengths with ideal ones, again
-    dist_mat[N_IDX, CA_IDX, np.arange(L), np.arange(L)] = ideal.NA
-    dist_mat[CA_IDX, N_IDX, np.arange(L), np.arange(L)] = ideal.NA
+    dist_mat[N_IDX, CA_IDX, torch.arange(L), torch.arange(L)] = ideal.NA
+    dist_mat[CA_IDX, N_IDX, torch.arange(L), torch.arange(L)] = ideal.NA
 
-    dist_mat[CA_IDX, C_IDX, np.arange(L), np.arange(L)] = ideal.AC
-    dist_mat[C_IDX, CA_IDX, np.arange(L), np.arange(L)] = ideal.AC
+    dist_mat[CA_IDX, C_IDX, torch.arange(L), torch.arange(L)] = ideal.AC
+    dist_mat[C_IDX, CA_IDX, torch.arange(L), torch.arange(L)] = ideal.AC
 
-    dist_mat[C_IDX, N_IDX, np.arange(L - 1), np.arange(1, L)] = ideal.C_N
-    dist_mat[N_IDX, C_IDX, np.arange(1, L), np.arange(L - 1)] = ideal.C_N
+    dist_mat[C_IDX, N_IDX, torch.arange(L - 1), torch.arange(1, L)] = ideal.C_N
+    dist_mat[N_IDX, C_IDX, torch.arange(1, L), torch.arange(L - 1)] = ideal.C_N
 
     return dist_mat
 
@@ -410,7 +410,9 @@ def fix_chirality(coords: np.array) -> np.array:
     return coords * np.array([1, 1, -1])[None, None, :]
 
 
-def gram_schmidt(a: torch.Tensor, b: torch.Tensor, c: torch.Tensor) -> torch.FloatTensor:
+def gram_schmidt(
+    a: torch.Tensor, b: torch.Tensor, c: torch.Tensor
+) -> torch.FloatTensor:
     """Given three xyz coordinates, compute the orthonormal basis
     using Gram-Schmidt process. Specifically, compute the orthonormal
     basis of the plane defined by vectors (c - b) and (a - b).

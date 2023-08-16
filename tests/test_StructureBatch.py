@@ -199,12 +199,12 @@ def test_from_backbone_orientations_translations():
     sb2 = StructureBatch.from_backbone_orientations_translations(
         orientations, translations, chain_idx, chain_ids, seq
     )
-    assert sb2.get_max_n_atoms_per_residue() == 3
+    assert sb2.get_max_n_atoms_per_residue() == 15
 
     sb3 = StructureBatch.from_backbone_orientations_translations(
         orientations, translations, chain_idx, chain_ids, seq, include_cb=True
     )
-    assert sb3.get_max_n_atoms_per_residue() == 4
+    assert sb3.get_max_n_atoms_per_residue() == 15
 
 
 def test_standardize_unstandardize():
@@ -273,3 +273,23 @@ def test_center_at_desired_points():
     sb.center_at(centers)
 
     assert torch.allclose(sb.center_of_mass(), centers, rtol=1e-4, atol=1e-5)
+
+
+def test_get_residue_mask():
+    pdb_id = ["1REX", "4EOT"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    residue_mask = sb.get_residue_mask()
+    assert residue_mask.shape == (2, 184)
+
+
+def test_seq_idx():
+    pdb_id = ["1REX", "4EOT"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    seq_idx = sb.get_seq_idx()
+    residue_mask = sb.get_residue_mask()
+
+    assert seq_idx.shape == (2, 184)
+    assert (seq_idx[~residue_mask.bool()] == ps.general.AA.UNK).all()
+    print(seq_idx[0])
