@@ -349,6 +349,14 @@ class StructureBatch:
         """
         return self.residue_mask.cumsum(dim=1).argmax(dim=1) + 1
 
+    def get_max_n_residues(self) -> int:
+        """Return the number of residues in the longest protein in the batch.
+
+        Returns:
+            max_n_residues: The number of residues in the longest protein in the batch.
+        """
+        return self.n_residues
+
     def get_max_n_atoms_per_residue(self):
         return self.max_n_atoms_per_residue
 
