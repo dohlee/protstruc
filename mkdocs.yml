@@ -39,6 +39,7 @@ nav:
       - Rotating structures: tutorials/rotating_structures.ipynb
       - Diffusing XYZ coordinates with Gaussian noise: tutorials/diffusing_xyz_coordinates.ipynb
       - Parsing antibody PDB files: tutorials/parsing_antibody_pdb.ipynb
+      - Using AntibodyStructureBatch: tutorials/antibody_structure_batch.ipynb
   - API reference:
     - StructureBatch: reference/StructureBatch.md
     - AntibodyStructureBatch: reference/AntibodyStructureBatch.md

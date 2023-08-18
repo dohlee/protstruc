@@ -14,6 +14,7 @@ from protstruc.alphabet import three2one
 from protstruc.general import ATOM, AA, ressymb_to_resindex
 from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
 from protstruc.io import pdb_to_xyz, pdb_df_to_xyz
+from protstruc.pdb import ChothiaAntibodyPDB
 
 CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
@@ -799,7 +800,7 @@ class StructureBatch:
         return ret
 
 
-class AntibodyFvStructureBatch(StructureBatch):
+class AntibodyStructureBatch(StructureBatch):
     def __init__(
         self,
         xyz: torch.Tensor,
@@ -807,111 +808,145 @@ class AntibodyFvStructureBatch(StructureBatch):
         chain_idx: torch.Tensor = None,
         chain_ids: List[str] = None,
         seq: List[Dict[str, str]] = None,
-        heavy_chain_ids=None,
-        light_chain_ids=None,
-        numbering_scheme: Literal["kabat", "chothia", "imgt"] = None,
+        residue_masks: Dict[str, torch.BoolTensor] = None,
+        heavy_chain_id=None,
+        light_chain_id=None,
+        antigen_chain_ids: List[str] = None,
+        numbering_scheme: Literal["kabat", "chothia", "imgt"] = "chothia",
+        keep_fv_only: bool = False,
     ):
         super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq)
 
-        if heavy_chain_ids is None:
-            self.heavy_chain_ids = ["H" for _ in range(self.batch_size)]
-        else:
-            self.heavy_chain_ids = heavy_chain_ids
-
-        if light_chain_ids is None:
-            self.light_chain_ids = ["L" for _ in range(self.batch_size)]
-        else:
-            self.light_chain_ids = light_chain_ids
-
-        if numbering_scheme not in ["kabat", "chothia", "imgt", None]:
-            raise ValueError(
-                'Antibody numbering scheme must be one of "kabat", "chothia", "imgt".'
-            )
-
         self.numbering_scheme = numbering_scheme
+        self.residue_masks = residue_masks
+
+    def get_heavy_chain_mask(self) -> torch.BoolTensor:
+        return self.residue_masks["heavy_chain"]
+
+    def get_light_chain_mask(self) -> torch.BoolTensor:
+        return self.residue_masks["light_chain"]
+
+    def get_antigen_mask(self) -> torch.BoolTensor:
+        return self.residue_masks["antigen"]
+
+    def get_cdr_mask(self, subset: Union[str, List[str]]) -> torch.BoolTensor:
+        if subset is None:
+            subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
+
+        subset = _always_list(subset)
+        _masks = torch.stack([self.residue_masks[cdr] for cdr in subset], axis=0)
+        return _masks.any(axis=0)
 
     @classmethod
-    def from_pdb(cls):
-        pass
+    def from_pdb(
+        cls,
+        pdb_path: Union[str, List[str]],
+        heavy_chain_id: List[str],
+        light_chain_id: List[str],
+        antigen_chain_ids: List[List[str]] = None,
+        numbering_scheme: Literal["kabat", "chothia", "imgt"] = "chothia",
+        keep_fv_only: bool = False,
+        **kwargs,
+    ) -> "AntibodyStructureBatch":
+        """Initialize an `AntibodyStructureBatch` from a PDB file or a list of PDB files.
 
+        Examples:
+            Initialize a `StructureBatch` object from a single PDB file,
+            >>> pdb_path = '1a0a.pdb'
+            >>> sb = StructureBatch.from_pdb(pdb_path)
 
-class AntibodyStructureBatch(StructureBatch):
-    """A specified `StructureBatch` class representing antibody structures.
+            or with a list of PDB files.
+            >>> pdb_paths = ['1a0a.pdb', '1a0b.pdb']
+            >>> sb = StructureBatch.from_pdb(pdb_paths)
 
-    Note: `AntibodyStructureBatch` supports the handling of
-        - Fv structures
-        - Fv-antigen complex structures
-        - Fab sturcutres
-        - CDR-only structures
-    """
+        Args:
+            pdb_path: Path to a PDB file or a list of paths to PDB files.
+            heavy_chain_id: Chain ID of the heavy chain.
+            light_chain_id: Chain ID of the light chain.
+            antigen_chain_ids: Chain IDs of the antigen chains. Defaults to None
 
-    def __init__(
-        self,
-        xyz: torch.Tensor,
-        atom_mask: torch.BoolTensor = None,
-        chain_idx: torch.Tensor = None,
-        chain_ids: List[str] = None,
-        seq: List[Dict[str, str]] = None,
-        heavy_chain_ids=None,
-        light_chain_ids=None,
-        numbering_scheme: Literal["kabat", "chothia", "imgt"] = None,
-    ):
-        super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq)
-
-        if heavy_chain_ids is None:
-            self.heavy_chain_ids = ["H" for _ in range(self.batch_size)]
-        else:
-            self.heavy_chain_ids = heavy_chain_ids
-
-        if light_chain_ids is None:
-            self.light_chain_ids = ["L" for _ in range(self.batch_size)]
-        else:
-            self.light_chain_ids = light_chain_ids
-
+        Returns:
+            AntibodyStructureBatch: An AntibodyStructureBatch object.
+        """
         if numbering_scheme not in ["kabat", "chothia", "imgt", None]:
             raise ValueError(
                 'Antibody numbering scheme must be one of "kabat", "chothia", "imgt".'
             )
 
-        self.numbering_scheme = numbering_scheme
+        pdb_path = _always_list(pdb_path)
+        bsz = len(pdb_path)
+        cdr_keys = ["H1", "H2", "H3", "L1", "L2", "L3"]
 
-    def get_heavy_chain_lengths(self) -> torch.LongTensor:
-        """Return the lengths of heavy chains.
+        if antigen_chain_ids is None:
+            antigen_chain_ids = [None for _ in range(bsz)]
 
-        Returns:
-            heavy_chain_lengths: A tensor containing the lengths of heavy chains.
-                Shape: (batch_size,)
-        """
-        return torch.Tensor(
-            [len(s[chain_id]) for s, chain_id in zip(self.seq, self.heavy_chain_ids)]
-        ).long()
+        tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
+        tmp_residue_masks = defaultdict(list)
 
-    def get_light_chain_lengths(self) -> torch.LongTensor:
-        """Return the lengths of light chains.
+        chain_ids = []
+        for f, hid, lid, aids in zip(
+            pdb_path, heavy_chain_id, light_chain_id, antigen_chain_ids
+        ):
+            pdb = ChothiaAntibodyPDB.read_pdb(f, hid, lid, aids, keep_fv_only)
 
-        Returns:
-            light_chain_lengths: A tensor containing the lengths of light chains.
-                Shape: (batch_size,)
-        """
-        return torch.Tensor(
-            [len(s[chain_id]) for s, chain_id in zip(self.seq, self.light_chain_ids)]
-        ).long()
+            _atom_xyz, _atom_mask = pdb.get_atom_xyz()
+            _chain_idx = pdb.get_chain_idx()
+            _chain_ids = pdb.get_chain_ids()
+            _seq_dict = pdb.get_seq_dict()
 
-    def get_heavy_chain_seq(self) -> List[str]:
-        """Return a list of sequences containing heavy chain sequences.
+            tmp_atom_xyz.append(_atom_xyz)
+            tmp_atom_mask.append(_atom_mask)
+            tmp_chain_idx.append(_chain_idx)
+            chain_ids.append(_chain_ids)
+            seq.append(_seq_dict)
 
-        Returns:
-            heavy_chain_seq: A list of sequences containing heavy chain sequences.
-        """
-        return [s[chain_id] for s, chain_id in zip(self.seq, self.heavy_chain_ids)]
+            tmp_residue_masks["heavy_chain"].append(pdb.get_heavy_chain_mask())
+            tmp_residue_masks["light_chain"].append(pdb.get_light_chain_mask())
+            tmp_residue_masks["antigen"].append(pdb.get_antigen_mask())
+            for cdr in cdr_keys:
+                tmp_residue_masks[cdr].append(pdb.get_cdr_mask(cdr))
 
-    def get_light_chain_seq(self) -> List[str]:
-        """Return a list of sequences containing light chain sequences.
+        max_n_residues = max([len(xyz) for xyz in tmp_atom_xyz])
 
-        Returns:
-            light_chain_seq: A list of sequences containing light chain sequences.
-        """
-        return [s[chain_id] for s, chain_id in zip(self.seq, self.light_chain_ids)]
+        atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
+        atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
+        chain_idx = torch.ones(bsz, max_n_residues) * torch.nan
+
+        residue_mask_keys = ["heavy_chain", "light_chain", "antigen"]
+        residue_mask_keys += cdr_keys
+
+        residue_masks = {}
+        for key in residue_mask_keys:
+            residue_masks[key] = torch.zeros(bsz, max_n_residues).bool()
+
+        for i in range(bsz):
+            _atom_xyz = tmp_atom_xyz[i]
+            _atom_mask = tmp_atom_mask[i]
+            _chain_idx = tmp_chain_idx[i]
+
+            atom_xyz[i, : len(_atom_xyz)] = _atom_xyz
+            atom_mask[i, : len(_atom_mask)] = _atom_mask
+            chain_idx[i, : len(_chain_idx)] = _chain_idx
+
+            for key in residue_mask_keys:
+                len_residues = len(tmp_residue_masks[key][i])
+                residue_masks[key][i, :len_residues] = tmp_residue_masks[key][i]
+
+        self = cls(
+            atom_xyz,
+            atom_mask,
+            chain_idx,
+            chain_ids,
+            seq,
+            residue_masks,
+            heavy_chain_id,
+            light_chain_id,
+            antigen_chain_ids,
+            numbering_scheme,
+            keep_fv_only,
+            **kwargs,
+        )
+        return self
 
 
 class AntibodyFvStructure:

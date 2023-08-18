@@ -73,11 +73,12 @@ class ChothiaAntibodyPDB:
         fp: str,
         heavy_chain_id: str,
         light_chain_id: str,
-        antigen_chain_ids: List[str] = None,
+        antigen_chain_ids: Union[str, List[str]] = None,
         keep_fv_only: bool = False,
     ) -> "ChothiaAntibodyPDB":
         pdb_df = PandasPdb().read_pdb(fp).df["ATOM"]
         pdb_df = tidy_pdb(pdb_df)
+        antigen_chain_ids = _always_list(antigen_chain_ids)
         return cls(
             pdb_df, heavy_chain_id, light_chain_id, antigen_chain_ids, keep_fv_only
         )
@@ -221,6 +222,9 @@ class ChothiaAntibodyPDB:
     def get_light_chain_mask(self) -> torch.BoolTensor:
         return torch.Tensor(self._lookup.chain_id == self.light_chain_id).bool()
 
+    def get_antigen_mask(self) -> torch.BoolTensor:
+        return torch.Tensor(self._lookup.chain_id.isin(self.antigen_chain_ids)).bool()
+
     def get_fv_mask(self) -> torch.BoolTensor:
         mask_heavy = self.get_heavy_chain_mask()
         mask_light = self.get_light_chain_mask()
@@ -265,4 +269,4 @@ class ChothiaAntibodyPDB:
             for s in subset:
                 mask |= chain_masks[s[0]] & masks[s]
 
-        return torch.tensor(mask).bool()
+        return mask
