@@ -9,17 +9,17 @@
       
       
       
-        <link rel="prev" href="../protstruc/">
+        <link rel="prev" href="../AntibodyStructureBatch/">
       
       
         <link rel="next" href="../io/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
     
     
       
-        <title>protstruc.geometry - ProtStruc Documentation</title>
+        <title>geometry - ProtStruc Documentation</title>
       
     
     
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              protstruc.geometry
+              geometry
             
           </span>
         </div>
@@ -210,7 +210,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../protstruc/" class="md-tabs__link md-tabs__link--active">
+      <a href="../StructureBatch/" class="md-tabs__link md-tabs__link--active">
         API reference
       </a>
     </li>
@@ -400,6 +400,12 @@
         
           
         
+          
+        
+          
+        
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
@@ -462,8 +468,50 @@
   
   
     <li class="md-nav__item">
+      <a href="../../tutorials/rotating_structures/" class="md-nav__link">
+        Rotating structures
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../tutorials/diffusing_xyz_coordinates/" class="md-nav__link">
         Diffusing XYZ coordinates with Gaussian noise
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parsing_antibody_pdb/" class="md-nav__link">
+        Parsing antibody PDB files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/antibody_structure_batch/" class="md-nav__link">
+        Using AntibodyStructureBatch
       </a>
     </li>
   
@@ -508,6 +556,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -528,8 +578,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../protstruc/" class="md-nav__link">
-        protstruc.protstruc
+      <a href="../StructureBatch/" class="md-nav__link">
+        StructureBatch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AntibodyStructureBatch/" class="md-nav__link">
+        AntibodyStructureBatch
       </a>
     </li>
   
@@ -550,12 +614,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          protstruc.geometry
+          geometry
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        protstruc.geometry
+        geometry
       </a>
       
         
@@ -657,7 +721,7 @@
   
     <li class="md-nav__item">
       <a href="../io/" class="md-nav__link">
-        protstruc.io
+        io
       </a>
     </li>
   
@@ -782,7 +846,7 @@
   
 
 
-  <h1>protstruc.geometry</h1>
+  <h1>geometry</h1>
 
 <div class="doc doc-object doc-module">
 
@@ -1618,7 +1682,7 @@ i.e., dihedral angle between planes XCB and ACB</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code><span title="typing.Union">Union</span>[<span title="numpy">np</span>.<span title="numpy.array">array</span>, torch.<span title="torch.Tensor">Tensor</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1666,7 +1730,7 @@ N-Ca-Cb-Cb' dihedral (<code>theta</code>), and Ca-Cb-Cb' planar angle (<code>phi
         <tr>
           <td><code>d_cb</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1680,7 +1744,7 @@ N-Ca-Cb-Cb' dihedral (<code>theta</code>), and Ca-Cb-Cb' planar angle (<code>phi
         <tr>
           <td><code>omega</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1694,7 +1758,7 @@ N-Ca-Cb-Cb' dihedral (<code>theta</code>), and Ca-Cb-Cb' planar angle (<code>phi
         <tr>
           <td><code>theta</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1708,7 +1772,7 @@ N-Ca-Cb-Cb' dihedral (<code>theta</code>), and Ca-Cb-Cb' planar angle (<code>phi
         <tr>
           <td><code>phi</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1722,7 +1786,7 @@ N-Ca-Cb-Cb' dihedral (<code>theta</code>), and Ca-Cb-Cb' planar angle (<code>phi
         <tr>
           <td><code>mask</code></td>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1765,7 +1829,7 @@ same chain with the next one.</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="numpy">np</span>.<span title="numpy.array">array</span></code>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">

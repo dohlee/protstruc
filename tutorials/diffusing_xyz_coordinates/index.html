@@ -9,13 +9,13 @@
       
       
       
-        <link rel="prev" href="../backbone_orientations_and_translations/">
+        <link rel="prev" href="../rotating_structures/">
       
       
-        <link rel="next" href="../../reference/protstruc/">
+        <link rel="next" href="../parsing_antibody_pdb/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
     
     
       
@@ -205,7 +205,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../reference/protstruc/" class="md-tabs__link">
+      <a href="../../reference/StructureBatch/" class="md-tabs__link">
         API reference
       </a>
     </li>
@@ -399,6 +399,12 @@
         
           
         
+          
+        
+          
+        
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
@@ -459,6 +465,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../rotating_structures/" class="md-nav__link">
+        Rotating structures
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -472,6 +492,34 @@
         Diffusing XYZ coordinates with Gaussian noise
       </a>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parsing_antibody_pdb/" class="md-nav__link">
+        Parsing antibody PDB files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../antibody_structure_batch/" class="md-nav__link">
+        Using AntibodyStructureBatch
+      </a>
     </li>
   
 
@@ -513,6 +561,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -533,8 +583,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/protstruc/" class="md-nav__link">
-        protstruc.protstruc
+      <a href="../../reference/StructureBatch/" class="md-nav__link">
+        StructureBatch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/AntibodyStructureBatch/" class="md-nav__link">
+        AntibodyStructureBatch
       </a>
     </li>
   
@@ -548,7 +612,7 @@
   
     <li class="md-nav__item">
       <a href="../../reference/geometry/" class="md-nav__link">
-        protstruc.geometry
+        geometry
       </a>
     </li>
   
@@ -562,7 +626,7 @@
   
     <li class="md-nav__item">
       <a href="../../reference/io/" class="md-nav__link">
-        protstruc.io
+        io
       </a>
     </li>
   
@@ -1643,8 +1707,8 @@ This tutorial shows how to use the <code>StructureBatch</code> object to generat
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -1677,20 +1741,6 @@ import torch
 
 import protstruc as ps
 from protstruc.general import ATOM</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>/data/project/dohoon/miniconda3/envs/torch12/lib/python3.9/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
-  from .autonotebook import tqdm as notebook_tqdm
-</pre>
 </div>
 </div>
 </div>
@@ -1781,7 +1831,7 @@ def cosine_variance_schedule(T, s=8e-3, beta_max=0.999):
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy for="cell-3">
@@ -1903,6 +1953,13 @@ plt.clf()  # not showing the results after this cell</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
+<pre>MovieWriter ffmpeg unavailable; using Pillow instead.
+</pre>
+</div>
+</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
