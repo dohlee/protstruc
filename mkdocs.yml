@@ -38,9 +38,10 @@ nav:
       - Backbone orientations/translations: tutorials/backbone_orientations_and_translations.ipynb
       - Rotating structures: tutorials/rotating_structures.ipynb
       - Diffusing XYZ coordinates with Gaussian noise: tutorials/diffusing_xyz_coordinates.ipynb
+      - Parsing antibody PDB files: tutorials/parsing_antibody_pdb.ipynb
   - API reference:
     - StructureBatch: reference/StructureBatch.md
-    - AntibodyFvStructureBatch: reference/AntibodyFvStructureBatch.md
+    - AntibodyStructureBatch: reference/AntibodyStructureBatch.md
     - geometry: reference/geometry.md
     - io: reference/io.md
   

@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Literal
 from collections import defaultdict
 import torch
 import numpy as np
@@ -43,11 +43,14 @@ def _precompute_internal_index_map(pdb_df):
 
 def tidy_pdb(pdb_df: pd.DataFrame) -> pd.DataFrame:
     # convert non-standard residues to standard residues
-    pdb_df["atom_name"] = pdb_df["atom_name"].replace(non_standard_residue_substitutions)
+    pdb_df["atom_name"] = pdb_df["atom_name"].replace(
+        non_standard_residue_substitutions
+    )
 
     # try discard non-standard residues
     # hopefully this will discard non-peptide chains, too
-    pdb_df = pdb_df[pdb_df["residue_name"].isin(standard_aa_names)].reset_index(drop=True)
+    _mask = pdb_df["residue_name"].isin(standard_aa_names)
+    pdb_df = pdb_df[_mask].reset_index(drop=True)
 
     return pdb_df
 
@@ -87,7 +90,9 @@ def pdb_df_to_xyz(
         internal_idx = index_map[(r.chain_id, r.residue_number, r.insertion)]
 
         atom_idx = heavyatom_names.index(r.atom_name)
-        atom_xyz[internal_idx, atom_idx] = torch.tensor([r.x_coord, r.y_coord, r.z_coord])
+        atom_xyz[internal_idx, atom_idx] = torch.tensor(
+            [r.x_coord, r.y_coord, r.z_coord]
+        )
         chain_idx[internal_idx] = curr_chain_idx
         seq[internal_idx] = AA[residue_name].oneletter()
 

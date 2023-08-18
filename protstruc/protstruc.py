@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Union, Tuple, Literal
 from biopandas.pdb import PandasPdb
 from scipy.spatial.distance import cdist
 from collections import defaultdict
@@ -809,6 +809,7 @@ class AntibodyFvStructureBatch(StructureBatch):
         seq: List[Dict[str, str]] = None,
         heavy_chain_ids=None,
         light_chain_ids=None,
+        numbering_scheme: Literal["kabat", "chothia", "imgt"] = None,
     ):
         super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq)
 
@@ -821,6 +822,58 @@ class AntibodyFvStructureBatch(StructureBatch):
             self.light_chain_ids = ["L" for _ in range(self.batch_size)]
         else:
             self.light_chain_ids = light_chain_ids
+
+        if numbering_scheme not in ["kabat", "chothia", "imgt", None]:
+            raise ValueError(
+                'Antibody numbering scheme must be one of "kabat", "chothia", "imgt".'
+            )
+
+        self.numbering_scheme = numbering_scheme
+
+    @classmethod
+    def from_pdb(cls):
+        pass
+
+
+class AntibodyStructureBatch(StructureBatch):
+    """A specified `StructureBatch` class representing antibody structures.
+
+    Note: `AntibodyStructureBatch` supports the handling of
+        - Fv structures
+        - Fv-antigen complex structures
+        - Fab sturcutres
+        - CDR-only structures
+    """
+
+    def __init__(
+        self,
+        xyz: torch.Tensor,
+        atom_mask: torch.BoolTensor = None,
+        chain_idx: torch.Tensor = None,
+        chain_ids: List[str] = None,
+        seq: List[Dict[str, str]] = None,
+        heavy_chain_ids=None,
+        light_chain_ids=None,
+        numbering_scheme: Literal["kabat", "chothia", "imgt"] = None,
+    ):
+        super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq)
+
+        if heavy_chain_ids is None:
+            self.heavy_chain_ids = ["H" for _ in range(self.batch_size)]
+        else:
+            self.heavy_chain_ids = heavy_chain_ids
+
+        if light_chain_ids is None:
+            self.light_chain_ids = ["L" for _ in range(self.batch_size)]
+        else:
+            self.light_chain_ids = light_chain_ids
+
+        if numbering_scheme not in ["kabat", "chothia", "imgt", None]:
+            raise ValueError(
+                'Antibody numbering scheme must be one of "kabat", "chothia", "imgt".'
+            )
+
+        self.numbering_scheme = numbering_scheme
 
     def get_heavy_chain_lengths(self) -> torch.LongTensor:
         """Return the lengths of heavy chains.
