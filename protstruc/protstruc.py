@@ -808,6 +808,7 @@ class AntibodyStructureBatch(StructureBatch):
         chain_idx: torch.Tensor = None,
         chain_ids: List[str] = None,
         seq: List[Dict[str, str]] = None,
+        residue_idx: torch.BoolTensor = None,
         residue_masks: Dict[str, torch.BoolTensor] = None,
         heavy_chain_id=None,
         light_chain_id=None,
@@ -818,6 +819,7 @@ class AntibodyStructureBatch(StructureBatch):
         super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq)
 
         self.numbering_scheme = numbering_scheme
+        self.residue_idx = residue_idx
         self.residue_masks = residue_masks
 
     def get_heavy_chain_mask(self) -> torch.BoolTensor:
@@ -836,6 +838,9 @@ class AntibodyStructureBatch(StructureBatch):
         subset = _always_list(subset)
         _masks = torch.stack([self.residue_masks[cdr] for cdr in subset], axis=0)
         return _masks.any(axis=0)
+
+    def get_residue_idx(self) -> torch.BoolTensor:
+        return self.residue_idx
 
     @classmethod
     def from_pdb(
@@ -881,6 +886,7 @@ class AntibodyStructureBatch(StructureBatch):
             antigen_chain_ids = [None for _ in range(bsz)]
 
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
+        tmp_residue_idx = []
         tmp_residue_masks = defaultdict(list)
 
         chain_ids = []
@@ -891,12 +897,14 @@ class AntibodyStructureBatch(StructureBatch):
 
             _atom_xyz, _atom_mask = pdb.get_atom_xyz()
             _chain_idx = pdb.get_chain_idx()
+            _residue_idx = pdb.get_residue_idx()
             _chain_ids = pdb.get_chain_ids()
             _seq_dict = pdb.get_seq_dict()
 
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
             tmp_chain_idx.append(_chain_idx)
+            tmp_residue_idx.append(_residue_idx)
             chain_ids.append(_chain_ids)
             seq.append(_seq_dict)
 
@@ -911,6 +919,7 @@ class AntibodyStructureBatch(StructureBatch):
         atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
         atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
         chain_idx = torch.ones(bsz, max_n_residues) * torch.nan
+        residue_idx = torch.ones(bsz, max_n_residues) * torch.nan
 
         residue_mask_keys = ["heavy_chain", "light_chain", "antigen"]
         residue_mask_keys += cdr_keys
@@ -923,10 +932,12 @@ class AntibodyStructureBatch(StructureBatch):
             _atom_xyz = tmp_atom_xyz[i]
             _atom_mask = tmp_atom_mask[i]
             _chain_idx = tmp_chain_idx[i]
+            _residue_idx = tmp_residue_idx[i]
 
             atom_xyz[i, : len(_atom_xyz)] = _atom_xyz
             atom_mask[i, : len(_atom_mask)] = _atom_mask
             chain_idx[i, : len(_chain_idx)] = _chain_idx
+            residue_idx[i, : len(_residue_idx)] = _residue_idx
 
             for key in residue_mask_keys:
                 len_residues = len(tmp_residue_masks[key][i])
@@ -938,6 +949,7 @@ class AntibodyStructureBatch(StructureBatch):
             chain_idx,
             chain_ids,
             seq,
+            residue_idx,
             residue_masks,
             heavy_chain_id,
             light_chain_id,
