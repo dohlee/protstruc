@@ -10,6 +10,9 @@ Dealing with a batch of protein structures is a common task in this new era of a
 This package, `protstruc`, provides an easy-to-use interface to handle a batch of protein structures, while specifically designed for deep learning applications based on PyTorch.
 `protstruc` provides various features including:
 
+- Computing geometric features of a protein structure (e.g., pairwise distance matrix, backbone dihedrals, backbone orientations, backbone translations, pairwise dihedrals and pairwise planar angles)
+- Manipulation of protein structures (e.g., selecting specific chains, selecting specific residues, rotating the structure, translating the structure, zeroing the center-of-mass, etc.)
+
 There are many options to initialize the core data structure for a batch of protein structures, `StructureBatch`:
 
 - from local PDB files `StructureBatch.from_pdb`
