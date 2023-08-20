@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn.functional as F
 
@@ -22,6 +23,10 @@ CB_DIHEDRAL = -2.143
 
 N_IDX, CA_IDX, C_IDX, O_IDX, CB_IDX = 0, 1, 2, 3, 4
 atom2idx = {"N": N_IDX, "CA": CA_IDX, "C": C_IDX, "O": O_IDX, "CB": CB_IDX}
+
+
+def isnull(x):
+    return pd.isnull(x)
 
 
 def _always_tensor(x):
@@ -846,8 +851,8 @@ class AntibodyStructureBatch(StructureBatch):
     def from_pdb(
         cls,
         pdb_path: Union[str, List[str]],
-        heavy_chain_id: List[str],
-        light_chain_id: List[str],
+        heavy_chain_id: List[str] = None,
+        light_chain_id: List[str] = None,
         antigen_chain_ids: List[List[str]] = None,
         numbering_scheme: Literal["kabat", "chothia", "imgt"] = "chothia",
         keep_fv_only: bool = False,
@@ -882,7 +887,11 @@ class AntibodyStructureBatch(StructureBatch):
         bsz = len(pdb_path)
         cdr_keys = ["H1", "H2", "H3", "L1", "L2", "L3"]
 
-        if antigen_chain_ids is None:
+        if isnull(heavy_chain_id):
+            heavy_chain_id = [None for _ in range(bsz)]
+        if isnull(light_chain_id):
+            light_chain_id = [None for _ in range(bsz)]
+        if isnull(antigen_chain_ids):
             antigen_chain_ids = [None for _ in range(bsz)]
 
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
