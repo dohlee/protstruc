@@ -5,13 +5,10 @@ import torch.nn.functional as F
 
 from typing import List, Dict, Union, Tuple, Literal
 from biopandas.pdb import PandasPdb
-from scipy.spatial.distance import cdist
 from collections import defaultdict
 from einops import rearrange, repeat
 
 import protstruc.geometry as geom
-from protstruc.constants import ideal
-from protstruc.alphabet import three2one
 from protstruc.general import ATOM, AA, ressymb_to_resindex
 from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
 from protstruc.io import pdb_to_xyz, pdb_df_to_xyz
@@ -168,7 +165,7 @@ class StructureBatch:
         max_n_residues = max([len(xyz) for xyz in tmp_atom_xyz])
 
         atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
-        atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
+        atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE).bool()
         chain_idx = torch.ones(bsz, max_n_residues) * torch.nan
 
         for i in range(bsz):
@@ -351,7 +348,7 @@ class StructureBatch:
         Returns:
             residue_mask: Shape (batch_size, num_residues)
         """
-        return self.atom_mask[:, :, ATOM.CA]
+        return self.atom_mask[:, :, ATOM.CA].bool()
 
     def get_chain_idx(self) -> torch.LongTensor:
         return self.chain_idx.long()
@@ -540,9 +537,9 @@ class StructureBatch:
             bb_orientations: A tensor containing the local reference backbone
                 orientation for each residue.
         """
-        a1_coords = self.xyz[:, :, atom2idx[a1]]
-        a2_coords = self.xyz[:, :, atom2idx[a2]]
-        a3_coords = self.xyz[:, :, atom2idx[a3]]
+        a1_coords = self.xyz[:, :, ATOM[a1]]
+        a2_coords = self.xyz[:, :, ATOM[a2]]
+        a3_coords = self.xyz[:, :, ATOM[a3]]
 
         return geom.gram_schmidt(a1_coords, a2_coords, a3_coords)
 
@@ -560,7 +557,38 @@ class StructureBatch:
             bb_translations: xyz coordinates (translations) of a specified backbone atoms.
                 Shape: (batch_size, num_residues, 3)
         """
-        return self.xyz[:, :, atom2idx[atom]]
+        return self.xyz[:, :, ATOM[atom]]
+
+    def _pairwise_xyz(
+        self, atoms_i: List[str], atoms_j: List[str]
+    ) -> torch.FloatTensor:
+        """Return a matrix representing a pairwise distance between residues defined by
+        two sets of atoms, one for each side of the residue.
+
+        Args:
+            atoms_i: List of atoms to be used for the first residue.
+            atoms_j: List of atoms to be used for the second residue.
+
+        Returns:
+            pairwise_xyz: A tensor containing pairwise distances between residues.
+                Shape: (batch_size, num_residues^2, len(atoms_i) + len(atoms_j), 3)
+        """
+        for atom in atoms_i + atoms_j:
+            if not ATOM.is_valid(atom):
+                raise ValueError(f"Atom {atom} is not valid.")
+
+        atoms_i = [ATOM[a] for a in atoms_i]
+        atoms_j = [ATOM[a] for a in atoms_j]
+
+        # get coordinates of specified atoms for residue i and j
+        n = self.n_residues
+        coords_i = self.xyz[:, :, atoms_i].repeat_interleave(n, dim=1)
+        coords_j = self.xyz[:, :, atoms_j].repeat(1, n, 1, 1)
+
+        # and construct all-pairwise four-atom coordinates
+        coords = torch.cat([coords_i, coords_j], dim=-2)  # bsz, n_res^2, n_atoms, 3
+
+        return coords
 
     def pairwise_dihedrals(
         self, atoms_i: List[str], atoms_j: List[str]
@@ -576,32 +604,12 @@ class StructureBatch:
             pairwise_dihedrals: A tensor containing pairwise dihedral angles between residues.
                 Shape: (batch_size, num_residues, num_residues)
         """
-        # take uppercase of atom names
-        atoms_i = [atom.upper() for atom in atoms_i]
-        atoms_j = [atom.upper() for atom in atoms_j]
-
-        for atom in atoms_i:
-            if atom not in atom2idx:
-                raise ValueError(f"Atom {atom} is not valid.")
-        for atom in atoms_j:
-            if atom not in atom2idx:
-                raise ValueError(f"Atom {atom} is not valid.")
-
-        atoms_i = [atom2idx[atom] for atom in atoms_i]
-        atoms_j = [atom2idx[atom] for atom in atoms_j]
-
-        # get coordinates of specified atoms for residue i and j
-        n = self.n_residues
-        coords_i = self.xyz[:, :, atoms_i].repeat_interleave(n, dim=1)
-        coords_j = self.xyz[:, :, atoms_j].repeat(1, n, 1, 1)
-
-        # and construct all-pairwise four-atom coordinates
-        coords = torch.cat([coords_i, coords_j], dim=-2)  # bsz, n_res^2, 4, 3
+        coords = self._pairwise_xyz(atoms_i, atoms_j)  # bsz, n_res^2, 4, 3
 
         dih = geom.dihedral(
             coords[:, :, 0], coords[:, :, 1], coords[:, :, 2], coords[:, :, 3]
         )
-        dih = dih.reshape(-1, n, n)
+        dih = dih.reshape(-1, self.n_residues, self.n_residues)
         return dih
 
     def pairwise_planar_angles(
@@ -618,30 +626,10 @@ class StructureBatch:
             pairwise_planar_angles: A tensor containing pairwise planar angles between residues.
                 Shape: (batch_size, num_residues, num_residues)
         """
-        # take uppercase of atom names
-        atoms_i = [atom.upper() for atom in atoms_i]
-        atoms_j = [atom.upper() for atom in atoms_j]
-
-        for atom in atoms_i:
-            if atom not in atom2idx:
-                raise ValueError(f"Atom {atom} is not valid.")
-        for atom in atoms_j:
-            if atom not in atom2idx:
-                raise ValueError(f"Atom {atom} is not valid.")
-
-        atoms_i = [atom2idx[atom] for atom in atoms_i]
-        atoms_j = [atom2idx[atom] for atom in atoms_j]
-
-        # get coordinates of specified atoms for residue i and j
-        n = self.n_residues
-        coords_i = self.xyz[:, :, atoms_i].repeat_interleave(n, dim=1)
-        coords_j = self.xyz[:, :, atoms_j].repeat(1, n, 1, 1)
-
-        # and construct all-pairwise four-atom coordinates
-        coords = torch.cat([coords_i, coords_j], dim=-2)  # bsz, n_res^2, 3, 3
+        coords = self._pairwise_xyz(atoms_i, atoms_j)  # bsz, n_res^2, 3, 3
 
         planar_angle = geom.angle(coords[:, :, 0], coords[:, :, 1], coords[:, :, 2])
-        planar_angle = planar_angle.reshape(-1, n, n)
+        planar_angle = planar_angle.reshape(-1, self.n_residues, self.n_residues)
         return planar_angle
 
     def translate(self, translation: torch.Tensor, atomwise: bool = False):
@@ -738,7 +726,6 @@ class StructureBatch:
             center_of_mass: A tensor containing the center of mass of the structures.
                 Shape: (batch_size, 3)
         """
-
         xyz_ca = self.xyz[:, :, atom2idx["CA"]]
         return xyz_ca.nanmean(axis=1)
 
@@ -767,11 +754,11 @@ class StructureBatch:
         if center.ndim == 1:
             center = center.unsqueeze(0)  # (1 3)
 
-        # compute translation vector
+        # compute translation vector and translate
         translation = center - self.center_of_mass()
         translation = rearrange(translation, "b c -> b () () c")
 
-        self.xyz = self.xyz + translation
+        self.xyz += translation
 
     def inter_residue_geometry(self) -> Dict[str, torch.Tensor]:
         """Return a dictionary of inter-residue geometry, which is used for representing
@@ -800,8 +787,6 @@ class StructureBatch:
         # Ca-Cb-Cb' planar angle (Non-symmetric)
         ret["phi"] = self.pairwise_planar_angles(["CA", "CB"], ["CB"])
 
-        print(ret["phi"].shape)
-
         return ret
 
 
@@ -815,9 +800,9 @@ class AntibodyStructureBatch(StructureBatch):
         seq: List[Dict[str, str]] = None,
         residue_idx: torch.BoolTensor = None,
         residue_masks: Dict[str, torch.BoolTensor] = None,
-        heavy_chain_id=None,
-        light_chain_id=None,
-        antigen_chain_ids: List[str] = None,
+        heavy_chain_id: List[str] = None,
+        light_chain_id: List[str] = None,
+        antigen_chain_ids: List[List[str]] = None,
         numbering_scheme: Literal["kabat", "chothia", "imgt"] = "chothia",
         keep_fv_only: bool = False,
     ):
@@ -826,6 +811,11 @@ class AntibodyStructureBatch(StructureBatch):
         self.numbering_scheme = numbering_scheme
         self.residue_idx = residue_idx
         self.residue_masks = residue_masks
+
+        self.heavy_chain_id = heavy_chain_id
+        self.light_chain_id = light_chain_id
+        self.antigen_chain_ids = antigen_chain_ids
+        self.keep_fv_only = keep_fv_only
 
     def get_heavy_chain_mask(self) -> torch.BoolTensor:
         return self.residue_masks["heavy_chain"]
@@ -836,11 +826,23 @@ class AntibodyStructureBatch(StructureBatch):
     def get_antigen_mask(self) -> torch.BoolTensor:
         return self.residue_masks["antigen"]
 
+    def get_heavy_chain_id(self) -> List[str]:
+        return self.heavy_chain_id
+
+    def get_light_chain_id(self) -> List[str]:
+        return self.light_chain_id
+
+    def get_antigen_chain_ids(self) -> List[List[str]]:
+        return self.antigen_chain_ids
+
+    def is_fv_only(self) -> bool:
+        return self.keep_fv_only
+
     def get_cdr_mask(self, subset: Union[str, List[str]]) -> torch.BoolTensor:
         if subset is None:
             subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
-
         subset = _always_list(subset)
+
         _masks = torch.stack([self.residue_masks[cdr] for cdr in subset], axis=0)
         return _masks.any(axis=0)
 
@@ -887,12 +889,13 @@ class AntibodyStructureBatch(StructureBatch):
         bsz = len(pdb_path)
         cdr_keys = ["H1", "H2", "H3", "L1", "L2", "L3"]
 
-        if isnull(heavy_chain_id):
-            heavy_chain_id = [None for _ in range(bsz)]
-        if isnull(light_chain_id):
-            light_chain_id = [None for _ in range(bsz)]
-        if isnull(antigen_chain_ids):
-            antigen_chain_ids = [None for _ in range(bsz)]
+        heavy_chain_id = _always_list(heavy_chain_id)
+        light_chain_id = _always_list(light_chain_id)
+        antigen_chain_ids = _always_list(antigen_chain_ids)
+
+        heavy_chain_id = [None if isnull(x) else x for x in heavy_chain_id]
+        light_chain_id = [None if isnull(x) else x for x in light_chain_id]
+        antigen_chain_ids = [None if isnull(x) else x for x in antigen_chain_ids]
 
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
         tmp_residue_idx = []
@@ -968,141 +971,3 @@ class AntibodyStructureBatch(StructureBatch):
             **kwargs,
         )
         return self
-
-
-class AntibodyFvStructure:
-    def __init__(
-        self,
-        pdb_path,
-        impute_missing_atoms=True,
-        heavy_chain_id="H",
-        light_chain_id="L",
-    ):
-        self.df = PandasPdb().read_pdb(pdb_path).df["ATOM"]
-
-        chain_id = self.df["chain_id"]
-        _max_char_len = self.df["residue_number"].astype(str).map(len).max()
-        residue_number = (
-            self.df["residue_number"]
-            .astype(str)
-            .str.pad(_max_char_len, side="left", fillchar="0")
-        )
-        insertion = self.df["insertion"]
-        self.df["residue_id"] = chain_id + residue_number + insertion
-
-        self.coord = self.df[["x_coord", "y_coord", "z_coord"]].values
-
-        atoms = ["N", "CA", "C", "O", "CB"]
-        mask = self.df.atom_name.isin(atoms)
-        df_piv = (
-            self.df[mask]
-            .pivot(
-                columns="atom_name",
-                index="residue_id",
-                values=["x_coord", "y_coord", "z_coord"],
-            )
-            .swaplevel(0, 1, axis=1)
-        )
-
-        residue_ids = df_piv.index.values
-        residues = (
-            self.df.drop_duplicates("residue_id")
-            .set_index("residue_id")
-            .loc[residue_ids]
-        )
-        self.chain_ids = residues.chain_id.unique()
-        self.sequences = defaultdict(list)
-        for r in residues.to_records():
-            self.sequences[r.chain_id].append(three2one[r.residue_name])
-        self.sequences = {k: "".join(v) for k, v in self.sequences.items()}
-
-        self.coord_per_atom = {}
-        for atom in atoms:
-            self.coord_per_atom[atom] = df_piv[atom].values
-
-        if impute_missing_atoms:
-            self.impute_cb_coord()
-
-        self.heavy_chain_id = heavy_chain_id
-        self.light_chain_id = light_chain_id
-
-    def get_sequences(self):
-        return [self.sequences[chain] for chain in self.chain_ids]
-
-    def get_chain_ids(self):
-        return self.chain_ids
-
-    def get_heavy_chain_length(self):
-        return self.df[self.df.chain_id == self.heavy_chain_id].residue_number.nunique()
-
-    def get_light_chain_length(self):
-        return self.df[self.df.chain_id == self.light_chain_id].residue_number.nunique()
-
-    def valid_coord_mask(self, atom):
-        return np.isfinite(self.coord_per_atom[atom]).all(axis=-1)
-
-    def pdist(self, atom1="CA", atom2="CA"):
-        c1 = self.coord_per_atom[atom1]
-        c2 = self.coord_per_atom[atom2]
-
-        return cdist(c1, c2)
-
-    def get_seq(self, chain=None):
-        if chain is None:
-            residues = self.df.drop_duplicates("residue_id").residue_name.values
-        else:
-            tmp = self.df[self.df.chain_id == chain]
-            residues = tmp.drop_duplicates("residue_id").residue_name.values
-
-        return "".join(three2one[aa] for aa in residues)
-
-    def impute_cb_coord(self):
-        c = self.coord_per_atom["C"]
-        n = self.coord_per_atom["N"]
-        ca = self.coord_per_atom["CA"]
-
-        cb_coords = geom.place_fourth_atom(c, n, ca, ideal.AB, ideal.NAB, ideal.BANC)
-
-        to_fill = ~self.valid_coord_mask("CB")
-        self.coord_per_atom["CB"][to_fill] = cb_coords[to_fill]
-
-    def inter_residue_geometry(self, to_degree=False):
-        """
-        https://github.com/RosettaCommons/RoseTTAFold/blob/main/network/kinematics.py
-        """
-        ret = {}
-
-        # Ca-Ca distance (Symmetric)
-        ret["d_ca"] = self.pdist("CA", "CA")
-        # Cb-Cb distance (Symmetric)
-        ret["d_cb"] = self.pdist("CB", "CB")
-        # N-O distance (Non-symmetric)
-        ret["d_no"] = self.pdist("N", "O")
-        # Ca-Cb-Cb'-Ca' dihedral (Symmetric)
-        ret["omega"] = geom.dihedral(
-            self.coord_per_atom["CA"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][np.newaxis, :, :],
-            self.coord_per_atom["CA"][np.newaxis, :, :],
-            to_degree=to_degree,
-        )
-        # N-Ca-Cb-Cb' dihedral (Non-symmetric)
-        ret["theta"] = geom.dihedral(
-            self.coord_per_atom["N"][:, np.newaxis, :],
-            self.coord_per_atom["CA"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][np.newaxis, :, :],
-            to_degree=to_degree,
-        )
-        # Ca-Cb-Cb' planar angle (Non-symmetric)
-        ret["phi"] = geom.angle(
-            self.coord_per_atom["CA"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][:, np.newaxis, :],
-            self.coord_per_atom["CB"][np.newaxis, :, :],
-            to_degree=to_degree,
-        )
-
-        return ret
-
-    def totensor(self):
-        pass

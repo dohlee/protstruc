@@ -86,7 +86,7 @@ ax.view_init(-10, 20, 90)
 
 **Pairwise distance matrix**
 
-```
+```python
 from protstruc.general import ATOM
 struc = StructureBatch.from_pdb_id('5dk3')
 

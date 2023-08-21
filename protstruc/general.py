@@ -1,5 +1,82 @@
 import enum
 
+
+class ATOM(enum.IntEnum):
+    N = 0
+    n = 0
+    CA = 1
+    Ca = 1
+    ca = 1
+    C = 2
+    c = 2
+    O = 3  # noqa: E741
+    o = 3
+    CB = 4
+    Cb = 4
+    cb = 4
+
+    @classmethod
+    def is_valid(self, value):
+        return value.upper() in self._member_names_
+
+    def __str__(self):
+        return self.name
+
+
+class AA(enum.IntEnum):
+    ALA = 0
+    CYS = 1
+    ASP = 2
+    GLU = 3
+    PHE = 4
+    GLY = 5
+    HIS = 6
+    ILE = 7
+    LYS = 8
+    LEU = 9
+    MET = 10
+    ASN = 11
+    PRO = 12
+    GLN = 13
+    ARG = 14
+    SER = 15
+    THR = 16
+    VAL = 17
+    TRP = 18
+    TYR = 19
+    UNK = 20
+
+    @classmethod
+    def _missing_(cls, value):
+        if isinstance(value, str) and len(value) == 3:  # three representation
+            if value in non_standard_residue_substitutions:
+                value = non_standard_residue_substitutions[value]
+            if value in cls._member_names_:
+                return getattr(cls, value)
+        elif isinstance(value, str) and len(value) == 1:  # one representation
+            if value in ressymb_to_resindex:
+                return cls(ressymb_to_resindex[value])
+
+        return super()._missing_(value)
+
+    def __str__(self):
+        return self.name
+
+    def oneletter(self):
+        return resindex_to_oneletter[self.value]
+
+    @classmethod
+    def is_aa(cls, value):
+        return (
+            (value in ressymb_to_resindex)
+            or (value in non_standard_residue_substitutions)
+            or (value in cls._member_names_)
+            or (value in cls._member_map_.values())
+        )
+
+
+standard_aa_names = [AA(i).name for i in range(20)]
+
 # fmt: off
 """
 This is part of the OpenMM molecular simulation toolkit originating from
@@ -55,58 +132,6 @@ ressymb_to_resindex = {
 }
 resindex_to_oneletter = {v: k for k, v in ressymb_to_resindex.items()}
 
-class AA(enum.IntEnum):
-    ALA = 0
-    CYS = 1
-    ASP = 2
-    GLU = 3
-    PHE = 4
-    GLY = 5
-    HIS = 6
-    ILE = 7
-    LYS = 8
-    LEU = 9
-    MET = 10
-    ASN = 11
-    PRO = 12
-    GLN = 13
-    ARG = 14
-    SER = 15
-    THR = 16
-    VAL = 17
-    TRP = 18
-    TYR = 19
-    UNK = 20
-
-    @classmethod
-    def _missing_(cls, value):
-        if isinstance(value, str) and len(value) == 3:  # three representation
-            if value in non_standard_residue_substitutions:
-                value = non_standard_residue_substitutions[value]
-            if value in cls._member_names_:
-                return getattr(cls, value)
-        elif isinstance(value, str) and len(value) == 1:  # one representation
-            if value in ressymb_to_resindex:
-                return cls(ressymb_to_resindex[value])
-
-        return super()._missing_(value)
-
-    def __str__(self):
-        return self.name
-
-    def oneletter(self):
-        return resindex_to_oneletter[self.value]
-
-    @classmethod
-    def is_aa(cls, value):
-        return (
-            (value in ressymb_to_resindex)
-            or (value in non_standard_residue_substitutions)
-            or (value in cls._member_names_)
-            or (value in cls._member_map_.values())
-        )
-    
-standard_aa_names = [AA(i).name for i in range(20)]
 
 # Copyright 2021 DeepMind Technologies Limited
 #
@@ -144,13 +169,3 @@ restype_to_heavyatom_names = {
     AA.VAL: ['N', 'CA', 'C', 'O', 'CB', 'CG1', 'CG2', '',    '',    '',    '',    '',    '',    '', 'OXT'],  # noqa: E241, E501
     AA.UNK: ['',  '',   '',  '',  '',   '',    '',    '',    '',    '',    '',    '',    '',    '',    ''],  # noqa: E241, E501
 }
-
-class ATOM(enum.IntEnum):
-    N = 0
-    CA = 1
-    C = 2
-    O = 3  # noqa: E741
-    CB = 4
-
-    def __str__(self):
-        return self.name

@@ -10,12 +10,14 @@
       
       
       
+        <link rel="next" href="home/examples/">
+      
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
     
     
       
-        <title>ProtStruc Documentation</title>
+        <title>ProtStruc - ProtStruc Documentation</title>
       
     
     
@@ -30,12 +32,14 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
       
     
     
       <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="css/mkdocs.css">
     
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -59,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#welcome-to-mkdocs" class="md-skip">
+        <a href="#protstruc" class="md-skip">
           Skip to content
         </a>
       
@@ -71,14 +75,12 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="." title="ProtStruc Documentation" class="md-header__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="m48.7 125.8 53.2 31.9c7.8 4.7 17.8 2 22.2-5.9l77.5-139.7c3-5.4-.9-12.1-7.1-12.1-1.6 0-3.2.5-4.6 1.4l-142 97.4c-9.6 6.6-9.2 20.9.8 26.9zM16 171.7v123.6c0 8 10.4 11 14.7 4.4l60-92c5-7.6 2.6-17.8-5.2-22.5L40.2 158c-10.6-6.4-24.2 1.3-24.2 13.7zM310.4 12.1 388 151.7c4.4 7.9 14.5 10.6 22.2 5.9l53.2-31.9c10-6 10.4-20.3.8-26.9L322.1 1.4c-1.4-.9-3-1.4-4.6-1.4-6.2 0-10.1 6.7-7.1 12.1zM496 171.7c0-12.4-13.6-20.1-24.2-13.7l-45.3 27.2c-7.8 4.7-10.1 14.9-5.2 22.5l60 92c4.3 6.7 14.7 3.6 14.7-4.4V171.7zm-49.3 246-160.6 18.9c-8.1.9-14.1 7.8-14.1 15.9v52.8c0 3.7 3 6.8 6.8 6.8.8 0 1.6-.1 2.4-.4l172.7-64c6.1-2.2 10.1-8 10.1-14.5 0-9.3-8.1-16.5-17.3-15.4zM233.2 512c3.7 0 6.8-3 6.8-6.8v-52.6c0-8.1-6.1-14.9-14.1-15.9l-160.6-19c-9.2-1.1-17.3 6.1-17.3 15.4 0 6.5 4 12.3 10.1 14.5l172.7 64c.8.3 1.6.4 2.4.4zM41.7 382.9l170.9 20.2c7.8.9 13.4-7.5 9.5-14.3l-85.7-150c-5.9-10.4-20.7-10.8-27.3-.8L30.2 358.2c-6.5 9.9-.3 23.3 11.5 24.7zm439.6-24.8-78.4-120c-6.5-10-21.4-9.6-27.3.8l-85.4 149.6c-3.9 6.8 1.6 15.2 9.5 14.3l170.1-20c11.8-1.4 18-14.7 11.5-24.6zm-216.9 11 78.4-137.2c6.1-10.7-1.6-23.9-13.9-23.9H183.1c-12.3 0-20 13.3-13.9 23.9l78.4 137.2c3.7 6.4 13 6.4 16.7 0zm-90-193.1h163.2c12.2 0 19.9-13.1 14-23.8l-80-144c-2.8-5.1-8.2-8.2-14-8.2h-3.2c-5.8 0-11.2 3.2-14 8.2l-80 144c-5.9 10.7 1.8 23.8 14 23.8z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -94,7 +96,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Welcome to MkDocs
+              ProtStruc
             
           </span>
         </div>
@@ -103,6 +105,51 @@
     
     
     
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dohlee/protstruc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dohlee/protstruc
+  </div>
+</a>
+      </div>
     
   </nav>
   
@@ -112,6 +159,65 @@
       
       
         
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="." class="md-tabs__link md-tabs__link--active">
+        Home
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="getting-started/installation/" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="reference/StructureBatch/" class="md-tabs__link">
+        API reference
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
           
         
       
@@ -125,17 +231,31 @@
                   <div class="md-sidebar__inner">
                     
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="." title="ProtStruc Documentation" class="md-nav__button md-logo" aria-label="ProtStruc Documentation" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="m48.7 125.8 53.2 31.9c7.8 4.7 17.8 2 22.2-5.9l77.5-139.7c3-5.4-.9-12.1-7.1-12.1-1.6 0-3.2.5-4.6 1.4l-142 97.4c-9.6 6.6-9.2 20.9.8 26.9zM16 171.7v123.6c0 8 10.4 11 14.7 4.4l60-92c5-7.6 2.6-17.8-5.2-22.5L40.2 158c-10.6-6.4-24.2 1.3-24.2 13.7zM310.4 12.1 388 151.7c4.4 7.9 14.5 10.6 22.2 5.9l53.2-31.9c10-6 10.4-20.3.8-26.9L322.1 1.4c-1.4-.9-3-1.4-4.6-1.4-6.2 0-10.1 6.7-7.1 12.1zM496 171.7c0-12.4-13.6-20.1-24.2-13.7l-45.3 27.2c-7.8 4.7-10.1 14.9-5.2 22.5l60 92c4.3 6.7 14.7 3.6 14.7-4.4V171.7zm-49.3 246-160.6 18.9c-8.1.9-14.1 7.8-14.1 15.9v52.8c0 3.7 3 6.8 6.8 6.8.8 0 1.6-.1 2.4-.4l172.7-64c6.1-2.2 10.1-8 10.1-14.5 0-9.3-8.1-16.5-17.3-15.4zM233.2 512c3.7 0 6.8-3 6.8-6.8v-52.6c0-8.1-6.1-14.9-14.1-15.9l-160.6-19c-9.2-1.1-17.3 6.1-17.3 15.4 0 6.5 4 12.3 10.1 14.5l172.7 64c.8.3 1.6.4 2.4.4zM41.7 382.9l170.9 20.2c7.8.9 13.4-7.5 9.5-14.3l-85.7-150c-5.9-10.4-20.7-10.8-27.3-.8L30.2 358.2c-6.5 9.9-.3 23.3 11.5 24.7zm439.6-24.8-78.4-120c-6.5-10-21.4-9.6-27.3.8l-85.4 149.6c-3.9 6.8 1.6 15.2 9.5 14.3l170.1-20c11.8-1.4 18-14.7 11.5-24.6zm-216.9 11 78.4-137.2c6.1-10.7-1.6-23.9-13.9-23.9H183.1c-12.3 0-20 13.3-13.9 23.9l78.4 137.2c3.7 6.4 13 6.4 16.7 0zm-90-193.1h163.2c12.2 0 19.9-13.1 14-23.8l-80-144c-2.8-5.1-8.2-8.2-14-8.2h-3.2c-5.8 0-11.2 3.2-14 8.2l-80 144c-5.9 10.7 1.8 23.8 14 23.8z"/></svg>
 
     </a>
     ProtStruc Documentation
   </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dohlee/protstruc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dohlee/protstruc
+  </div>
+</a>
+    </div>
   
   <ul class="md-nav__list" data-md-scrollfix>
     
@@ -148,131 +268,366 @@
     
   
   
-    <li class="md-nav__item md-nav__item--active">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
       
       
         
+          
+            
+          
+        
+          
+        
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Welcome to MkDocs
+        
+        
+        <div class="md-nav__link md-nav__link--index md-nav__link--active">
+          <a href=".">Home</a>
+          
+            <label for="__nav_1">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_1">
           <span class="md-nav__icon md-icon"></span>
+          Home
         </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
-        Welcome to MkDocs
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="home/examples/" class="md-nav__link">
+        Examples
       </a>
-      
-        
+    </li>
+  
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
   
   
   
     
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+    <li class="md-nav__item md-nav__item--nested">
       
-        <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    Commands
-  </a>
-  
-</li>
       
-        <li class="md-nav__item">
-  <a href="#project-layout" class="md-nav__link">
-    Project layout
-  </a>
-  
-</li>
       
-        <li class="md-nav__item">
-  <a href="#protstruc.protstruc" class="md-nav__link">
-    protstruc.protstruc
-  </a>
-  
-</li>
       
-        <li class="md-nav__item">
-  <a href="#protstruc.protstruc.AntibodyFvStructure" class="md-nav__link">
-    AntibodyFvStructure
-  </a>
-  
-    <nav class="md-nav" aria-label="AntibodyFvStructure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.AntibodyFvStructure.inter_residue_geometry" class="md-nav__link">
-    inter_residue_geometry()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
       
-        <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch" class="md-nav__link">
-    StructureBatch
-  </a>
-  
-    <nav class="md-nav" aria-label="StructureBatch">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
-    from_dihedrals()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_xyz" class="md-nav__link">
-    from_xyz()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
-    get_backbone_dihedrals()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_c_terminal_mask" class="md-nav__link">
-    get_c_terminal_mask()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_n_terminal_mask" class="md-nav__link">
-    get_n_terminal_mask()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
-    </ul>
-  
-</nav>
+        
+          
+        
+          
+        
       
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          Getting started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started/installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/pairwise_distance_matrix/" class="md-nav__link">
+        Pairwise distance matrix
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/ramachandran_plot/" class="md-nav__link">
+        Ramachandran plot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/backbone_orientations_and_translations/" class="md-nav__link">
+        Backbone orientations/translations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/rotating_structures/" class="md-nav__link">
+        Rotating structures
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/diffusing_xyz_coordinates/" class="md-nav__link">
+        Diffusing XYZ coordinates with Gaussian noise
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/parsing_antibody_pdb/" class="md-nav__link">
+        Parsing antibody PDB files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/antibody_structure_batch/" class="md-nav__link">
+        Using AntibodyStructureBatch
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          API reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          API reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/StructureBatch/" class="md-nav__link">
+        StructureBatch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/AntibodyStructureBatch/" class="md-nav__link">
+        AntibodyStructureBatch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/geometry/" class="md-nav__link">
+        geometry
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/io/" class="md-nav__link">
+        io
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -304,91 +659,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    Commands
+  <a href="#what-is-protstruc" class="md-nav__link">
+    What is ProtStruc?
   </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-layout" class="md-nav__link">
-    Project layout
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#protstruc.protstruc" class="md-nav__link">
-    protstruc.protstruc
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#protstruc.protstruc.AntibodyFvStructure" class="md-nav__link">
-    AntibodyFvStructure
-  </a>
-  
-    <nav class="md-nav" aria-label="AntibodyFvStructure">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.AntibodyFvStructure.inter_residue_geometry" class="md-nav__link">
-    inter_residue_geometry()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch" class="md-nav__link">
-    StructureBatch
-  </a>
-  
-    <nav class="md-nav" aria-label="StructureBatch">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_dihedrals" class="md-nav__link">
-    from_dihedrals()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.from_xyz" class="md-nav__link">
-    from_xyz()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="md-nav__link">
-    get_backbone_dihedrals()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_c_terminal_mask" class="md-nav__link">
-    get_c_terminal_mask()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protstruc.protstruc.StructureBatch.get_n_terminal_mask" class="md-nav__link">
-    get_n_terminal_mask()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -406,1170 +679,114 @@
                 
                   
 
-
-<h1 id="welcome-to-mkdocs">Welcome to MkDocs</h1>
-<p>For full documentation visit <a href="https://www.mkdocs.org">mkdocs.org</a>.</p>
-<h2 id="commands">Commands</h2>
-<ul>
-<li><code>mkdocs new [dir-name]</code> - Create a new project.</li>
-<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
-<li><code>mkdocs build</code> - Build the documentation site.</li>
-<li><code>mkdocs -h</code> - Print help message and exit.</li>
-</ul>
-<h2 id="project-layout">Project layout</h2>
-<pre><code>mkdocs.yml    # The configuration file.
-docs/
-    index.md  # The documentation homepage.
-    ...       # Other markdown pages, images and other files.
-</code></pre>
-
-
-<div class="doc doc-object doc-module">
-
-
-<a id="protstruc.protstruc"></a>
-  <div class="doc doc-contents first">
-
+  
   
 
-  <div class="doc doc-children">
 
-
-
-
-
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="protstruc.protstruc.AntibodyFvStructure" class="doc doc-heading">
-          <code>AntibodyFvStructure</code>
-
-
-</h2>
-
-
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>object</code></p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AntibodyFvStructure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">pdb_path</span><span class="p">,</span>
-        <span class="n">impute_missing_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">heavy_chain_id</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
-        <span class="n">light_chain_id</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">PandasPdb</span><span class="p">()</span><span class="o">.</span><span class="n">read_pdb</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;ATOM&quot;</span><span class="p">]</span>
-
-        <span class="n">chain_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;chain_id&quot;</span><span class="p">]</span>
-        <span class="n">_max_char_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;residue_number&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="n">residue_number</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;residue_number&quot;</span><span class="p">]</span>
-            <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">_max_char_len</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">insertion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;insertion&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;residue_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chain_id</span> <span class="o">+</span> <span class="n">residue_number</span> <span class="o">+</span> <span class="n">insertion</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;x_coord&quot;</span><span class="p">,</span> <span class="s2">&quot;y_coord&quot;</span><span class="p">,</span> <span class="s2">&quot;z_coord&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
-
-        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="s2">&quot;CB&quot;</span><span class="p">]</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">atom_name</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-        <span class="n">df_piv</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
-            <span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
-                <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;atom_name&quot;</span><span class="p">,</span>
-                <span class="n">index</span><span class="o">=</span><span class="s2">&quot;residue_id&quot;</span><span class="p">,</span>
-                <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x_coord&quot;</span><span class="p">,</span> <span class="s2">&quot;y_coord&quot;</span><span class="p">,</span> <span class="s2">&quot;z_coord&quot;</span><span class="p">],</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">swaplevel</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="n">residue_ids</span> <span class="o">=</span> <span class="n">df_piv</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">residues</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">&quot;residue_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;residue_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">residue_ids</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span> <span class="o">=</span> <span class="n">residues</span><span class="o">.</span><span class="n">chain_id</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sequences</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">residues</span><span class="o">.</span><span class="n">to_records</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">chain_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">three2one</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">residue_name</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sequences</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_piv</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-
-        <span class="c1"># for i in range(1):</span>
-        <span class="c1">#     print(</span>
-        <span class="c1">#         np.linalg.norm(self.coord_per_atom[&quot;C&quot;][i] - self.coord_per_atom[&quot;N&quot;][i + 1])</span>
-        <span class="c1">#     )</span>
-
-        <span class="k">if</span> <span class="n">impute_missing_atoms</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">impute_cb_coord</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">heavy_chain_id</span> <span class="o">=</span> <span class="n">heavy_chain_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">light_chain_id</span> <span class="o">=</span> <span class="n">light_chain_id</span>
-
-    <span class="k">def</span> <span class="nf">get_sequences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="p">[</span><span class="n">chain</span><span class="p">]</span> <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">get_chain_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span>
-
-    <span class="k">def</span> <span class="nf">get_heavy_chain_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">chain_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">heavy_chain_id</span><span class="p">]</span><span class="o">.</span><span class="n">residue_number</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">get_light_chain_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">chain_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">light_chain_id</span><span class="p">]</span><span class="o">.</span><span class="n">residue_number</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">valid_coord_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="n">atom</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">pdist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom1</span><span class="o">=</span><span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="n">atom2</span><span class="o">=</span><span class="s2">&quot;CA&quot;</span><span class="p">):</span>
-        <span class="n">c1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="n">atom1</span><span class="p">]</span>
-        <span class="n">c2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="n">atom2</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">cdist</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">get_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">chain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">residues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">&quot;residue_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">residue_name</span><span class="o">.</span><span class="n">values</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">chain_id</span> <span class="o">==</span> <span class="n">chain</span><span class="p">]</span>
-            <span class="n">residues</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">&quot;residue_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">residue_name</span><span class="o">.</span><span class="n">values</span>
-
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">three2one</span><span class="p">[</span><span class="n">aa</span><span class="p">]</span> <span class="k">for</span> <span class="n">aa</span> <span class="ow">in</span> <span class="n">residues</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">impute_cb_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">]</span>
-        <span class="n">ca</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">]</span>
-
-        <span class="n">cb_coords</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">place_fourth_atom</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ca</span><span class="p">,</span> <span class="n">ideal</span><span class="o">.</span><span class="n">AB</span><span class="p">,</span> <span class="n">ideal</span><span class="o">.</span><span class="n">NAB</span><span class="p">,</span> <span class="n">ideal</span><span class="o">.</span><span class="n">BANC</span><span class="p">)</span>
-
-        <span class="n">to_fill</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_coord_mask</span><span class="p">(</span><span class="s2">&quot;CB&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][</span><span class="n">to_fill</span><span class="p">]</span> <span class="o">=</span> <span class="n">cb_coords</span><span class="p">[</span><span class="n">to_fill</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">inter_residue_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_degree</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        https://github.com/RosettaCommons/RoseTTAFold/blob/main/network/kinematics.py</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="c1"># Ca-Ca distance (Symmetric)</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;d_ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;CA&quot;</span><span class="p">)</span>
-        <span class="c1"># Cb-Cb distance (Symmetric)</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;d_cb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="s2">&quot;CB&quot;</span><span class="p">,</span> <span class="s2">&quot;CB&quot;</span><span class="p">)</span>
-        <span class="c1"># N-O distance (Non-symmetric)</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;d_no&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)</span>
-        <span class="c1"># Ca-Cb-Cb&#39;-Ca&#39; dihedral (Symmetric)</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;omega&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-            <span class="n">to_degree</span><span class="o">=</span><span class="n">to_degree</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># N-Ca-Cb-Cb&#39; dihedral (Non-symmetric)</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-            <span class="n">to_degree</span><span class="o">=</span><span class="n">to_degree</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># Ca-Cb-Cb&#39; planar angle (Non-symmetric)</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;phi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-            <span class="n">to_degree</span><span class="o">=</span><span class="n">to_degree</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">ret</span>
-
-    <span class="k">def</span> <span class="nf">totensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.AntibodyFvStructure.inter_residue_geometry" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">inter_residue_geometry</span><span class="p">(</span><span class="n">to_degree</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>https://github.com/RosettaCommons/RoseTTAFold/blob/main/network/kinematics.py</p>
-
-          <details class="quote">
-            <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">inter_residue_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_degree</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    https://github.com/RosettaCommons/RoseTTAFold/blob/main/network/kinematics.py</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="c1"># Ca-Ca distance (Symmetric)</span>
-    <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;d_ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;CA&quot;</span><span class="p">)</span>
-    <span class="c1"># Cb-Cb distance (Symmetric)</span>
-    <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;d_cb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="s2">&quot;CB&quot;</span><span class="p">,</span> <span class="s2">&quot;CB&quot;</span><span class="p">)</span>
-    <span class="c1"># N-O distance (Non-symmetric)</span>
-    <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;d_no&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)</span>
-    <span class="c1"># Ca-Cb-Cb&#39;-Ca&#39; dihedral (Symmetric)</span>
-    <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;omega&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="n">to_degree</span><span class="o">=</span><span class="n">to_degree</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="c1"># N-Ca-Cb-Cb&#39; dihedral (Non-symmetric)</span>
-    <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="n">to_degree</span><span class="o">=</span><span class="n">to_degree</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="c1"># Ca-Cb-Cb&#39; planar angle (Non-symmetric)</span>
-    <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;phi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coord_per_atom</span><span class="p">[</span><span class="s2">&quot;CB&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="n">to_degree</span><span class="o">=</span><span class="n">to_degree</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">ret</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="protstruc.protstruc.StructureBatch" class="doc doc-heading">
-          <code>StructureBatch</code>
-
-
-</h2>
-
-
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>object</code></p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
-<span class="normal"> 19</span>
-<span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">StructureBatch</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">chain_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">xyz</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_n_atoms_per_residue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span> <span class="o">=</span> <span class="n">chain_ids</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Chain ids should start from zero&quot;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xyz</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xyz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">chain_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a StructureBatch from a 3D coordinate array.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            xyz (np.ndarray): Shape: (batch_size, num_residues, num_atoms, 3)</span>
-<span class="sd">            chain_ids (np.ndarray, optional): Chain identifiers for each residue.</span>
-<span class="sd">                Should be starting from zero. Defaults to None.</span>
-<span class="sd">                Shape: (batch_size, num_residues)</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            StructureBatch: A StructureBatch object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">chain_ids</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dihedrals</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dihedrals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">chain_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a StructureBatch from a dihedral angle array.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            dihedrals (np.ndarray): Shape: (batch_size, num_residues, num_dihedrals)</span>
-<span class="sd">            chain_ids (np.ndarray, optional): Chain identifiers for each residue.</span>
-<span class="sd">                Should be starting from zero. Defaults to None.</span>
-<span class="sd">                Shape: (batch_size, num_residues)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Implement this</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">get_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span>
-
-    <span class="k">def</span> <span class="nf">get_max_n_atoms_per_residue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_atoms_per_residue</span>
-
-    <span class="k">def</span> <span class="nf">get_n_terminal_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a boolean mask for the N-terminal residues.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            np.ndarray: Shape: (batch_size, num_residues)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">padded</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">padded</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">get_c_terminal_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a boolean mask for the C-terminal residues.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            np.ndarray: Shape: (batch_size, num_residues)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">padded</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">padded</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">get_backbone_dihedrals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the backbone dihedral angles.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            np.ndarray: Shape: (batch_size, num_residues, 3)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">n_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">N_IDX</span><span class="p">]</span>
-        <span class="n">ca_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">CA_IDX</span><span class="p">]</span>
-        <span class="n">c_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">C_IDX</span><span class="p">]</span>
-
-        <span class="n">nterm</span><span class="p">,</span> <span class="n">cterm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_n_terminal_mask</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_c_terminal_mask</span><span class="p">()</span>
-
-        <span class="n">phi</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-            <span class="n">c_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">ca_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">c_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-        <span class="p">)</span>
-        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="n">phi</span><span class="p">[</span><span class="n">nterm</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-        <span class="n">psi</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-            <span class="n">n_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ca_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-        <span class="p">)</span>
-        <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="n">psi</span><span class="p">[</span><span class="n">cterm</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-        <span class="n">omega</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-            <span class="n">ca_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">ca_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-        <span class="p">)</span>
-        <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="n">omega</span><span class="p">[</span><span class="n">cterm</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-        <span class="n">dihedrals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">phi</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">omega</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">dihedral_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">nterm</span><span class="p">,</span> <span class="n">cterm</span><span class="p">,</span> <span class="n">cterm</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">dihedrals</span><span class="p">,</span> <span class="n">dihedral_mask</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.from_dihedrals" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_dihedrals</span><span class="p">(</span><span class="n">dihedrals</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
-  </span>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Initialize a StructureBatch from a dihedral angle array.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>dihedrals</code></td>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Shape: (batch_size, num_residues, num_dihedrals)</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>chain_ids</code></td>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Chain identifiers for each residue.
-Should be starting from zero. Defaults to None.
-Shape: (batch_size, num_residues)</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">from_dihedrals</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dihedrals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">chain_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize a StructureBatch from a dihedral angle array.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        dihedrals (np.ndarray): Shape: (batch_size, num_residues, num_dihedrals)</span>
-<span class="sd">        chain_ids (np.ndarray, optional): Chain identifiers for each residue.</span>
-<span class="sd">            Should be starting from zero. Defaults to None.</span>
-<span class="sd">            Shape: (batch_size, num_residues)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Implement this</span>
-    <span class="k">pass</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.from_xyz" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">chain_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
-  </span>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Initialize a StructureBatch from a 3D coordinate array.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>xyz</code></td>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Shape: (batch_size, num_residues, num_atoms, 3)</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>chain_ids</code></td>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Chain identifiers for each residue.
-Should be starting from zero. Defaults to None.
-Shape: (batch_size, num_residues)</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-<td><code>StructureBatch</code></td>          <td>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A StructureBatch object.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">from_xyz</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xyz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">chain_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize a StructureBatch from a 3D coordinate array.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        xyz (np.ndarray): Shape: (batch_size, num_residues, num_atoms, 3)</span>
-<span class="sd">        chain_ids (np.ndarray, optional): Chain identifiers for each residue.</span>
-<span class="sd">            Should be starting from zero. Defaults to None.</span>
-<span class="sd">            Shape: (batch_size, num_residues)</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        StructureBatch: A StructureBatch object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">chain_ids</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.get_backbone_dihedrals" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_backbone_dihedrals</span><span class="p">()</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Return the backbone dihedral angles.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>np.ndarray: Shape: (batch_size, num_residues, 3)</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_backbone_dihedrals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the backbone dihedral angles.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        np.ndarray: Shape: (batch_size, num_residues, 3)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">n_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">N_IDX</span><span class="p">]</span>
-    <span class="n">ca_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">CA_IDX</span><span class="p">]</span>
-    <span class="n">c_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">C_IDX</span><span class="p">]</span>
-
-    <span class="n">nterm</span><span class="p">,</span> <span class="n">cterm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_n_terminal_mask</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_c_terminal_mask</span><span class="p">()</span>
-
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-        <span class="n">c_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">ca_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">c_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-    <span class="p">)</span>
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-    <span class="n">phi</span><span class="p">[</span><span class="n">nterm</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="n">psi</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-        <span class="n">n_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ca_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-    <span class="p">)</span>
-    <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-    <span class="n">psi</span><span class="p">[</span><span class="n">cterm</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="n">omega</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">dihedral</span><span class="p">(</span>
-        <span class="n">ca_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">ca_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-    <span class="p">)</span>
-    <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-    <span class="n">omega</span><span class="p">[</span><span class="n">cterm</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="n">dihedrals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">phi</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">omega</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">dihedral_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">nterm</span><span class="p">,</span> <span class="n">cterm</span><span class="p">,</span> <span class="n">cterm</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dihedrals</span><span class="p">,</span> <span class="n">dihedral_mask</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.get_c_terminal_mask" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_c_terminal_mask</span><span class="p">()</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Return a boolean mask for the C-terminal residues.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>np.ndarray: Shape: (batch_size, num_residues)</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_c_terminal_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a boolean mask for the C-terminal residues.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        np.ndarray: Shape: (batch_size, num_residues)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">padded</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">padded</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="protstruc.protstruc.StructureBatch.get_n_terminal_mask" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_n_terminal_mask</span><span class="p">()</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Return a boolean mask for the N-terminal residues.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>np.ndarray: Shape: (batch_size, num_residues)</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>protstruc/protstruc.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_n_terminal_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a boolean mask for the N-terminal residues.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        np.ndarray: Shape: (batch_size, num_residues)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chain_ids</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">padded</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">padded</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
+<h1 id="protstruc">ProtStruc</h1>
+<p><a href="https://badge.fury.io/py/protstruc"><img alt="PyPI version" src="https://badge.fury.io/py/protstruc.svg" /></a>
+<a href="https://dohlee.github.io/protstruc"><img alt="Documentation" src="https://img.shields.io/badge/documentation-link-blue.svg" /></a>
+<a href="https://github.com/psf/black"><img alt="Black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
+<h2 id="what-is-protstruc">What is ProtStruc?</h2>
+<p>ProtStruc is a Python package for handling protein structures, especially for deep learning applications,
+through a simple, flexible, and efficient representation of protein structures.</p>
+<p>There are many ways to represent protein structures in various deep learning applications:</p>
+<table>
+<thead>
+<tr>
+<th>Year &amp; Source</th>
+<th>Category</th>
+<th>Deep learning application</th>
+<th>Protein structure representation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020, <em>PNAS</em></td>
+<td>Structure prediction</td>
+<td><a href="https://doi.org/10.1073/pnas.1914677117">TrRoseTTA</a></td>
+<td><strong>Inter-residue geometry</strong></td>
+</tr>
+<tr>
+<td>2021, <em>Science</em></td>
+<td>Structure prediction</td>
+<td><a href="https://doi.org/10.1126/science.abj8754">RoseTTAFold</a></td>
+<td><strong>Inter-residue geometry</strong></td>
+</tr>
+<tr>
+<td>2021, <em>Nature</em></td>
+<td>Structure prediction</td>
+<td><a href="https://doi.org/10.1038/s41586-021-03819-2">AlphaFold2</a></td>
+<td><strong>Orientation &amp; translation</strong> of backbone frames centered at Ca's</td>
+</tr>
+<tr>
+<td>2022, <em>Patterns</em></td>
+<td>Structure prediction</td>
+<td><a href="https://www.sciencedirect.com/science/article/pii/S2666389921002804">DeepAb</a></td>
+<td><strong>Inter-residue geometry</strong></td>
+</tr>
+<tr>
+<td>2023, <em>Nat. Commun.</em></td>
+<td>Antibody structure prediction</td>
+<td><a href="https://doi.org/10.1038/s41467-023-38063-x">IgFold</a></td>
+<td><strong>Oritentation &amp; translation</strong> of backbone frames centered at Ca's</td>
+</tr>
+<tr>
+<td>2022, <em>arXiv</em></td>
+<td>Structure generation</td>
+<td><a href="https://arxiv.org/abs/2209.15611">FoldingDiff</a></td>
+<td><strong>Three backbone dihedrals and three bond angles</strong></td>
+</tr>
+<tr>
+<td>2022, <em>NeurIPS</em></td>
+<td>Structure generation</td>
+<td><a href="https://doi.org/10.1101/2022.07.10.499510">DiffAb</a></td>
+<td><strong>Orientation &amp; translation</strong> of backbone frames centered at Ca's</td>
+</tr>
+<tr>
+<td>2022, <em>Science</em></td>
+<td>Inverse-folding</td>
+<td><a href="https://doi.org/10.1126/science.add2187">ProteinMPNN</a></td>
+<td><strong>k-nearest neighbor graph</strong></td>
+</tr>
+<tr>
+<td>2022, <em>arXiv</em></td>
+<td>Inverse-folding</td>
+<td><a href="https://arxiv.org/abs/2209.12643">PiFold</a></td>
+<td><strong>Inter-atomic/residue distance, backbone dihedrals and bond angles, orientation of residue frame, inter-residue orientations</strong></td>
+</tr>
+<tr>
+<td>2023, <em>Science</em></td>
+<td>Structure prediction</td>
+<td><a href="https://www.science.org/doi/10.1126/science.ade2574">ESMFold</a></td>
+<td><strong>Orientation &amp; translation</strong> of backbone frames centered at Ca's</td>
+</tr>
+<tr>
+<td>2023, <em>ICML</em></td>
+<td>Structure generation</td>
+<td><a href="https://arxiv.org/abs/2302.02277">FrameDiff</a></td>
+<td><strong>Orientation &amp; translation</strong> of backbone frames centered at Ca's, an additional torsion angle for oxygen atom</td>
+</tr>
+<tr>
+<td>2022, <em>ICML</em></td>
+<td>Structure generation</td>
+<td><a href="https://arxiv.org/abs/2207.06616">Hierarchical Equivariant Refinement Network (HERN)</a></td>
+<td></td>
+</tr>
+<tr>
+<td>2022, <em>arXiv</em></td>
+<td>Sequence-structure co-design</td>
+<td><a href="https://arxiv.org/abs/2208.06073">Multi-channel Equivariant Attention Network (MEAN)</a></td>
+<td></td>
+</tr>
+<tr>
+<td>2023, <em>ICML</em></td>
+<td>Sequence-structure co-design</td>
+<td><a href="https://arxiv.org/abs/2302.00203">Dynamic multi-channel Equivariant Attention Network (dyMEAN)</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -1607,7 +824,7 @@ Shape: (batch_size, num_residues)</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.copy", "navigation.tabs", "navigation.sections", "navigation.indexes"], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="assets/javascripts/bundle.220ee61c.min.js"></script>
