@@ -789,6 +789,22 @@ class StructureBatch:
 
         return ret
 
+    def diffuse_xyz(self, beta: torch.FloatTensor):
+        """Add Gaussian noises of given variance `beta` to the atom 3D coordinates of the structures.
+        This may be conceived as a single diffusion step of the Langevin dynamics
+        from timestep t-1 to t.
+
+        Note:
+            This operation modifies the xyz coordinate in an in-place manner.
+
+        Args:
+            beta: Variance of the Gaussian noise. Shape: (batch_size,)
+        """
+        beta = rearrange(beta, "b -> b () () ()")
+        noise = torch.randn_like(self.xyz) * beta.sqrt()
+
+        self.xyz = (1 - beta).sqrt() * self.xyz + noise
+
 
 class AntibodyStructureBatch(StructureBatch):
     def __init__(

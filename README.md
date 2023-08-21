@@ -98,6 +98,45 @@ plt.axis('off')
 
 <img src="img/pembrolizumab_distmat.png" width="300px">
 
+### Diffusing 3D atom coordinates by adding Gaussian noise
+
+We often need to add Gaussian noises to 3D atom coordinates to train Euclidean diffusion models for protein structure generation.
+A `StructureBatch` object provides a handy method `diffuse_xyz` to add Gaussian noises of zero mean and given variances to 3D atom coordinates.
+
+```python
+# Diffusion parameters
+T = 300
+sched = cosine_variance_schedule(T)
+prt_idx, atom_idx = 0, ATOM.CA # only show Ca atoms for visual clarity
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+struc = StructureBatch.from_pdb_id('5dk3')
+# Center atom coordinates at the origin and scale to unit variance
+# NOTE: All atoms are considered here
+struc.standardize()
+
+ims = []
+for t in range(T):
+    xyz = struc.get_xyz()
+    im1 = ax.scatter(
+        xyz[prt_idx, :, atom_idx, 0],
+        xyz[prt_idx, :, atom_idx, 1],
+        xyz[prt_idx, :, atom_idx, 2],
+        c='C1'
+    )
+    ax.view_init(-10, 20, 90)
+    ims.append([im1])
+
+    # Add Gaussian noise to the structure
+    struc.diffuse_xyz(beta=torch.tensor([sched['beta'][t]]))
+
+ani = animation.ArtistAnimation(fig, ims, interval=100, blit=True, repeat_delay=1000)
+ani.save(f'animations/pembrolizumab_diffusion.gif')
+```
+
+<img src="img/pembrolizumab_diffusion.gif" height="300px">
+
 ## Testing
 
 To test the integrity of the package, run the following command:
