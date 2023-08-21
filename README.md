@@ -10,8 +10,22 @@ Dealing with a batch of protein structures is a common task in this new era of a
 This package, `protstruc`, provides an easy-to-use interface to handle a batch of protein structures, while specifically designed for deep learning applications based on PyTorch.
 `protstruc` provides various features including:
 
-- Computing geometric features of a protein structure (e.g., pairwise distance matrix, backbone dihedrals, backbone orientations, backbone translations, pairwise dihedrals and pairwise planar angles)
-- Manipulation of protein structures (e.g., selecting specific chains, selecting specific residues, rotating the structure, translating the structure, zeroing the center-of-mass, etc.)
+- Computing geometric features of a protein structure
+
+  - pairwise distance matrix
+  - backbone dihedrals
+  - backbone orientations
+  - backbone translations
+  - pairwise dihedrals
+  - pairwise planar angles
+
+* Manipulation of protein structures
+  - selecting specific chains
+  - selecting specific residues
+  - rotating the structure
+  - translating the structure
+  - zeroing center-of-mass
+  - diffusing (adding Gaussian noise) atom 3D coordinates
 
 There are many options to initialize the core data structure for a batch of protein structures, `StructureBatch`:
 
@@ -107,7 +121,7 @@ A `StructureBatch` object provides a handy method `diffuse_xyz` to add Gaussian 
 # Diffusion parameters
 T = 300
 sched = cosine_variance_schedule(T)
-prt_idx, atom_idx = 0, ATOM.CA # only show Ca atoms for visual clarity
+prt_idx = 0
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -120,9 +134,9 @@ ims = []
 for t in range(T):
     xyz = struc.get_xyz()
     im1 = ax.scatter(
-        xyz[prt_idx, :, atom_idx, 0],
-        xyz[prt_idx, :, atom_idx, 1],
-        xyz[prt_idx, :, atom_idx, 2],
+        xyz[prt_idx, :, ATOM.CA, 0],
+        xyz[prt_idx, :, ATOM.CA, 1],
+        xyz[prt_idx, :, ATOM.CA, 2],
         c='C1'
     )
     ax.view_init(-10, 20, 90)

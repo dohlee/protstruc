@@ -14,7 +14,7 @@ import numpy as np
 
 from typing import Union, Tuple, List
 from sklearn.manifold import MDS
-from einops import repeat
+from einops import repeat, rearrange
 from .constants import ideal
 from .decorator import with_tensor
 
@@ -437,3 +437,44 @@ def gram_schmidt(
     e3 = torch.cross(e1, e2)
 
     return torch.stack([e1, e2, e3], dim=-1)
+
+
+def kabsch(a: torch.Tensor, b: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Compute the optimal rotation matrix and translation vector that minimizes
+    the RMSD between two sets of coordinates `a` and `b`, when applied to `a`.
+
+    Args:
+        a: A set of 3D coordinates. Shape: n, 3
+        b: A set of 3D coordinates. Shape: n, 3
+
+    Returns:
+        rotation_matrix: Shape: 3, 3
+        translation_vector: Shape: 3
+    """
+    # compute centroids
+    centroid_a = a.mean(dim=-2, keepdim=True)
+    centroid_b = b.mean(dim=-2, keepdim=True)
+
+    # compute centered coordinates
+    a_centered = a - centroid_a
+    b_centered = b - centroid_b
+
+    # compute covariance matrix
+    h = torch.einsum("ki,kj->ij", a_centered, b_centered)
+
+    # compute optimal rotation matrix
+    u, _, vt = torch.linalg.svd(h)
+    v, ut = vt.transpose(-2, -1), u.transpose(-2, -1)
+
+    d = torch.sign(torch.linalg.det(torch.einsum("ij,jk->ik", v, ut)))
+    diag = torch.eye(3).expand_as(h).clone()
+    diag[2, 2] = d
+
+    rotation_matrix = torch.einsum("ij,jk,kl->...il", v, diag, ut)
+
+    # compute optimal translation vector
+    translation_vector = centroid_b.squeeze(-2) - torch.einsum(
+        "ij,j->i", rotation_matrix, centroid_a.squeeze(-2)
+    )
+
+    return rotation_matrix, translation_vector

@@ -260,3 +260,13 @@ def test_ideal_backbone_coordinates():
 
     # check that the ideal coordinates results in identity frame
     assert (frame == torch.eye(3).expand(bsz, n_res, -1, -1)).all()
+
+
+def test_kabsch():
+    n_atoms = 100
+    a = torch.randn(n_atoms, 3)
+    b = torch.randn(n_atoms, 3)
+
+    rotations, translations = geom.kabsch(a, b)
+    assert rotations.shape == (3, 3)
+    assert translations.shape == (3,)

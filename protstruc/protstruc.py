@@ -314,6 +314,9 @@ class StructureBatch:
         # TODO: Implement this
         pass
 
+    def get_batch_size(self) -> int:
+        return self.batch_size
+
     def get_xyz(self):
         return self.xyz
 
@@ -804,6 +807,46 @@ class StructureBatch:
         noise = torch.randn_like(self.xyz) * beta.sqrt()
 
         self.xyz = (1 - beta).sqrt() * self.xyz + noise
+
+    def align(
+        self, target: "StructureBatch", atom_mask: torch.BoolTensor = None
+    ) -> torch.Tensor:
+        """Align the structures to a given structure.
+
+        Args:
+            target: StructureBatch to align to.
+            atom_mask: Mask for atoms used for alignment. If None, all atoms are used.
+
+        Returns:
+            rotation: Rotation matrices used for the alignment.
+                Shape: (batch_size, 3, 3)
+        """
+        if target.get_batch_size() != 1 and self.batch_size != target.get_batch_size():
+            raise ValueError("Batch size of the two structures must be the same.")
+
+        if atom_mask is None:
+            atom_mask = self.atom_mask * target.get_atom_mask()
+
+        source_xyz = rearrange(self.get_xyz(), "b n a c -> b (n a) c")
+        target_xyz = rearrange(target.get_xyz(), "b n a c -> b (n a) c")
+
+        atom_mask = rearrange(atom_mask, "b n a -> b (n a)").bool()
+
+        rotations, translations = [], []
+        for source, target, mask in zip(source_xyz, target_xyz, atom_mask):
+            source = source[mask]
+            target = target[mask]
+            # compute rotation matrix and translation vectors
+            r, t = geom.kabsch(source, target)
+
+            rotations.append(r)
+            translations.append(t)
+
+        rotations, translations = torch.stack(rotations), torch.stack(translations)
+
+        # apply rotation and translation
+        self.rotate(rotations)
+        self.translate(translations.unsqueeze(1))
 
 
 class AntibodyStructureBatch(StructureBatch):
