@@ -135,7 +135,7 @@ ani = animation.ArtistAnimation(fig, ims, interval=100, blit=True, repeat_delay=
 ani.save(f'animations/pembrolizumab_diffusion.gif')
 ```
 
-<img src="img/pembrolizumab_diffusion.gif" height="300px">
+<img src="img/pembrolizumab_diffusion.gif">
 
 ## Testing
 
