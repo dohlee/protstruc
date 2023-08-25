@@ -4,7 +4,7 @@ setup(
     name="protstruc",
     packages=find_packages(exclude=[]),
     include_package_data=True,
-    version="0.0.2",
+    version="0.0.3",
     license="MIT",
     description="Utility library for handling protein structures in Python.",
     author="Dohoon Lee",
