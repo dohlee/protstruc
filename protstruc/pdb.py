@@ -32,7 +32,7 @@ def tidy_structure(structure: struc.AtomArray) -> struc.AtomArray:
 
     # retain only standard residues names
     # hopefully this will discard non-peptide chains, too
-    mask = struc.filter_amino_acids(structure)
+    mask = struc.filter_canonical_amino_acids(structure)
     structure = structure[mask]
 
     # retain only heavy atoms with standard names
