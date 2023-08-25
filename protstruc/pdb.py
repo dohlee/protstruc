@@ -127,7 +127,9 @@ class ChothiaAntibodyPDB:
         mask = (mask_heavy & mask_vh) | (mask_light & mask_vl)
 
         if self.antigen_chain_ids is not None:
-            mask_ag = self.pdb_df.chain_id.isin(self.antigen_chain_ids)  # antigen
+            mask_ag = np.isin(
+                self.structure.chain_id, self.antigen_chain_ids
+            )  # antigen
             mask |= mask_ag
 
         self.structure = self.structure[mask]
