@@ -1,17 +1,40 @@
 import torch
+import numpy as np
 import pandas as pd
 
 from biopandas.pdb import PandasPdb
+import biotite.structure as struc
+from biotite.structure.io.pdb import PDBFile
 from typing import List, Tuple, Union
 from collections import defaultdict
 from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
 from protstruc.general import (
     restype_to_heavyatom_names,
-    resindex_to_oneletter,
     non_standard_residue_substitutions,
     standard_aa_names,
     AA,
 )
+
+
+def _always_list(x):
+    if isinstance(x, list):
+        return x
+    else:
+        return [x]
+
+
+def tidy_structure(structure: struc.AtomArray) -> struc.AtomArray:
+    # convert non-standard residues to standard residues
+    standardize = non_standard_residue_substitutions
+    standardized = [standardize.get(r, r) for r in structure.res_name]
+    structure.res_name = standardized
+
+    # retain only standard residues names
+    # hopefully this will discard non-peptide chains, too
+    mask = struc.filter_amino_acids(structure)
+    structure = structure[mask]
+
+    return structure
 
 
 def tidy_pdb(pdb_df: pd.DataFrame) -> pd.DataFrame:
@@ -26,13 +49,6 @@ def tidy_pdb(pdb_df: pd.DataFrame) -> pd.DataFrame:
     return pdb_df
 
 
-def _always_list(x):
-    if isinstance(x, list):
-        return x
-    else:
-        return [x]
-
-
 class ChothiaAntibodyPDB:
     fv_heavy_range = (1, 113)
     fv_light_range = (1, 106)
@@ -45,13 +61,13 @@ class ChothiaAntibodyPDB:
 
     def __init__(
         self,
-        pdb_df,
+        structure: struc.AtomArray,
         heavy_chain_id,
         light_chain_id,
         antigen_chain_ids: List[str] = None,
         keep_fv_only: bool = False,
     ):
-        self.pdb_df = pdb_df
+        self.structure = structure
 
         self.heavy_chain_id = heavy_chain_id
         self.light_chain_id = light_chain_id
@@ -62,7 +78,7 @@ class ChothiaAntibodyPDB:
         if self.keep_fv_only:
             self._retain_only_fv()
 
-        self._compute_lookup()
+        self._initialize_lookup()
         self.n_residues = len(self._lookup)
 
         self._compute_atom_xyz()
@@ -76,73 +92,89 @@ class ChothiaAntibodyPDB:
         antigen_chain_ids: Union[str, List[str]] = None,
         keep_fv_only: bool = False,
     ) -> "ChothiaAntibodyPDB":
-        pdb_df = PandasPdb().read_pdb(fp).df["ATOM"]
-        pdb_df = tidy_pdb(pdb_df)
+        structure = PDBFile.read(fp).get_structure(model=1)  # take the first model
+        structure = tidy_structure(structure)
+
         antigen_chain_ids = _always_list(antigen_chain_ids)
         return cls(
-            pdb_df, heavy_chain_id, light_chain_id, antigen_chain_ids, keep_fv_only
+            structure, heavy_chain_id, light_chain_id, antigen_chain_ids, keep_fv_only
         )
 
     def _retain_only_relevant_chains(self):
-        if self.antigen_chain_ids is None:
-            mask = self.pdb_df.chain_id.isin([self.heavy_chain_id, self.light_chain_id])
-        else:
-            mask = self.pdb_df.chain_id.isin(
-                [self.heavy_chain_id, self.light_chain_id] + self.antigen_chain_ids
-            )
+        target_chains = [self.heavy_chain_id, self.light_chain_id]
 
-        self.pdb_df = self.pdb_df[mask]
+        if self.antigen_chain_ids is not None:
+            target_chains += self.antigen_chain_ids
+
+        mask = np.isin(self.structure.chain_id, target_chains)
+        self.structure = self.structure[mask]
 
     def _retain_only_fv(self):
-        mask_heavy = self.pdb_df.chain_id == self.heavy_chain_id
-        mask_light = self.pdb_df.chain_id == self.light_chain_id
+        hmin, hmax = self.fv_heavy_range
+        lmin, lmax = self.fv_light_range
 
-        mask_vh = self.pdb_df.residue_number.between(*self.fv_heavy_range)
-        mask_vl = self.pdb_df.residue_number.between(*self.fv_light_range)
+        mask_heavy = self.structure.chain_id == self.heavy_chain_id
+        mask_light = self.structure.chain_id == self.light_chain_id
+        mask_vh = (hmin <= self.structure.res_id) & (self.structure.res_id <= hmax)
+        mask_vl = (lmin <= self.structure.res_id) & (self.structure.res_id <= lmax)
 
-        if self.antigen_chain_ids is None:
-            mask = (mask_heavy & mask_vh) | (mask_light & mask_vl)
-        else:
+        mask = (mask_heavy & mask_vh) | (mask_light & mask_vl)
+
+        if self.antigen_chain_ids is not None:
             mask_ag = self.pdb_df.chain_id.isin(self.antigen_chain_ids)  # antigen
-            mask = (mask_heavy & mask_vh) | (mask_light & mask_vl) | mask_ag
+            mask |= mask_ag
 
-        self.pdb_df = self.pdb_df[mask]
+        self.structure = self.structure[mask]
 
-    def _compute_lookup(self):
-        dedup_subset = ["chain_id", "residue_number", "insertion"]
-        pdb_df_dedup = self.pdb_df.drop_duplicates(subset=dedup_subset)
+    def _fill_lookup(
+        self, chain_id, residue_number, insertion, threeletter, oneletter, idx
+    ):
+        """Fill the lookup table with a new entry."""
+        self._lookup["internal_idx"].append(idx)
+        self._lookup["chain_id"].append(chain_id)
+        self._lookup["residue_number"].append(residue_number)
+        self._lookup["insertion"].append(insertion)
+        self._lookup["threeletter"].append(threeletter)
+        self._lookup["oneletter"].append(oneletter)
 
+    def _initialize_lookup(self):
+        """Initialize a lookup table mapping (chain_id, residue_number, insertion) to
+        internal index.
+        """
         self._lookup = defaultdict(list)
+
         idx = 0
+        curr_chain_id, curr_residue_number = None, None
+        for r in struc.residue_iter(self.structure):
+            chain_id = r.chain_id[0]
+            residue_number = r.res_id[1]
+            insertion = r.ins_code[0]
+            threeletter = r.res_name[0]
+            oneletter = AA[threeletter].oneletter()
 
-        curr_chain_id, curr_residue_number, curr_insertion = None, None, None
-        for r in pdb_df_dedup.to_records():
-            if curr_chain_id is None or curr_chain_id != r.chain_id:
-                curr_chain_id = r.chain_id
-                curr_residue_number = r.residue_number
-                curr_insertion = r.insertion
+            if curr_chain_id is None or curr_chain_id != chain_id:
+                curr_chain_id = chain_id
+                curr_residue_number = residue_number
 
-            while curr_residue_number + 1 < r.residue_number:
-                self._lookup["internal_idx"].append(idx)
-                self._lookup["chain_id"].append(curr_chain_id)
-                self._lookup["residue_number"].append(curr_residue_number + 1)
-                self._lookup["insertion"].append(curr_insertion)
-                self._lookup["residue_name"].append("UNK")
-                self._lookup["oneletter"].append(AA["UNK"].oneletter())
+            # fill the missing in-between residues with a dummy residue internally
+            while curr_residue_number + 1 < residue_number:
+                self._fill_lookup(
+                    curr_chain_id,
+                    curr_residue_number + 1,
+                    insertion,
+                    "UNK",
+                    AA["UNK"].oneletter(),
+                    idx,
+                )
                 curr_residue_number += 1
                 idx += 1
 
-            self._lookup["internal_idx"].append(idx)
-            self._lookup["chain_id"].append(r.chain_id)
-            self._lookup["residue_number"].append(r.residue_number)
-            self._lookup["insertion"].append(r.insertion)
-            self._lookup["residue_name"].append(r.residue_name)
-            self._lookup["oneletter"].append(AA[r.residue_name].oneletter())
+            self._fill_lookup(
+                chain_id, residue_number, insertion, threeletter, oneletter, idx
+            )
 
-            curr_chain_id = r.chain_id
-            curr_residue_number = r.residue_number
-            curr_insertion = r.insertion
-
+            curr_chain_id = chain_id
+            curr_residue_number = residue_number
             idx += 1
 
         self._lookup = pd.DataFrame(self._lookup)
@@ -161,34 +193,38 @@ class ChothiaAntibodyPDB:
             self.n_residues, MAX_N_ATOMS_PER_RESIDUE, dtype=torch.bool
         )
 
-        for r in self.pdb_df.to_records():
-            cri = (r.chain_id, r.residue_number, r.insertion)
+        for r in struc.residue_iter(self.structure):
+            cri = (r.chain_id[0], r.res_id[1], r.ins_code[0])
             internal_idx = self.cri2idx[cri]
 
-            heavyatom_names_for_residue = restype_to_heavyatom_names[AA[r.residue_name]]
-            atom_idx = heavyatom_names_for_residue.index(r.atom_name)
+            residue_name = r.res_name[0]
+            heavyatom_names_for_residue = restype_to_heavyatom_names[AA[residue_name]]
 
-            self.atom_xyz[internal_idx, atom_idx] = torch.tensor(
-                [r.x_coord, r.y_coord, r.z_coord]
-            )
-            self.atom_xyz_mask[internal_idx, atom_idx] = True
+            for atom in r:
+                atom_idx = heavyatom_names_for_residue.index(atom.atom_name)
 
-    def get_heavy_chain_pdb_df(self):
-        return self.pdb_df.query(f"chain_id == '{self.heavy_chain_id}'")
+                self.atom_xyz[internal_idx, atom_idx] = torch.tensor(atom.coord)
+                self.atom_xyz_mask[internal_idx, atom_idx] = True
 
-    def get_light_chain_pdb_df(self):
-        return self.pdb_df.query(f"chain_id == '{self.light_chain_id}'")
+    def get_heavy_chain_structure(self):
+        mask = self.structure.chain_id == self.heavy_chain_id
+        return self.structure[mask]
 
-    def get_antigen_chains_pdb_df(self):
+    def get_light_chain_structure(self):
+        mask = self.structure.chain_id == self.light_chain_id
+        return self.structure[mask]
+
+    def get_antigen_chains_structure(self):
         if self.antigen_chain_ids is None:
             return None
         else:
-            return self.pdb_df.query(f"chain_id in {self.antigen_chain_ids}")
+            mask = np.isin(self.structure.chain_id, self.antigen_chain_ids)
+            return self.structure[mask]
 
     def get_atom_xyz(self) -> Tuple[torch.FloatTensor, torch.LongTensor]:
         return self.atom_xyz, self.atom_xyz_mask
 
-    def get_chain_idx(self, return_chain_ids=True) -> torch.LongTensor:
+    def get_chain_idx(self) -> torch.LongTensor:
         return torch.tensor(self._lookup.chain_idx.values).long()
 
     def get_chain_ids(self) -> List[str]:
@@ -198,20 +234,17 @@ class ChothiaAntibodyPDB:
         return torch.tensor(self._lookup.internal_idx.values).long()
 
     def get_seq_idx(self) -> torch.LongTensor:
-        return torch.tensor(
-            [AA[c].value for c in self._lookup.residue_name.values]
-        ).long()
+        residue_names = self._lookup.residue_name.values
+        return torch.tensor([AA[c].value for c in residue_names]).long()
 
     def get_seq(self) -> str:
         return "".join(self._lookup.oneletter.values)
 
     def get_seq_dict(self):
         seq_dict = {}
-
         for chain_id in self.get_chain_ids():
-            seq = "".join(
-                self._lookup[self._lookup.chain_id == chain_id].oneletter.values
-            )
+            selected = self._lookup[self._lookup.chain_id == chain_id]
+            seq = "".join(selected.oneletter.values)
             seq_dict[chain_id] = seq
 
         return seq_dict

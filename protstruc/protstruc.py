@@ -23,7 +23,10 @@ atom2idx = {"N": N_IDX, "CA": CA_IDX, "C": C_IDX, "O": O_IDX, "CB": CB_IDX}
 
 
 def isnull(x):
-    return pd.isnull(x)
+    if isinstance(x, list):
+        return any([pd.isnull(_x) for _x in x])
+    else:
+        return pd.isnull(x)
 
 
 def _always_tensor(x):

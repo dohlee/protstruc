@@ -29,6 +29,7 @@ setup(
         "einops",
         "torch",
         "biopandas>=0.4.1",
+        "biotite>=0.37.0",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
