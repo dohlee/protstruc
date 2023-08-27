@@ -908,6 +908,20 @@ class AntibodyStructureBatch(StructureBatch):
         _masks = torch.stack([self.residue_masks[cdr] for cdr in subset], axis=0)
         return _masks.any(axis=0)
 
+    def get_cdr_anchor_mask(self, subset: Union[str, List[str]]) -> torch.BoolTensor:
+        if subset is None:
+            subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
+        subset = _always_list(subset)
+
+        cdr_mask = self.get_cdr_mask(subset)
+        cdr_mask_next = F.pad(cdr_mask, (1, 0), mode="constant", value=False)[:, 1:]
+        cdr_mask_prev = F.pad(cdr_mask, (0, 1), mode="constant", value=False)[:, :-1]
+
+        front_anchor_mask = ~cdr_mask & cdr_mask_next
+        back_anchor_mask = ~cdr_mask & cdr_mask_prev
+
+        return front_anchor_mask | back_anchor_mask
+
     def get_residue_idx(self) -> torch.BoolTensor:
         return self.residue_idx
 
