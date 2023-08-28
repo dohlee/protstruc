@@ -795,6 +795,42 @@ class StructureBatch:
 
         return ret
 
+    def get_topk_nearest_residue_mask(
+        self, query_xyz: torch.FloatTensor, k: int = 128, mask: torch.BoolTensor = None
+    ) -> torch.BoolTensor:
+        """Return a boolean mask for the top-k nearest residues with respect to the
+        given 3D coordinates of query points. Distances are measured using the alpha-carbon atoms.
+
+        Warning:
+            This operation is defined only for a single-size StructureBatch.
+
+        Args:
+            query_xyz: Coordinates of the query points. Shape: (num_query_points, 3)
+            k: Maximum mumber of neighboring residues to consider.
+                Defaults to min(128, n_residues).
+            mask: If given, only consider residues denoted by this mask. Defaults to None.
+
+        Returns:
+            torch.BoolTensor: Shape: (1, num_residues)
+        """
+
+        if self.batch_size > 1:
+            raise ValueError(
+                "get_topk_nearest_residue_mask method is not defined "
+                "for a StructureBatch with batch size > 1."
+            )
+
+        xyz = self.get_xyz()[0, :, ATOM.CA]
+        dist = torch.norm(
+            xyz[:, None] - query_xyz, dim=-1
+        )  # n_residues, n_query_points
+
+        dist, _ = dist.min(dim=-1)  # n_residues
+        _, idx = dist.topk(k, largest=False)  #
+        mask = torch.zeros(self.n_residues, dtype=torch.bool).scatter(0, idx, True)
+
+        return mask.unsqueeze(0)
+
     def diffuse_xyz(self, beta: torch.FloatTensor):
         """Add Gaussian noises of given variance `beta` to the atom 3D coordinates of the structures.
         This may be conceived as a single diffusion step of the Langevin dynamics
@@ -909,11 +945,33 @@ class AntibodyStructureBatch(StructureBatch):
         return _masks.any(axis=0)
 
     def get_cdr_anchor_mask(
-        self, subset: Union[str, List[str]] = None
+        self,
+        subset: Union[
+            Literal["H1", "H2", "H3", "L1", "L2", "L3"],
+            List[Literal["H1", "H2", "H3", "L1", "L2", "L3"]],
+        ] = None,
     ) -> torch.BoolTensor:
+        """Return a boolean mask for the CDR anchor residues.
+
+        Note:
+            CDR anchor residues are defined as the residues that are not in the CDRs,
+            but are adjacent to the CDRs. i.e., both a residue right before a CDR loop and
+            a residue right after a CDR loop.
+
+        Args:
+            subset: A CDR name or a list of CDR names.
+            Defaults to None, which means all CDRs are considered.
+
+        Returns:
+            torch.BoolTensor: A boolean mask tensor denoting CDR anchor residues.
+        """
         if subset is None:
             subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
         subset = _always_list(subset)
+
+        for cdr in subset:
+            if cdr not in ["H1", "H2", "H3", "L1", "L2", "L3"]:
+                raise ValueError(f"CDR {cdr} is not valid.")
 
         cdr_mask = self.get_cdr_mask(subset)
         cdr_mask_next = F.pad(cdr_mask, (0, 1), mode="constant", value=False)[:, 1:]
