@@ -900,7 +900,7 @@ class AntibodyStructureBatch(StructureBatch):
     def is_fv_only(self) -> bool:
         return self.keep_fv_only
 
-    def get_cdr_mask(self, subset: Union[str, List[str]]) -> torch.BoolTensor:
+    def get_cdr_mask(self, subset: Union[str, List[str]] = None) -> torch.BoolTensor:
         if subset is None:
             subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
         subset = _always_list(subset)
@@ -908,14 +908,16 @@ class AntibodyStructureBatch(StructureBatch):
         _masks = torch.stack([self.residue_masks[cdr] for cdr in subset], axis=0)
         return _masks.any(axis=0)
 
-    def get_cdr_anchor_mask(self, subset: Union[str, List[str]]) -> torch.BoolTensor:
+    def get_cdr_anchor_mask(
+        self, subset: Union[str, List[str]] = None
+    ) -> torch.BoolTensor:
         if subset is None:
             subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
         subset = _always_list(subset)
 
         cdr_mask = self.get_cdr_mask(subset)
-        cdr_mask_next = F.pad(cdr_mask, (1, 0), mode="constant", value=False)[:, 1:]
-        cdr_mask_prev = F.pad(cdr_mask, (0, 1), mode="constant", value=False)[:, :-1]
+        cdr_mask_next = F.pad(cdr_mask, (0, 1), mode="constant", value=False)[:, 1:]
+        cdr_mask_prev = F.pad(cdr_mask, (1, 0), mode="constant", value=False)[:, :-1]
 
         front_anchor_mask = ~cdr_mask & cdr_mask_next
         back_anchor_mask = ~cdr_mask & cdr_mask_prev
@@ -963,6 +965,7 @@ class AntibodyStructureBatch(StructureBatch):
 
         pdb_path = _always_list(pdb_path)
         bsz = len(pdb_path)
+
         cdr_keys = ["H1", "H2", "H3", "L1", "L2", "L3"]
 
         heavy_chain_id = _always_list(heavy_chain_id)
