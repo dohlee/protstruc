@@ -1,25 +1,21 @@
+from collections import defaultdict
+from typing import Dict, List, Literal, Tuple, Union
+
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
-
-from typing import List, Dict, Union, Tuple, Literal
-from biopandas.pdb import PandasPdb
-from collections import defaultdict
+from biotite.database.rcsb import fetch
 from einops import rearrange, repeat
 
 import protstruc.geometry as geom
-from protstruc.general import ATOM, AA, ressymb_to_resindex
 from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
-from protstruc.io import pdb_to_xyz, pdb_df_to_xyz
-from protstruc.pdb import ChothiaAntibodyPDB
+from protstruc.general import AA, ATOM, CDR_NAMES, ressymb_to_resindex
+from protstruc.pdb import PDB, ChothiaAntibodyPDB
 
 CC_BOND_LENGTH = 1.522
 CB_CA_N_ANGLE = 1.927
 CB_DIHEDRAL = -2.143
-
-N_IDX, CA_IDX, C_IDX, O_IDX, CB_IDX = 0, 1, 2, 3, 4
-atom2idx = {"N": N_IDX, "CA": CA_IDX, "C": C_IDX, "O": O_IDX, "CB": CB_IDX}
 
 
 def isnull(x):
@@ -158,7 +154,13 @@ class StructureBatch:
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
         chain_ids = []
         for f in pdb_path:
-            _atom_xyz, _atom_mask, _chain_idx, _chain_ids, _seq_dict = pdb_to_xyz(f)
+            pdb = PDB.read_pdb(f)
+
+            _atom_xyz, _atom_mask = pdb.get_atom_xyz()
+            _chain_idx = pdb.get_chain_idx()
+            _chain_ids = pdb.get_chain_ids()
+            _seq_dict = pdb.get_seq_dict()
+
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
             tmp_chain_idx.append(_chain_idx)
@@ -213,10 +215,12 @@ class StructureBatch:
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
         chain_ids = []
         for id in pdb_id:
-            pdb_df = PandasPdb().fetch_pdb(id).df["ATOM"]
-            _atom_xyz, _atom_mask, _chain_idx, _chain_ids, _seq_dict = pdb_df_to_xyz(
-                pdb_df
-            )
+            pdb = PDB.read_pdb(fetch(id, "pdb"))
+
+            _atom_xyz, _atom_mask = pdb.get_atom_xyz()
+            _chain_idx = pdb.get_chain_idx()
+            _chain_ids = pdb.get_chain_ids()
+            _seq_dict = pdb.get_seq_dict()
 
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
@@ -337,7 +341,7 @@ class StructureBatch:
         xyz = self.xyz  # b n a 3
 
         local_xyz = torch.einsum("bnaji,bnaj->bnai", orientation, xyz)
-        local_xyz = local_xyz - xyz[:, :, atom2idx["CA"]].unsqueeze(-2)
+        local_xyz = local_xyz - xyz[:, :, ATOM.CA].unsqueeze(-2)
         return local_xyz
 
     def get_atom_mask(self) -> torch.BoolTensor:
@@ -488,9 +492,9 @@ class StructureBatch:
                 `True` if the corresponding dihedral angle is defined, `False` otherwise.
                 Shape: (batch_size, num_residues, 3)
         """
-        n_coords = self.xyz[:, :, N_IDX]
-        ca_coords = self.xyz[:, :, CA_IDX]
-        c_coords = self.xyz[:, :, C_IDX]
+        n_coords = self.xyz[:, :, ATOM.N]
+        ca_coords = self.xyz[:, :, ATOM.CA]
+        c_coords = self.xyz[:, :, ATOM.C]
 
         nterm, cterm = self.get_n_terminal_mask(), self.get_c_terminal_mask()
 
@@ -732,7 +736,7 @@ class StructureBatch:
             center_of_mass: A tensor containing the center of mass of the structures.
                 Shape: (batch_size, 3)
         """
-        xyz_ca = self.xyz[:, :, atom2idx["CA"]]
+        xyz_ca = self.xyz[:, :, ATOM.CA]
         return xyz_ca.nanmean(axis=1)
 
     def center_at(self, center: torch.Tensor = None):
@@ -777,14 +781,14 @@ class StructureBatch:
         dist, dist_mask = self.pairwise_distance_matrix()  # b n n a a
 
         # Ca-Ca distance (Symmetric)
-        ret["d_ca"] = dist[:, :, :, atom2idx["CA"], atom2idx["CA"]]
-        ret["d_ca_mask"] = dist_mask[:, :, :, atom2idx["CA"], atom2idx["CA"]]
+        ret["d_ca"] = dist[:, :, :, ATOM.CA, ATOM.CA]
+        ret["d_ca_mask"] = dist_mask[:, :, :, ATOM.CA, ATOM.CA]
         # Cb-Cb distance (Symmetric)
-        ret["d_cb"] = dist[:, :, :, atom2idx["CB"], atom2idx["CB"]]
-        ret["d_cb_mask"] = dist_mask[:, :, :, atom2idx["CB"], atom2idx["CB"]]
+        ret["d_cb"] = dist[:, :, :, ATOM.CB, ATOM.CB]
+        ret["d_cb_mask"] = dist_mask[:, :, :, ATOM.CB, ATOM.CB]
         # N-O distance (Non-symmetric)
-        ret["d_no"] = dist[:, :, :, atom2idx["N"], atom2idx["O"]]
-        ret["d_no_mask"] = dist_mask[:, :, :, atom2idx["N"], atom2idx["O"]]
+        ret["d_no"] = dist[:, :, :, ATOM.N, ATOM.O]
+        ret["d_no_mask"] = dist_mask[:, :, :, ATOM.N, ATOM.O]
 
         # Ca-Cb-Cb'-Ca' dihedral (Symmetric)
         ret["omega"] = self.pairwise_dihedrals(["CA", "CB"], ["CA", "CB"])
@@ -826,7 +830,9 @@ class StructureBatch:
         )  # n_residues, n_query_points
 
         dist, _ = dist.min(dim=-1)  # n_residues
-        _, idx = dist.topk(k, largest=False)  #
+        dist[mask] = 1e9
+
+        _, idx = dist.topk(k, largest=False)  # k
         mask = torch.zeros(self.n_residues, dtype=torch.bool).scatter(0, idx, True)
 
         return mask.unsqueeze(0)
@@ -937,8 +943,7 @@ class AntibodyStructureBatch(StructureBatch):
         return self.keep_fv_only
 
     def get_cdr_mask(self, subset: Union[str, List[str]] = None) -> torch.BoolTensor:
-        if subset is None:
-            subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
+        subset = subset or CDR_NAMES
         subset = _always_list(subset)
 
         _masks = torch.stack([self.residue_masks[cdr] for cdr in subset], axis=0)
@@ -965,12 +970,11 @@ class AntibodyStructureBatch(StructureBatch):
         Returns:
             torch.BoolTensor: A boolean mask tensor denoting CDR anchor residues.
         """
-        if subset is None:
-            subset = ["H1", "H2", "H3", "L1", "L2", "L3"]
+        subset = subset or CDR_NAMES
         subset = _always_list(subset)
 
         for cdr in subset:
-            if cdr not in ["H1", "H2", "H3", "L1", "L2", "L3"]:
+            if cdr not in CDR_NAMES:
                 raise ValueError(f"CDR {cdr} is not valid.")
 
         cdr_mask = self.get_cdr_mask(subset)
@@ -1024,8 +1028,6 @@ class AntibodyStructureBatch(StructureBatch):
         pdb_path = _always_list(pdb_path)
         bsz = len(pdb_path)
 
-        cdr_keys = ["H1", "H2", "H3", "L1", "L2", "L3"]
-
         heavy_chain_id = _always_list(heavy_chain_id)
         light_chain_id = _always_list(light_chain_id)
         antigen_chain_ids = _always_list(antigen_chain_ids)
@@ -1060,7 +1062,7 @@ class AntibodyStructureBatch(StructureBatch):
             tmp_residue_masks["heavy_chain"].append(pdb.get_heavy_chain_mask())
             tmp_residue_masks["light_chain"].append(pdb.get_light_chain_mask())
             tmp_residue_masks["antigen"].append(pdb.get_antigen_mask())
-            for cdr in cdr_keys:
+            for cdr in CDR_NAMES:
                 tmp_residue_masks[cdr].append(pdb.get_cdr_mask(cdr))
 
         max_n_residues = max([len(xyz) for xyz in tmp_atom_xyz])
@@ -1071,7 +1073,7 @@ class AntibodyStructureBatch(StructureBatch):
         residue_idx = torch.ones(bsz, max_n_residues) * torch.nan
 
         residue_mask_keys = ["heavy_chain", "light_chain", "antigen"]
-        residue_mask_keys += cdr_keys
+        residue_mask_keys += CDR_NAMES
 
         residue_masks = {}
         for key in residue_mask_keys:

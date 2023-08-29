@@ -1,27 +1,24 @@
-import torch
+from collections import defaultdict
+from typing import List, Tuple, Union
+
+import biotite.structure as struc
 import numpy as np
 import pandas as pd
-
-from biopandas.pdb import PandasPdb
-import biotite.structure as struc
+import torch
 from biotite.structure.io.pdb import PDBFile
-from typing import List, Tuple, Union
-from collections import defaultdict
+
 from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
 from protstruc.general import (
-    restype_to_heavyatom_names,
+    AA,
     non_standard_residue_substitutions,
+    restype_to_heavyatom_names,
     standard_aa_names,
     standard_heavy_atom_names,
-    AA,
 )
 
 
 def _always_list(x):
-    if isinstance(x, list):
-        return x
-    else:
-        return [x]
+    return x if isinstance(x, list) else [x]
 
 
 def tidy_structure(structure: struc.AtomArray) -> struc.AtomArray:
@@ -55,34 +52,9 @@ def tidy_pdb(pdb_df: pd.DataFrame) -> pd.DataFrame:
     return pdb_df
 
 
-class ChothiaAntibodyPDB:
-    fv_heavy_range = (1, 113)
-    fv_light_range = (1, 106)
-    h1_range = (26, 32)
-    h2_range = (52, 56)
-    h3_range = (95, 102)
-    l1_range = (24, 34)
-    l2_range = (50, 56)
-    l3_range = (89, 97)
-
-    def __init__(
-        self,
-        structure: struc.AtomArray,
-        heavy_chain_id,
-        light_chain_id,
-        antigen_chain_ids: List[str] = None,
-        keep_fv_only: bool = False,
-    ):
+class PDB:
+    def __init__(self, structure: struc.AtomArray):
         self.structure = structure
-
-        self.heavy_chain_id = heavy_chain_id
-        self.light_chain_id = light_chain_id
-        self.antigen_chain_ids = antigen_chain_ids
-        self.keep_fv_only = keep_fv_only
-
-        self._retain_only_relevant_chains()
-        if self.keep_fv_only:
-            self._retain_only_fv()
 
         self._initialize_lookup()
         self.n_residues = len(self._lookup)
@@ -90,49 +62,11 @@ class ChothiaAntibodyPDB:
         self._compute_atom_xyz()
 
     @classmethod
-    def read_pdb(
-        cls,
-        fp: str,
-        heavy_chain_id: str,
-        light_chain_id: str,
-        antigen_chain_ids: Union[str, List[str]] = None,
-        keep_fv_only: bool = False,
-    ) -> "ChothiaAntibodyPDB":
-        structure = PDBFile.read(fp).get_structure(model=1)  # take the first model
+    def read_pdb(cls, fp) -> "PDB":
+        structure = PDBFile.read(fp).get_structure(model=1)
         structure = tidy_structure(structure)
 
-        antigen_chain_ids = _always_list(antigen_chain_ids)
-        return cls(
-            structure, heavy_chain_id, light_chain_id, antigen_chain_ids, keep_fv_only
-        )
-
-    def _retain_only_relevant_chains(self):
-        target_chains = [self.heavy_chain_id, self.light_chain_id]
-
-        if self.antigen_chain_ids is not None:
-            target_chains += self.antigen_chain_ids
-
-        mask = np.isin(self.structure.chain_id, target_chains)
-        self.structure = self.structure[mask]
-
-    def _retain_only_fv(self):
-        hmin, hmax = self.fv_heavy_range
-        lmin, lmax = self.fv_light_range
-
-        mask_heavy = self.structure.chain_id == self.heavy_chain_id
-        mask_light = self.structure.chain_id == self.light_chain_id
-        mask_vh = (hmin <= self.structure.res_id) & (self.structure.res_id <= hmax)
-        mask_vl = (lmin <= self.structure.res_id) & (self.structure.res_id <= lmax)
-
-        mask = (mask_heavy & mask_vh) | (mask_light & mask_vl)
-
-        if self.antigen_chain_ids is not None:
-            mask_ag = np.isin(
-                self.structure.chain_id, self.antigen_chain_ids
-            )  # antigen
-            mask |= mask_ag
-
-        self.structure = self.structure[mask]
+        return cls(structure)
 
     def _fill_lookup(
         self, chain_id, residue_number, insertion, threeletter, oneletter, idx
@@ -214,21 +148,6 @@ class ChothiaAntibodyPDB:
                 self.atom_xyz[internal_idx, atom_idx] = torch.tensor(atom.coord)
                 self.atom_xyz_mask[internal_idx, atom_idx] = True
 
-    def get_heavy_chain_structure(self):
-        mask = self.structure.chain_id == self.heavy_chain_id
-        return self.structure[mask]
-
-    def get_light_chain_structure(self):
-        mask = self.structure.chain_id == self.light_chain_id
-        return self.structure[mask]
-
-    def get_antigen_chains_structure(self):
-        if self.antigen_chain_ids is None:
-            return None
-        else:
-            mask = np.isin(self.structure.chain_id, self.antigen_chain_ids)
-            return self.structure[mask]
-
     def get_atom_xyz(self) -> Tuple[torch.FloatTensor, torch.LongTensor]:
         return self.atom_xyz, self.atom_xyz_mask
 
@@ -256,6 +175,101 @@ class ChothiaAntibodyPDB:
             seq_dict[chain_id] = seq
 
         return seq_dict
+
+
+class ChothiaAntibodyPDB(PDB):
+    fv_heavy_range = (1, 113)
+    fv_light_range = (1, 106)
+    h1_range = (26, 32)
+    h2_range = (52, 56)
+    h3_range = (95, 102)
+    l1_range = (24, 34)
+    l2_range = (50, 56)
+    l3_range = (89, 97)
+
+    def __init__(
+        self,
+        structure: struc.AtomArray,
+        heavy_chain_id,
+        light_chain_id,
+        antigen_chain_ids: List[str] = None,
+        keep_fv_only: bool = False,
+    ):
+        self.structure = structure
+
+        self.heavy_chain_id = heavy_chain_id
+        self.light_chain_id = light_chain_id
+        self.antigen_chain_ids = antigen_chain_ids
+        self.keep_fv_only = keep_fv_only
+
+        self._retain_only_relevant_chains()
+        if self.keep_fv_only:
+            self._retain_only_fv()
+
+        self._initialize_lookup()
+        self.n_residues = len(self._lookup)
+
+        self._compute_atom_xyz()
+
+    @classmethod
+    def read_pdb(
+        cls,
+        fp: str,
+        heavy_chain_id: str,
+        light_chain_id: str,
+        antigen_chain_ids: Union[str, List[str]] = None,
+        keep_fv_only: bool = False,
+    ) -> "ChothiaAntibodyPDB":
+        structure = PDBFile.read(fp).get_structure(model=1)  # take the first model
+        structure = tidy_structure(structure)
+
+        antigen_chain_ids = _always_list(antigen_chain_ids)
+        return cls(
+            structure, heavy_chain_id, light_chain_id, antigen_chain_ids, keep_fv_only
+        )
+
+    def _retain_only_relevant_chains(self):
+        target_chains = [self.heavy_chain_id, self.light_chain_id]
+
+        if self.antigen_chain_ids is not None:
+            target_chains += self.antigen_chain_ids
+
+        mask = np.isin(self.structure.chain_id, target_chains)
+        self.structure = self.structure[mask]
+
+    def _retain_only_fv(self):
+        hmin, hmax = self.fv_heavy_range
+        lmin, lmax = self.fv_light_range
+
+        mask_heavy = self.structure.chain_id == self.heavy_chain_id
+        mask_light = self.structure.chain_id == self.light_chain_id
+        mask_vh = (hmin <= self.structure.res_id) & (self.structure.res_id <= hmax)
+        mask_vl = (lmin <= self.structure.res_id) & (self.structure.res_id <= lmax)
+
+        mask = (mask_heavy & mask_vh) | (mask_light & mask_vl)
+
+        if self.antigen_chain_ids is not None:
+            mask_ag = np.isin(
+                self.structure.chain_id, self.antigen_chain_ids
+            )  # antigen
+            mask |= mask_ag
+
+        self.structure = self.structure[mask]
+
+    def get_heavy_chain_structure(self):
+        mask = self.structure.chain_id == self.heavy_chain_id
+        return self.structure[mask]
+
+    def get_light_chain_structure(self):
+        mask = self.structure.chain_id == self.light_chain_id
+        return self.structure[mask]
+
+    def get_antigen_chains_structure(self):
+        if self.antigen_chain_ids is None:
+            return None
+        else:
+            mask = np.isin(self.structure.chain_id, self.antigen_chain_ids)
+            return self.structure[mask]
 
     def get_heavy_chain_mask(self) -> torch.BoolTensor:
         return torch.Tensor(self._lookup.chain_id == self.heavy_chain_id).bool()

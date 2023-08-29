@@ -174,3 +174,5 @@ standard_heavy_atom_names = set()
 for atoms in restype_to_heavyatom_names.values():
     standard_heavy_atom_names.update([x for x in atoms if x != ''])
 standard_heavy_atom_names = list(standard_heavy_atom_names)
+
+CDR_NAMES = ['H1', 'H2', 'H3', 'L1', 'L2', 'L3']
