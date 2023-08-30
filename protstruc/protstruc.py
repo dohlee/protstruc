@@ -13,10 +13,6 @@ from protstruc.constants import MAX_N_ATOMS_PER_RESIDUE
 from protstruc.general import AA, ATOM, CDR_NAMES, ressymb_to_resindex
 from protstruc.pdb import PDB, ChothiaAntibodyPDB
 
-CC_BOND_LENGTH = 1.522
-CB_CA_N_ANGLE = 1.927
-CB_DIHEDRAL = -2.143
-
 
 def isnull(x):
     if isinstance(x, list):
@@ -54,6 +50,7 @@ class StructureBatch:
         chain_idx: torch.Tensor = None,
         chain_ids: List[str] = None,
         seq: List[Dict[str, str]] = None,
+        residue_idx: torch.LongTensor = None,
     ):
         if (chain_idx is not None and chain_ids is None) or (
             chain_idx is None and chain_ids is not None
@@ -88,6 +85,7 @@ class StructureBatch:
 
         self.chain_ids = chain_ids
         self.seq = seq
+        self.residue_idx = residue_idx
 
         # assumes that the input is not standardized yet
         self._standardized = False
@@ -152,18 +150,21 @@ class StructureBatch:
         bsz = len(pdb_path)
 
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
+        tmp_residue_idx = []
         chain_ids = []
         for f in pdb_path:
             pdb = PDB.read_pdb(f)
 
             _atom_xyz, _atom_mask = pdb.get_atom_xyz()
             _chain_idx = pdb.get_chain_idx()
+            _residue_idx = pdb.get_residue_idx()
             _chain_ids = pdb.get_chain_ids()
             _seq_dict = pdb.get_seq_dict()
 
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
             tmp_chain_idx.append(_chain_idx)
+            tmp_residue_idx.append(_residue_idx)
             chain_ids.append(_chain_ids)
             seq.append(_seq_dict)
 
@@ -172,17 +173,22 @@ class StructureBatch:
         atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
         atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE).bool()
         chain_idx = torch.ones(bsz, max_n_residues) * torch.nan
+        residue_idx = torch.ones(bsz, max_n_residues) * torch.nan
 
         for i in range(bsz):
             _atom_xyz = tmp_atom_xyz[i]
             _atom_mask = tmp_atom_mask[i]
             _chain_idx = tmp_chain_idx[i]
+            _residue_idx = tmp_residue_idx[i]
 
             atom_xyz[i, : len(_atom_xyz)] = _atom_xyz
             atom_mask[i, : len(_atom_mask)] = _atom_mask
             chain_idx[i, : len(_chain_idx)] = _chain_idx
+            residue_idx[i, : len(_residue_idx)] = _residue_idx
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
+        self = cls(
+            atom_xyz, atom_mask, chain_idx, chain_ids, seq, residue_idx, **kwargs
+        )
         return self
 
     @classmethod
@@ -213,18 +219,21 @@ class StructureBatch:
         bsz = len(pdb_id)
 
         tmp_atom_xyz, tmp_atom_mask, tmp_chain_idx, seq = [], [], [], []
+        tmp_residue_idx = []
         chain_ids = []
         for id in pdb_id:
             pdb = PDB.read_pdb(fetch(id, "pdb"))
 
             _atom_xyz, _atom_mask = pdb.get_atom_xyz()
             _chain_idx = pdb.get_chain_idx()
+            _residue_idx = pdb.get_residue_idx()
             _chain_ids = pdb.get_chain_ids()
             _seq_dict = pdb.get_seq_dict()
 
             tmp_atom_xyz.append(_atom_xyz)
             tmp_atom_mask.append(_atom_mask)
             tmp_chain_idx.append(_chain_idx)
+            tmp_residue_idx.append(_residue_idx)
             chain_ids.append(_chain_ids)
             seq.append(_seq_dict)
 
@@ -233,17 +242,22 @@ class StructureBatch:
         atom_xyz = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE, 3)
         atom_mask = torch.zeros(bsz, max_n_residues, MAX_N_ATOMS_PER_RESIDUE)
         chain_idx = torch.ones(bsz, max_n_residues) * torch.nan
+        residue_idx = torch.ones(bsz, max_n_residues) * torch.nan
 
         for i in range(bsz):
             _atom_xyz = tmp_atom_xyz[i]
             _atom_mask = tmp_atom_mask[i]
             _chain_idx = tmp_chain_idx[i]
+            _residue_idx = tmp_residue_idx[i]
 
             atom_xyz[i, : len(_atom_xyz)] = _atom_xyz
             atom_mask[i, : len(_atom_mask)] = _atom_mask
             chain_idx[i, : len(_chain_idx)] = _chain_idx
+            residue_idx[i, : len(_residue_idx)] = _residue_idx
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
+        self = cls(
+            atom_xyz, atom_mask, chain_idx, chain_ids, seq, residue_idx, **kwargs
+        )
         return self
 
     @classmethod
@@ -254,6 +268,7 @@ class StructureBatch:
         chain_idx: Union[np.ndarray, torch.Tensor] = None,
         chain_ids: List[List[str]] = None,
         seq: List[Dict[str, str]] = None,
+        residue_idx: Union[np.ndarray, torch.Tensor] = None,
         include_cb: bool = False,
         **kwargs,
     ) -> "StructureBatch":
@@ -298,7 +313,9 @@ class StructureBatch:
         )
         atom_mask = torch.cat([atom_mask, dummy_mask], axis=-1)
 
-        self = cls(atom_xyz, atom_mask, chain_idx, chain_ids, seq, **kwargs)
+        self = cls(
+            atom_xyz, atom_mask, chain_idx, chain_ids, seq, residue_idx, **kwargs
+        )
         return self
 
     @classmethod
@@ -830,12 +847,19 @@ class StructureBatch:
         )  # n_residues, n_query_points
 
         dist, _ = dist.min(dim=-1)  # n_residues
-        dist[mask] = 1e9
+
+        _mask = self.residue_mask[0]
+        if mask is not None:
+            _mask = _mask & mask
+
+        dist[~_mask] = 1e9
+
+        # adjust k if necessary
+        k = min(k, _mask.sum())
 
         _, idx = dist.topk(k, largest=False)  # k
-        mask = torch.zeros(self.n_residues, dtype=torch.bool).scatter(0, idx, True)
-
-        return mask.unsqueeze(0)
+        ret = torch.zeros(self.n_residues, dtype=torch.bool).scatter(0, idx, True)
+        return ret.unsqueeze(0)
 
     def diffuse_xyz(self, beta: torch.FloatTensor):
         """Add Gaussian noises of given variance `beta` to the atom 3D coordinates of the structures.
@@ -893,6 +917,44 @@ class StructureBatch:
         self.rotate(rotations)
         self.translate(translations.unsqueeze(1))
 
+    def residue_masked_select(self, mask: torch.BoolTensor) -> "StructureBatch":
+        """Return a StructureBatch containing only the residues denoted by the given mask.
+
+        Args:
+            mask: Mask for residues to select. Shape: (batch_size, num_residues)
+
+        Note:
+            `chain_ids` and `seq` attributes are not updated accordingly. i.e., they will
+            still contain the information for all residues.
+
+        Returns:
+            StructureBatch: A StructureBatch containing only the residues denoted by the given mask.
+        """
+        if self.batch_size > 1:
+            raise ValueError(
+                "residue_masked_select method is not defined "
+                "for a StructureBatch with batch size > 1."
+            )
+
+        if mask.shape != self.residue_mask.shape:
+            raise ValueError(
+                f"Mask shape {mask.shape} does not match residue mask shape {self.residue_mask.shape}."
+            )
+
+        if mask.dtype != torch.bool:
+            raise ValueError("Mask must be a boolean tensor.")
+
+        if mask.ndim == 1:
+            mask = mask.unsqueeze(0)
+
+        xyz = self.xyz[mask].unsqueeze(0)
+        atom_mask = self.atom_mask[mask].unsqueeze(0)
+        chain_idx = self.chain_idx[mask].unsqueeze(0)
+        chain_ids = self.chain_ids
+        seq = self.seq
+
+        return StructureBatch(xyz, atom_mask, chain_idx, chain_ids, seq)
+
 
 class AntibodyStructureBatch(StructureBatch):
     def __init__(
@@ -910,10 +972,9 @@ class AntibodyStructureBatch(StructureBatch):
         numbering_scheme: Literal["kabat", "chothia", "imgt"] = "chothia",
         keep_fv_only: bool = False,
     ):
-        super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq)
+        super().__init__(xyz, atom_mask, chain_idx, chain_ids, seq, residue_idx)
 
         self.numbering_scheme = numbering_scheme
-        self.residue_idx = residue_idx
         self.residue_masks = residue_masks
 
         self.heavy_chain_id = heavy_chain_id

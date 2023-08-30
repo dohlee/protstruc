@@ -293,3 +293,13 @@ def test_seq_idx():
     assert seq_idx.shape == (2, 184)
     assert (seq_idx[~residue_mask.bool()] == ps.general.AA.UNK).all()
     print(seq_idx[0])
+
+
+def test_residue_masked_select():
+    pdb_id = ["1REX"]
+    sb = StructureBatch.from_pdb_id(pdb_id)
+
+    my_residue_mask = torch.randint(0, 2, size=sb.get_residue_mask().shape).bool()
+
+    sb2 = sb.residue_masked_select(my_residue_mask)
+    assert sb2.get_xyz().shape == (1, my_residue_mask.sum().item(), 15, 3)

@@ -120,7 +120,9 @@ class PDB:
             idx += 1
 
         self._lookup = pd.DataFrame(self._lookup)
-        self._lookup["chain_idx"] = pd.Categorical(self._lookup.chain_id).codes
+        self._lookup["chain_idx"] = pd.Categorical(
+            self._lookup.chain_id, categories=self._lookup.chain_id.unique()
+        ).codes
 
         # compute internal index mapping
         self.cri2idx = {}
